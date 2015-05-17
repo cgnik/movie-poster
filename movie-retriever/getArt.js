@@ -62,16 +62,7 @@ var movieImageFetch = function(id) {
 		});
 	}
 };
-var targetMovieImage = function(targetFile, movieName) {
-	return function(exists) {
-		if (!exists) {
-			// we go get the id
-			queue.add(queueMovieName(movieName));
-		} else {
-			// console.log("Skipping already existing file " + targetFile);
-		}
-	}
-};
+
 var queueMovieName = function(movieName) {
 	return function() {
 		// console.log("Enqueueing name " + movieName);
@@ -135,7 +126,13 @@ var spawnMovieRetrievals = function() {
 				queue.add(queueMovieId(id));
 			} else {
 				// else go get it if we don't already have it
-				fs.exists(target, targetMovieImage(target, movieName));
+				if (fs.existsSync(target)) {
+					// we go get the id
+					queue.add(queueMovieName(movieName));
+				} else {
+					// console.log("Skipping already existing file " +
+					// targetFile);
+				}
 			}
 			// get out if we're done + safety until get it right
 			if (movieName in movies) {
