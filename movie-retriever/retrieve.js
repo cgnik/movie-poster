@@ -38,8 +38,12 @@ var movieImageFetch = function(id) {
 		var image = res.posters[0];
 
 		image = _.filter(res.posters, function(poster) {
-			return poster.iso_639_1.toLowerCase() == 'en';
+			return poster.iso_639_1 != null
+					&& poster.iso_639_1.toLowerCase() == 'en';
 		})[0];
+		if (image == null) {
+			image = res.posters[0];
+		}
 		if (image == null) {
 			console.log("ERROR FINDING ENGLISH POSTER: " + movies[id] + " ("
 					+ id + "): ");
@@ -84,7 +88,7 @@ var movieIdentification = function(name) {
 			return;
 		}
 		var fuzzymatches = fuzzy.filter(name, res.results.map(function(result) {
-			return result.title.toLowerCase();
+			return result.title;
 		}));
 		var bestmatch = _.max(fuzzymatches, function(fuzzymatch) {
 			return fuzzymatch.score;
@@ -99,8 +103,9 @@ var movieIdentification = function(name) {
 		console.log("best match '" + name + "'");
 		console.log(bestmatch);
 		if (!_.isEmpty(bestmatch)) {
+			var id = res.results[bestmatch.index].id;
 			movies[id] = name;
-			queue.add(queueMovieId(res.results[bestmatch.index].id));
+			queue.add(queueMovieId(id));
 		} else {
 			console.log("NO MATCH for title " + name);
 			console.log(res.results);

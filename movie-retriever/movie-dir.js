@@ -18,8 +18,7 @@ function mapMovieImageFiles(files) {
 	var movieImages = {};
 	for (i = 0; i < files.length; i++) {
 		fileFullName = files[i];
-		fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'))
-				.toLowerCase();
+		fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
 		if (fileName.trim().length < 1) {
 			// then it's a . file or something else we're likely not
 			// interested in
