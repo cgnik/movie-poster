@@ -4,6 +4,8 @@ themoviedbKey = fs.readFileSync('themoviedb-key.txt');
 if (themoviedbKey == null) {
 	process.exit(1);
 }
+var moviedir = module.require('./movie-dir.js');
+var moviematcher = module.require('./movie-matcher.js');
 
 moviedb = module.require("moviedb")(themoviedbKey);
 rateLimit = require("rate-limit");
@@ -17,13 +19,13 @@ var imagePath = "/Volumes/movies/";
 var configuration = [];
 // note -- if the movie name is already in here, we don't re-search it
 var moviesNames = {
-	"ALIENS" : 679,
-	"ALICE IN WONDERLAND" : 12092,
-	"ADAPTATION" : 2757,
-	"ANGELA" : 32622,
-	"ATONEMENT" : 4347,
-	"BRIDESMAIDS" : 55721,
-	"BRINGING DOWN THE HOUSE" : 10678
+	"aliens" : 679,
+	"alice in wonderland" : 12092,
+	"adaptation" : 2757,
+	"angela" : 32622,
+	"atonement" : 4347,
+	"bridesmaids" : 55721,
+	"bringing down the house" : 10678
 };
 var movies = new Array();
 // handles movie fetch from movie id
@@ -51,15 +53,12 @@ var movieImageFetch = function(id) {
 				- dotLoc);
 		var fileName = movies[id] + ext;
 		var fileDestination = imagePath + fileName;
-		fs.exists(fileDestination, function(exists) {
-			if (!exists) {
-				request.get(url).on('error', function(err) {
-					console.log(err)
-				}).pipe(fs.createWriteStream(fileDestination));
-			} else {
-				// console.log("skipping present file : " + fileDestination);
-			}
-		});
+		console
+				.log("Writing out file " + fileName + " for movie "
+						+ movies[id]);
+		request.get(url).on('error', function(err) {
+			console.log(err)
+		}).pipe(fs.createWriteStream(fileDestination));
 	}
 };
 
@@ -89,58 +88,49 @@ var movieIdentification = function(name) {
 		var skip = 0;
 		for (j = 0; j < res.results.length; j++) {
 			var id = res.results[j].id;
-			if (res.results[j].title.toUpperCase() === name.toUpperCase()) {
+			var title = res.results[j].title.toLowerCase();
+			var foundId = null;
+			if (moviematcher.matches(name, title)) {
 				movies[id] = res.results[j].title;
 				console.log("Fetching image for movie '" + movies[id]
 						+ "' (id: " + id + ")");
 				queue.add(queueMovieId(id));
+			} else {
+				console.log("NOMATCH: " + name + " | " + title);
 			}
 			if (movies[id] != null) {
 				break;
 			}
 		}
+		if (foundId != null) {
+			console.log("Unable to find matching search result for '" + name
+					+ "'");
+		}
 	};
 };
 // reads the directory and spawns requests for the first image of each found
 // result
-var spawnMovieRetrievals = function() {
+var spawnMovieImageRetrievals = function() {
 	// gets movie results for each file in movie dir
-	fs.readdir("/Volumes/movies/", function(err, files) {
-		for (i = 0; i < files.length; i++) {
-			fileName = files[i];
-			movieName = fileName.substring(0, fileName.lastIndexOf('.'));
-			// null protection
-			if (movieName.length < 1) {
-				continue;
-			}
-			// figure out the target file name/path
-			var target = imagePath + movieName + ".jpg";
-			// if we've already got this in the queue
-			if (movieName.toUpperCase() in moviesNames) {
-				movieNameU = movieName.toUpperCase();
-				console.log("Using predefined movie id: " + movieName + " ("
-						+ moviesNames[movieNameU] + ")");
-				// just spawn the retrieval, already
-				var id = moviesNames[movieNameU];
-				movies[id] = movieName;
-				queue.add(queueMovieId(id));
-			} else {
-				// else go get it if we don't already have it
-				if (fs.existsSync(target)) {
-					// we go get the id
-					queue.add(queueMovieName(movieName));
-				} else {
-					// console.log("Skipping already existing file " +
-					// targetFile);
-				}
-			}
-			// get out if we're done + safety until get it right
-			if (movieName in movies) {
-				break;
-			}
+	var movieImageMap = moviedir.MovieImageMap("/Volumes/movies/")
+			.getMovieImageMap();
+	console.log(movieImageMap);
+	Object.keys(movieImageMap).filter(function(key) {
+		return movieImageMap[key] == null;
+	}).forEach(function(movieName) {
+		if (moviesNames[movieName] != null) {
+			queue.add(queueMovieId(moviesNames[movieName]));
+		} else {
+			queue.add(queueMovieName(movieName));
 		}
 	});
 }
+/*
+ * movieNameU = movieName.toLowerCase(); console.log("Using predefined movie id: " +
+ * movieName + " (" + moviesNames[movieNameU] + ")"); // just spawn the
+ * retrieval, already var id = moviesNames[movieNameU]; movies[id] = movieName;
+ * queue.add(queueMovieId(id));
+ */
 
 var queue = rateLimit.createQueue({
 	interval : 500
@@ -156,7 +146,7 @@ moviedb
 						console
 								.log("Retrieved configuration.  Proceeding to spawn requests for movies/images");
 						configuration = config.images;
-						spawnMovieRetrievals();
+						spawnMovieImageRetrievals();
 					}
 				});
 /*
