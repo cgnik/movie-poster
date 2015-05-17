@@ -11,6 +11,7 @@ moviedb = module.require("moviedb")(themoviedbKey);
 rateLimit = require("rate-limit");
 sleep = module.require('sleep');
 request = module.require('request');
+_ = module.require('underscore');
 
 // where we're putting the images
 // var imagePath = "/Users/christo/dev/w.nodejs/movie-retriever/images/";
@@ -35,15 +36,13 @@ var movieImageFetch = function(id) {
 			console.log("Unable to retrieve '" + movies[id] + ": " + err);
 		}
 		var image = res.posters[0];
-		for (i = 0; i < res.posters.length; i++) {
-			if (res.posters[i].iso_639_1 != null
-					&& res.posters[i].iso_639_1.toLowerCase() == 'en') {
-				image = res.posters[i];
-				break;
-			}
-		}
+
+		image = _.filter(res.posters, function(poster) {
+			return poster.iso_639_1.toLowerCase() == 'en';
+		})[0];
 		if (image == null) {
-			console.log("ERROR: " + movies[id] + " (" + id + "): ");
+			console.log("ERROR FINDING ENGLISH POSTER: " + movies[id] + " ("
+					+ id + "): ");
 			console.log(res);
 			return;
 		}
@@ -72,7 +71,6 @@ var queueMovieName = function(movieName) {
 };
 var queueMovieId = function(id) {
 	return function() {
-		// console.log("Enqueueing id " + id);
 		moviedb.movieImages({
 			id : id
 		}, movieImageFetch(id));
@@ -85,26 +83,29 @@ var movieIdentification = function(name) {
 			console.log("ERROR: " + err);
 			return;
 		}
-		var skip = 0;
-		for (j = 0; j < res.results.length; j++) {
-			var id = res.results[j].id;
-			var title = res.results[j].title.toLowerCase();
-			var foundId = null;
-			if (moviematcher.matches(name, title)) {
-				movies[id] = res.results[j].title;
-				console.log("Fetching image for movie '" + movies[id]
-						+ "' (id: " + id + ")");
-				queue.add(queueMovieId(id));
-			} else {
-				console.log("NOMATCH: " + name + " | " + title);
-			}
-			if (movies[id] != null) {
-				break;
-			}
+		var fuzzymatches = fuzzy.filter(name, res.results.map(function(result) {
+			return result.title.toLowerCase();
+		}));
+		var bestmatch = _.max(fuzzymatches, function(fuzzymatch) {
+			return fuzzymatch.score;
+		});
+		// final failsafe -- if we've got no matches and only one result, trust
+		// the moviedb search
+		if (_.isEmpty(bestmatch) && res.results.length == 1) {
+			bestmatch = {
+				index : 0
+			};
 		}
-		if (foundId != null) {
-			console.log("Unable to find matching search result for '" + name
-					+ "'");
+		console.log("best match '" + name + "'");
+		console.log(bestmatch);
+		if (!_.isEmpty(bestmatch)) {
+			movies[id] = name;
+			queue.add(queueMovieId(res.results[bestmatch.index].id));
+		} else {
+			console.log("NO MATCH for title " + name);
+			console.log(res.results);
+			console.log("fuzzymatches");
+			console.log(fuzzymatches);
 		}
 	};
 };
@@ -114,8 +115,8 @@ var spawnMovieImageRetrievals = function() {
 	// gets movie results for each file in movie dir
 	var movieImageMap = moviedir.MovieImageMap("/Volumes/movies/")
 			.getMovieImageMap();
-	console.log(movieImageMap);
-	Object.keys(movieImageMap).filter(function(key) {
+	// console.log(movieImageMap);
+	_.keys(movieImageMap).filter(function(key) {
 		return movieImageMap[key] == null;
 	}).forEach(function(movieName) {
 		if (moviesNames[movieName] != null) {
