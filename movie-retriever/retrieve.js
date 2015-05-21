@@ -1,22 +1,36 @@
-fs = module.require("fs");
+// modules
+var fs = module.require("fs");
+var moviedir = module.require('./movie-dir.js');
+var moviematcher = module.require('./movie-matcher.js');
+var log = module.require('./movie-log.js');
+var rateLimit = require("rate-limit");
+var request = module.require('request');
+var _ = module.require('underscore');
 // we require the key for api access to be in this file
 themoviedbKey = fs.readFileSync('themoviedb-key.txt');
 if (themoviedbKey == null) {
 	process.exit(1);
 }
-var moviedir = module.require('./movie-dir.js');
-var moviematcher = module.require('./movie-matcher.js');
+var moviedb = module.require("moviedb")(themoviedbKey);
 
-moviedb = module.require("moviedb")(themoviedbKey);
-rateLimit = require("rate-limit");
-sleep = module.require('sleep');
-request = module.require('request');
-_ = module.require('underscore');
-
+// decl
+var queue = rateLimit.createQueue({
+	interval : 500
+});
+// setup
+var debug = false;
+process.argv.forEach(function(val, index, array) {
+	if (val == '--debug') {
+		log.loglevel = 'debug';
+	} else if (val == '--error') {
+		log.loglevel = 'error';
+	} else if (val == '--info') {
+		log.loglevel = 'info';
+	}
+});
 // where we're putting the images
-// var imagePath = "/Users/christo/dev/w.nodejs/movie-retriever/images/";
-var imagePath = "/Volumes/movies/";
-// the repo of keys we're retrieving
+// var imagePath = "/Volumes/movies/";
+var imagePath = "/Users/christo/Desktop/test/";
 var configuration = [];
 // note -- if the movie name is already in here, we don't re-search it
 var moviesNames = {
@@ -25,15 +39,16 @@ var moviesNames = {
 	"adaptation" : 2757,
 	"angela" : 32622,
 	"atonement" : 4347,
+	"batman" : 268,
 	"bridesmaids" : 55721,
 	"bringing down the house" : 10678
 };
-var movies = new Array();
+var movies = [];
 // handles movie fetch from movie id
 var movieImageFetch = function(id) {
 	return function(err, res) {
 		if (err || res == null || res.posters == null || res.posters.length < 1) {
-			console.log("Unable to retrieve '" + movies[id] + ": " + err);
+			log.error("Unable to retrieve '" + movies[id] + ": " + err);
 		}
 		var image = res.posters[0];
 
@@ -45,9 +60,9 @@ var movieImageFetch = function(id) {
 			image = res.posters[0];
 		}
 		if (image == null) {
-			console.log("ERROR FINDING ENGLISH POSTER: " + movies[id] + " ("
-					+ id + "): ");
-			console.log(res);
+			log.error("ERROR FINDING ENGLISH POSTER: " + movies[id] + " (" + id
+					+ "): ");
+			log.info(res);
 			return;
 		}
 		var url = configuration.base_url + "w300" + image.file_path;
@@ -56,18 +71,17 @@ var movieImageFetch = function(id) {
 				- dotLoc);
 		var fileName = movies[id] + ext;
 		var fileDestination = imagePath + fileName;
-		console
-				.log("Writing out file " + fileName + " for movie "
-						+ movies[id]);
+		log.info("Writing out file " + fileDestination + " for movie "
+				+ movies[id]);
 		request.get(url).on('error', function(err) {
-			console.log(err)
+			log.error(err)
 		}).pipe(fs.createWriteStream(fileDestination));
 	}
 };
 
 var queueMovieName = function(movieName) {
 	return function() {
-		// console.log("Enqueueing name " + movieName);
+		log.debug("Enqueueing name " + movieName);
 		moviedb.searchMovie({
 			query : '"' + movieName + '"'
 		}, movieIdentification(movieName));
@@ -84,7 +98,7 @@ var queueMovieId = function(id) {
 var movieIdentification = function(name) {
 	return function(err, res) {
 		if (err) {
-			console.log("ERROR: " + err);
+			log.error("ERROR: " + err);
 			return;
 		}
 		var fuzzymatches = fuzzy.filter(name, res.results.map(function(result) {
@@ -93,24 +107,26 @@ var movieIdentification = function(name) {
 		var bestmatch = _.max(fuzzymatches, function(fuzzymatch) {
 			return fuzzymatch.score;
 		});
-		// final failsafe -- if we've got no matches and only one result, trust
-		// the moviedb search
+		// failsafe -- if no best and only one result, trust the moviedb
 		if (_.isEmpty(bestmatch) && res.results.length == 1) {
 			bestmatch = {
 				index : 0
 			};
 		}
-		console.log("best match '" + name + "'");
-		console.log(bestmatch);
+		log.info("best match '" + name + "'");
+		log.debug(bestmatch);
 		if (!_.isEmpty(bestmatch)) {
 			var id = res.results[bestmatch.index].id;
+			log.info("Chose id " + res.results[bestmatch.index].id + " for "
+					+ name);
+			log.debug(res.results[bestmatch.index]);
 			movies[id] = name;
 			queue.add(queueMovieId(id));
 		} else {
-			console.log("NO MATCH for title " + name);
-			console.log(res.results);
-			console.log("fuzzymatches");
-			console.log(fuzzymatches);
+			log.error("NO MATCH for title " + name);
+			log.debug(res.results);
+			log.debug("fuzzymatches");
+			log.debug(fuzzymatches);
 		}
 	};
 };
@@ -118,9 +134,7 @@ var movieIdentification = function(name) {
 // result
 var spawnMovieImageRetrievals = function() {
 	// gets movie results for each file in movie dir
-	var movieImageMap = moviedir.MovieImageMap("/Volumes/movies/")
-			.getMovieImageMap();
-	// console.log(movieImageMap);
+	var movieImageMap = moviedir.MovieImageMap(imagePath).getMovieImageMap();
 	_.keys(movieImageMap).filter(function(key) {
 		return movieImageMap[key] == null;
 	}).forEach(function(movieName) {
@@ -131,33 +145,21 @@ var spawnMovieImageRetrievals = function() {
 		}
 	});
 }
-/*
- * movieNameU = movieName.toLowerCase(); console.log("Using predefined movie id: " +
- * movieName + " (" + moviesNames[movieNameU] + ")"); // just spawn the
- * retrieval, already var id = moviesNames[movieNameU]; movies[id] = movieName;
- * queue.add(queueMovieId(id));
- */
-
-var queue = rateLimit.createQueue({
-	interval : 500
-});
 
 moviedb
 		.configuration(
 				'',
 				function(err, config) {
 					if (err) {
-						console.log(err);
+						log.error(err);
 					} else {
-						console
-								.log("Retrieved configuration.  Proceeding to spawn requests for movies/images");
+						log
+								.error("Retrieved configuration.  Proceeding to spawn requests for movies/images");
 						configuration = config.images;
 						spawnMovieImageRetrievals();
 					}
 				});
 /*
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg
- * 1c1e657d2d223b479b991d5376dcf4e1
- * 
  * https://image.tmdb.org/t/p/w396/uU9R1byS3USozpzWJ5oz7YAkXyk.jpg
  */
