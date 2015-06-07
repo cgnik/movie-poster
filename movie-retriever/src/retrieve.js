@@ -33,16 +33,18 @@ var retrieve = {
 		log.debug(movieImageMap);
 		_.keys(movieImageMap).filter(function(key) {
 			return movieImageMap[key] == null;
-		}).forEach(function(movieName) {
-			movieId = retrieve.moviesNames[movieName.toLowerCase()];
-			if (movieId != null) {
-				log.always("Enqueueing image fetch: movie id " + movieId);
-				queue.queueMovieId(movieId);
-			} else {
-				log.always("Enqueueing search: " + movieName);
-				queue.queueMovieName(movieName);
-			}
-		});
+		}).forEach(
+				function(movieName) {
+					movieId = retrieve.moviesNames[movieName.toLowerCase()];
+					if (movieId != null) {
+						log.always("Enqueueing image fetch: " + movieName
+								+ " : movie id " + movieId);
+						queue.queueMovieId(movieId, movieName);
+					} else {
+						log.always("Enqueueing search: " + movieName);
+						queue.queueMovieName(movieName);
+					}
+				});
 	},
 	start : function(callback) {
 		moviedb.configuration('', function(err, config) {

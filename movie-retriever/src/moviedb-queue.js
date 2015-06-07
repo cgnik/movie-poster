@@ -15,7 +15,7 @@ moviedb = module.require("moviedb")(themoviedbKey);
 var queue = rateLimit.createQueue({
 	interval : 500
 });
-var movies = [];
+var movies = {};
 
 module.exports = {
 	configuration : {
@@ -31,9 +31,10 @@ module.exports = {
 			}, movieIdFind(movieName));
 		});
 	},
-	queueMovieId : function(id) {
+	queueMovieId : function(id, name) {
 		queue.add(function() {
 			log.debug("Enqueueing id " + id);
+			movies[id] = name;
 			moviedb.movieImages({
 				id : id
 			}, movieImageFind(id));
@@ -114,7 +115,7 @@ function movieIdFind(name) {
 					+ name);
 			log.debug(res.results[bestmatch.index]);
 			movies[id] = name;
-			module.exports.queueMovieId(id);
+			module.exports.queueMovieId(id, name);
 		} else {
 			log.error("NO MATCH for title " + name);
 			log.debug(res.results);
