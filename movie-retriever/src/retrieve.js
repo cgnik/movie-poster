@@ -60,15 +60,15 @@ var retrieve = {
 	enqueueMissing : function checkOrEnqueueFetch(movieName) {
 		movieId = retrieve.moviesNames[movieName.toLowerCase()];
 		if (movieId != null) {
-			log.always("Enqueueing image fetch: " + movieName + " : movie id "
+			log.info("Enqueueing image fetch: " + movieName + " : movie id "
 					+ movieId);
 			queue.queueMovieId(movieId, movieName);
 		} else {
-			log.always("Enqueueing search: " + movieName);
+			log.info("Enqueueing search: " + movieName);
 			queue.queueMovieName(movieName);
 		}
 	},
-	start : function(callback) {
+	configureMoviedb : function(callback) {
 		moviedb.configuration('', function(err, config) {
 			if (err) {
 				log.error(err);
@@ -83,7 +83,7 @@ var retrieve = {
 
 // exec
 retrieve.configure();
-retrieve.start(retrieve.spawnMovieImageRetrievals)
+retrieve.configureMoviedb(retrieve.spawnMovieImageRetrievals)
 
 /*
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg
