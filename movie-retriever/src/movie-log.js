@@ -27,10 +27,10 @@ process.argv.forEach(function(val, index, array) {
 		console.log('Debug logging enabled');
 		loglevel = 'debug';
 	} else if (val == '--error') {
-		console.log.always('Error logging enabled');
+		console.log('Error logging enabled');
 		exports.loglevel = 'error';
 	} else if (val == '--info') {
-		console.log.always('Info logging enabled');
+		console.log('Info logging enabled');
 		exports.loglevel = 'info';
 	}
 });

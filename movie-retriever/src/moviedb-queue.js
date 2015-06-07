@@ -1,4 +1,5 @@
 var log = global['log'];
+var fuzzy = module.require('fuzzy');
 var rateLimit = require("rate-limit");
 var fs = module.require("fs");
 var _ = module.require('underscore');
@@ -27,7 +28,7 @@ module.exports = {
 			log.debug("Enqueueing name " + movieName);
 			moviedb.searchMovie({
 				query : '"' + movieName + '"'
-			}, movieIdentification(movieName));
+			}, movieIdFind(movieName));
 		});
 	},
 	queueMovieId : function(id) {
@@ -87,7 +88,7 @@ function movieImageFetch(id, imageLoc) {
 	}).pipe(fs.createWriteStream(fileDestination));
 }
 // parses results from movies and finds exact title match
-function movieIdentification(name) {
+function movieIdFind(name) {
 	return function(err, res) {
 		if (err) {
 			log.error("ERROR: " + err);
