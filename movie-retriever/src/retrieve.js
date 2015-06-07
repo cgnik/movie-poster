@@ -10,41 +10,63 @@ var _ = module.require('underscore');
 
 // configuration
 var retrieve = {
-	imagePath : "/Volumes/movies/",
+	imagePath : [],
 	// note -- if the movie name is already in here, we don't re-search it
 	moviesNames : {},
 	configure : function() {
-		// where we're putting the images
-		queue.configuration = {};
-		queue.imagePath = this.imagePath;
 		// initialize static named movies
 		if (fs.existsSync('./movie-ids.json')) {
-			this.moviesNames = JSON.parse(fs.readFileSync('./movie-ids.json',
-					'utf8'));
+			retrieve.moviesNames = JSON.parse(fs.readFileSync(
+					'./movie-ids.json', 'utf8'));
 			log.always("Using static movie IDs ");
-			log.debug(this.moviesNames);
+			log.debug(retrieve.moviesNames);
 		}
+		process.argv.forEach(function(val, index, array) {
+			if (val.indexOf("--") == 0) {
+				return;
+			} else if (!(val.indexOf('--') >= 0)) {
+				stats = fs.statSync(val);
+				if (stats.isDirectory()) {
+					log.always("Adding scan dir " + val);
+					moviePath = val;
+					if (moviePath.charAt(moviePath.length - 1) != '/') {
+						moviePath = moviePath + '/';
+					}
+					retrieve.imagePath.push(moviePath);
+				}
+			}
+		});
+		if (this.imagePath.length < 1) {
+			log.always("No diretory specified.  Defaulting to ./");
+			retrieve.imagePath.push("./");
+		}
+		// where we're putting the images
+		queue.configuration = {};
+		queue.imagePath = retrieve.imagePath;
 	},
 	// Finds missing posters in moviedir and enqueues fetches
 	spawnMovieImageRetrievals : function(nameSerch, idSearch) {
-		// gets movie results for each file in movie dir
-		var movieImageMap = moviedir.MovieImageMap(retrieve.imagePath)
-				.getMovieImageMap();
-		log.debug(movieImageMap);
-		_.keys(movieImageMap).filter(function(key) {
-			return movieImageMap[key] == null;
-		}).forEach(
-				function(movieName) {
-					movieId = retrieve.moviesNames[movieName.toLowerCase()];
-					if (movieId != null) {
-						log.always("Enqueueing image fetch: " + movieName
-								+ " : movie id " + movieId);
-						queue.queueMovieId(movieId, movieName);
-					} else {
-						log.always("Enqueueing search: " + movieName);
-						queue.queueMovieName(movieName);
-					}
+		retrieve.imagePath
+				.forEach(function(path) {
+					// gets movie results for each file in movie dir
+					var movieImageMap = moviedir.MovieImageMap(path)
+							.getMovieImageMap();
+					log.debug(movieImageMap);
+					_.keys(movieImageMap).filter(function(key) {
+						return movieImageMap[key] == null;
+					}).forEach(retrieve.enqueueMissing);
 				});
+	},
+	enqueueMissing : function checkOrEnqueueFetch(movieName) {
+		movieId = retrieve.moviesNames[movieName.toLowerCase()];
+		if (movieId != null) {
+			log.always("Enqueueing image fetch: " + movieName + " : movie id "
+					+ movieId);
+			queue.queueMovieId(movieId, movieName);
+		} else {
+			log.always("Enqueueing search: " + movieName);
+			queue.queueMovieName(movieName);
+		}
 	},
 	start : function(callback) {
 		moviedb.configuration('', function(err, config) {

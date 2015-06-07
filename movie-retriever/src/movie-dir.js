@@ -42,7 +42,7 @@ function mapMovieImageFile(movieImages, fileFullName) {
 }
 function isMovieFile(fileExtension) {
 	return fileExtension == ".m4v" || fileExtension == ".mkv"
-			|| fileExtension == ".mp4";
+			|| fileExtension == ".mp4" || fileExtension == ".vob";
 }
 function isImageFile(fileExtension) {
 	return fileExtension == ".jpg" || fileExtension == ".gif"
