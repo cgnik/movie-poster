@@ -1,3 +1,4 @@
+log = global['log'];
 // local movies library -- functions re: movie dir
 fs = module.require("fs");
 module.exports = {

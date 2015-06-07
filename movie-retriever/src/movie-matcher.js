@@ -1,3 +1,4 @@
+log = global['log'];
 fuzzy = module.require('fuzzy');
 
 module.exports = {
