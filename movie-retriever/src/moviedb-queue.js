@@ -87,6 +87,7 @@ function movieImageFetch(id, imageLoc) {
 	request.get(url).on('error', function(err) {
 		log.error(err)
 	}).pipe(fs.createWriteStream(fileDestination));
+	log.always("Wrote image '" + fileDestination + "'");
 }
 // parses results from movies and finds exact title match
 function movieIdFind(name) {

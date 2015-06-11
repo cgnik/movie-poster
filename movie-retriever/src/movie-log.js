@@ -15,11 +15,12 @@ function Log(level) {
 		},
 		log : function(message, level) {
 			if (this.levels.indexOf(level) <= this.levels.indexOf(this.level)) {
-				console.log(message);
+				this.target(message);
 			}
 		},
 		level : level,
-		levels : [ 'always', 'error', 'info', 'debug' ]
+		levels : [ 'always', 'error', 'info', 'debug' ],
+		target : console.log
 	}
 }
 process.argv.forEach(function(val, index, array) {
