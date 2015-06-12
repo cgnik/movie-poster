@@ -1,28 +1,33 @@
 var loglevel = 'error';
-function Log(level) {
-	return {
+Log = function(level) {
+	var self = {
+		levels : [ 'always', 'debug', 'info', 'error' ],
+		target : console.log,
 		debug : function(message) {
-			return this.log(message, 'debug')
+			return self.log(message, 'debug')
 		},
 		info : function(message) {
-			return this.log(message, 'info');
+			return self.log(message, 'info');
 		},
 		error : function(message) {
-			return this.log(message, 'error');
+			return self.log(message, 'error');
 		},
 		always : function(message) {
-			return this.log(message, 'always');
+			return self.log(message, 'always');
 		},
 		log : function(message, level) {
-			if (this.levels.indexOf(level) <= this.levels.indexOf(this.level)) {
-				this.target(message);
+			console.log(self.levels.indexOf(self.level) + ": " + self.level
+					+ " <= " + self.levels.indexOf(level) + ": " + level);
+			if (level == 'always'
+					|| self.level == 'always'
+					|| self.levels.indexOf(self.level) <= self.levels
+							.indexOf(level)) {
+				self.target(message);
 			}
-		},
-		level : level,
-		levels : [ 'always', 'error', 'info', 'debug' ],
-		target : console.log
+		}
 	}
-}
+	return self;
+};
 process.argv.forEach(function(val, index, array) {
 	if (val == '--debug') {
 		console.log('Debug logging enabled');
@@ -35,4 +40,4 @@ process.argv.forEach(function(val, index, array) {
 		exports.loglevel = 'info';
 	}
 });
-module.exports = Log(loglevel);
+module.exports = Log('error');

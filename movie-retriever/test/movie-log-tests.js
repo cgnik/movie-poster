@@ -1,46 +1,43 @@
 assert = require('assert');
-var capturer = function() {
-	return {
-		message : '',
-		log : function(message) {
-			this.message = this.message + message;
-		},
-		reset : function() {
-			message = '';
-		}
-	}
+var capture = function(log, callback, message) {
+	var out = '';
+	log.target = function(message) {
+		out = message;
+	};
+	callback(message);
+	return out;
 };
 describe('Log', function() {
-	log = require('../src/movie-log.js');
-	var cap = capturer();
-	log.target = cap.log;
 	describe('#always', function() {
+		log = require('../src/movie-log.js');
+		log.level = 'always';
+		it('should always log always', function() {
+			assert(capture(log, log.always, 'duh') === 'duh');
+		})
+		it('should always log error', function() {
+			assert(capture(log, log.error, 'duh') === 'duh');
+		})
+		it('should always log info', function() {
+			assert(capture(log, log.info, 'duh') === 'duh');
+		})
+		it('should always log debug', function() {
+			assert(capture(log, log.debug, 'duh') === 'duh');
+		})
+	})
+	describe('#error', function() {
+		log = require('../src/movie-log.js');
 		log.level = 'error';
-		log.target = cap;
-		it('should always log', function(done) {
-			console.log('1');
-			log.always('duh');
-			console.log('2');
-			assert.equals(cap.message === 'duh');
-			console.log('3');
-			done();
+		it('should always log always', function() {
+			assert(capture(log, log.always, 'duh') === 'duh');
 		})
-		cap.reset();
-		it('should log when error', function(done) {
-			log.error('duh');
-			assert.equals(cap.message === 'duh');
-			done();
+		it('should always log error', function() {
+			assert(capture(log, log.error, 'duh') === 'duh');
 		})
-		cap.reset();
-		it('should log when info', function(done) {
-			log.info('duh');
-			assert.equals(cap.message === 'duh');
-			done();
+		it('should never log info', function() {
+			assert(capture(log, log.info, 'duh') === '');
 		})
-		it('should log when debug', function(done) {
-			log.debug('duh');
-			assert.equals(cap.message === 'duh');
-			done();
+		it('should never log debug', function() {
+			assert(capture(log, log.debug, 'duh') === '');
 		})
 	})
 })
