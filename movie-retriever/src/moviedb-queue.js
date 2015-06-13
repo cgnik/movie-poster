@@ -1,127 +1,130 @@
-var log = global['log'];
-var fuzzy = module.require('fuzzy');
-var rateLimit = require("rate-limit");
-var fs = module.require("fs");
-var _ = module.require('underscore');
-var request = module.require('request');
-
 // we require the key for api access to be in this file
+fs = module.require("fs");
 themoviedbKey = fs.readFileSync('themoviedb-key.txt');
 if (themoviedbKey == null) {
 	process.exit(1);
 }
 moviedb = module.require("moviedb")(themoviedbKey);
-// decl
-var queue = rateLimit.createQueue({
-	interval : 500
-});
-var movies = {};
+module.exports = MovieQueue();
+MovieQueue = function() {
+	self = {
+		movies : {},
+		log : global['log'],
+		fuzzy : module.require('fuzzy'),
+		rateLimit : require("rate-limit"),
+		_ : module.require('underscore'),
+		request : module.require('request'),
+		queue : self.rateLimit.createQueue({
+			interval : 500
+		}),
+		configuration : {
+			base_url : '/'
+		},
+		imagePath : '/',
 
-module.exports = {
-	configuration : {
-		base_url : '/'
-	},
-	imagePath : '/',
-
-	queueMovieName : function(movieName) {
-		queue.add(function() {
-			log.debug("Enqueueing name " + movieName);
-			moviedb.searchMovie({
-				query : '"' + movieName + '"'
-			}, movieIdFind(movieName));
-		});
-	},
-	queueMovieId : function(id, name) {
-		queue.add(function() {
-			log.debug("Enqueueing id " + id);
-			movies[id] = name;
-			moviedb.movieImages({
-				id : id
-			}, movieImageFind(id));
-		});
-	},
-	queueMovieImage : function(id, imagePath) {
-		queue.add(function() {
-			log.debug("Enqueueing image " + id);
-			movieImageFetch(id, imagePath);
-		});
-	},
-};
-// handles movie fetch from movie id
-function movieImageFind(id) {
-	return function(err, res) {
-		// validate
-		if (err || res == null || res.posters == null || res.posters.length < 1) {
-			log.error("Unable to retrieve '" + movies[id] + "': " + err);
-			return;
-		}
-		// default
-		var image = res.posters[0];
-		// find first english
-		englishImages = _.filter(res.posters, function(poster) {
-			return poster.iso_639_1 != null
-					&& poster.iso_639_1.toLowerCase() == 'en';
-		});
-		if (englishImages) {
-			image = englishImages[0];
-		}
-		// give up if nothing's worked
-		if (image == null) {
-			log.error("ERROR FINDING ENGLISH POSTER: " + movies[id] + " (" + id
-					+ "): ");
-			log.info(res);
-			return;
-		}
-		module.exports.queueMovieImage(id, image.file_path);
-	}
-};
-function movieImageFetch(id, imageLoc) {
-	var url = module.exports.configuration.base_url + "w300" + imageLoc;
-	var dotLoc = imageLoc.lastIndexOf('.');
-	var ext = imageLoc.substr(dotLoc, imageLoc.length - dotLoc);
-	var fileName = movies[id] + ext;
-	var fileDestination = module.exports.imagePath + fileName;
-	log
-			.info("Writing out file " + fileDestination + " for movie "
-					+ movies[id]);
-	request.get(url).on('error', function(err) {
-		log.error(err)
-	}).pipe(fs.createWriteStream(fileDestination));
-	log.always("Wrote image '" + fileDestination + "'");
-}
-// parses results from movies and finds exact title match
-function movieIdFind(name) {
-	return function(err, res) {
-		if (err) {
-			log.error("ERROR: " + err);
-			return;
-		}
-		var fuzzymatches = fuzzy.filter(name, res.results.map(function(result) {
-			return result.title;
-		}));
-		var bestmatch = _.max(fuzzymatches, function(fuzzymatch) {
-			return fuzzymatch.score;
-		});
-		// failsafe -- if no best and only one result, trust the moviedb
-		if (_.isEmpty(bestmatch) && res.results.length == 1) {
-			bestmatch = {
-				index : 0
+		queueMovieName : function(movieName) {
+			self.queue.add(function() {
+				self.log.debug("Enqueueing name " + movieName);
+				moviedb.searchMovie({
+					query : '"' + movieName + '"'
+				}, self.movieIdFind(movieName));
+			});
+		},
+		queueMovieId : function(id, name) {
+			self.queue.add(function() {
+				self.log.debug("Enqueueing id " + id);
+				self.movies[id] = name;
+				moviedb.movieImages({
+					id : id
+				}, self.movieImageFind(id));
+			});
+		},
+		queueMovieImage : function(id, imagePath) {
+			self.queue.add(function() {
+				self.log.debug("Enqueueing image " + id);
+				self.movieImageFetch(id, imagePath);
+			});
+		},
+		// handles movie fetch from movie id
+		movieImageFind : function(id) {
+			return function(err, res) {
+				// validate
+				if (err || res == null || res.posters == null
+						|| res.posters.length < 1) {
+					self.log.error("Couldn't retrieve '" + self.movies[id]
+							+ "': " + err);
+					return;
+				}
+				// default
+				image = res.posters[0];
+				// find first english
+				englishImages = self._.filter(res.posters, function(poster) {
+					return poster.iso_639_1 != null
+							&& poster.iso_639_1.toLowerCase() == 'en';
+				});
+				if (englishImages) {
+					image = englishImages[0];
+				}
+				// give up if nothing's worked
+				if (image == null) {
+					self.log.error("ERROR FINDING ENGLISH POSTER: "
+							+ movies[id] + " (" + id + "): ");
+					self.log.info(res);
+					return;
+				}
+				self.queueMovieImage(id, image.file_path);
+			}
+		},
+		movieImageFetch : function(id, imageLoc) {
+			url = self.configuration.base_url + "w300" + imageLoc;
+			dotLoc = imageLoc.lastIndexOf('.');
+			ext = imageLoc.substr(dotLoc, imageLoc.length - dotLoc);
+			fileName = self.movies[id] + ext;
+			fileDestination = self.imagePath + fileName;
+			self.log.info("Writing out file " + fileDestination + " for movie "
+					+ self.movies[id]);
+			request.get(url).on('error', function(err) {
+				self.log.error(err)
+			}).pipe(self.fs.createWriteStream(fileDestination));
+			self.log.always("Wrote image '" + fileDestination + "'");
+		},
+		// parses results from movies and finds exact title match
+		movieIdFind : function(name) {
+			return function(err, res) {
+				if (err) {
+					self.log.error("ERROR: " + err);
+					return;
+				}
+				fuzzymatches = self.fuzzy.filter(name, res.results
+						.map(function(result) {
+							return result.title;
+						}));
+				bestmatch = self._.max(fuzzymatches, function(fuzzymatch) {
+					return fuzzymatch.score;
+				});
+				// failsafe -- if no best and only one result, trust the moviedb
+				if (self._.isEmpty(bestmatch) && res.results.length == 1) {
+					bestmatch = {
+						index : 0
+					};
+				}
+				log.info("best match '" + name + "'");
+				log.debug(bestmatch);
+				if (!self._.isEmpty(bestmatch)) {
+					id = res.results[bestmatch.index].id;
+					self.log.info("Chose id " + res.results[bestmatch.index].id
+							+ " for " + name);
+					self.log.debug(res.results[bestmatch.index]);
+					self.movies[id] = name;
+					self.queueMovieId(id, name);
+				} else {
+					self.log.error("NO MATCH for title " + name);
+					self.log.debug(res.results);
+					self.log.debug("fuzzymatches");
+					self.log.debug(fuzzymatches);
+				}
 			};
-		}
-		log.info("best match '" + name + "'");
-		log.debug(bestmatch);
-		if (!_.isEmpty(bestmatch)) {
-			var id = res.results[bestmatch.index].id;
-			log.info("Chose id " + res.results[bestmatch.index].id + " for "
-					+ name);
-			log.debug(res.results[bestmatch.index]);
-			movies[id] = name;
-			module.exports.queueMovieId(id, name);
-		} else {
-			log.error("NO MATCH for title " + name);
-			log.debug(res.results);
-			log.debug("fuzzymatches");
-			log.debug(fuzzymatches);
+			return self;
 		}
 	}
 };
