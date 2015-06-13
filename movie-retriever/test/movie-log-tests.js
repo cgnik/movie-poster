@@ -23,7 +23,7 @@ describe('Log', function() {
 		it('should always log debug', function() {
 			assert(capture(log, log.debug, 'duh', 'always') === 'duh');
 		})
-	});
+	})
 	describe('#error', function() {
 		it('should always log always', function() {
 			assert(capture(log, log.always, 'duh', 'error') === 'duh');
@@ -37,5 +37,33 @@ describe('Log', function() {
 		it('should never log debug', function() {
 			assert(capture(log, log.debug, 'duh', 'error') === '');
 		})
-	});
+	})
+	describe('#info', function() {
+		it('should always log always', function() {
+			assert(capture(log, log.always, 'duh', 'info') === 'duh');
+		})
+		it('should always log error', function() {
+			assert(capture(log, log.error, 'duh', 'info') === 'duh');
+		})
+		it('should always log info', function() {
+			assert(capture(log, log.info, 'duh', 'info') === 'duh');
+		})
+		it('should never log debug', function() {
+			assert(capture(log, log.debug, 'duh', 'info') === '');
+		})
+	})
+	describe('#debug', function() {
+		it('should always log always', function() {
+			assert(capture(log, log.always, 'duh', 'debug') === 'duh');
+		})
+		it('should always log error', function() {
+			assert(capture(log, log.error, 'duh', 'debug') === 'duh');
+		})
+		it('should always log info', function() {
+			assert(capture(log, log.info, 'duh', 'debug') === 'duh');
+		})
+		it('should always log debug', function() {
+			assert(capture(log, log.debug, 'duh', 'debug') === 'duh');
+		})
+	})
 })
