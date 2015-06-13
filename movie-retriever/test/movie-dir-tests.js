@@ -9,7 +9,7 @@ expectedMap = {
 };
 expectedFiles = [ 'this.mp3', 'this.jpg', 'That.mp4', 'that.gif',
 		'other Thing.mkv', 'which.m4v', 'WHAT.vOb', 'bother.not' ];
-var mockfs = function(dir) {
+mockfs = function(dir) {
 	self = {
 		readdirSync : function(dir) {
 			return expectedFiles;
