@@ -11,7 +11,6 @@ MovieImageMap = function(dir) {
 					.readdirSync(dir));
 		},
 		mapMovieImageFiles : function(movieImages, files) {
-			console.log(files);
 			files.forEach(function(fileFullName) {
 				self.mapMovieImageFile(movieImages, fileFullName);
 			})
@@ -32,7 +31,7 @@ MovieImageMap = function(dir) {
 				if (!(fileName in movieImages)) {
 					movieImages[fileName] = null;
 				}
-			} else if (isImageFile(fileExtension)) {
+			} else if (self.isImageFile(fileExtension)) {
 				// set the filename for the movie cover art
 				self.movieImages[fileName] = fileFullName;
 			}
