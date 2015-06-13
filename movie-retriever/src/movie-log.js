@@ -1,7 +1,12 @@
-var loglevel = 'error';
+var loglevel = 'dup';
 Log = function(level) {
 	var self = {
-		levels : [ 'always', 'debug', 'info', 'error' ],
+		levels : {
+			'error' : 1,
+			'info' : 2,
+			'debug' : 3,
+			'always' : 4,
+		},
 		target : console.log,
 		debug : function(message) {
 			return self.log(message, 'debug')
@@ -16,14 +21,21 @@ Log = function(level) {
 			return self.log(message, 'always');
 		},
 		log : function(message, level) {
-			console.log(self.levels.indexOf(self.level) + ": " + self.level
-					+ " <= " + self.levels.indexOf(level) + ": " + level);
-			if (level == 'always'
-					|| self.level == 'always'
-					|| self.levels.indexOf(self.level) <= self.levels
-							.indexOf(level)) {
+			if (self.shouldLog(level)) {
 				self.target(message);
 			}
+		},
+		getLevel : function() {
+			return self.level;
+		},
+		setLevel : function(level) {
+			self.level = level;
+		},
+		shouldLog : function(lev) {
+			console.log(self.levels[self.level] + ": " + self.level + " >= "
+					+ self.levels[lev] + ": " + lev);
+			return (lev == 'always' || self.level == 'always')
+					|| (self.levels[self.level] >= self.levels[lev]);
 		}
 	}
 	return self;
@@ -31,13 +43,13 @@ Log = function(level) {
 process.argv.forEach(function(val, index, array) {
 	if (val == '--debug') {
 		console.log('Debug logging enabled');
-		loglevel = 'debug';
+		exports.level = 'debug';
 	} else if (val == '--error') {
 		console.log('Error logging enabled');
-		exports.loglevel = 'error';
+		exports.level = 'error';
 	} else if (val == '--info') {
 		console.log('Info logging enabled');
-		exports.loglevel = 'info';
+		exports.level = 'info';
 	}
 });
-module.exports = Log('error');
+module.exports = Log('durka');
