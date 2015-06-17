@@ -1,5 +1,7 @@
 var chai = require('chai');
 var should = chai.should();
+global['log'] = require('../src/movie-log.js');
+global['log'].level = 'debug';
 
 fetcher = require('../src/image-fetch.js')({
 	baseUrl : 'BASE',
@@ -14,16 +16,14 @@ var mockfs = function() {
 	return self;
 }
 var mockrequest = function(fetch, callback, errorCallback) {
+	var success = false;
 	self = {
 		get : function(url) {
-			console.log("get()");
 			return {
 				on : function(type, callback) {
-					console.log("on()");
 					return {
 						pipe : function(stream) {
-							console.log("pipe()");
-							callback();
+							success = true;
 						}
 					};
 				}
@@ -32,25 +32,28 @@ var mockrequest = function(fetch, callback, errorCallback) {
 	};
 	fetcher.request = self;
 	fetcher.fetch("URIPART", "FILENAME");
-	return self;
+	callback();
+	return success;
 }
 describe('FileFetch', function() {
 	fetcher.imageLoc = 'IMAGELOC';
 	describe('#getUrl', function() {
-		it('should assemble the url BASEw300IMAGELOC', function() {
-			assert(fetcher.getUrl() === 'BASEw300IMAGELOC');
+		it('should assemble the url BASEw300IMAGELOC', function(done) {
+			assert.equal(fetcher.getUrl(), 'BASEw300IMAGELOC');
+			done();
 		})
 	})
 	describe('#getExtension', function() {
-		it('should return ".ext" for file.ext', function() {
-			fetcher.getExtension('file.ext').should.be.equal('.ext');
+		it('should return ".ext" for file.ext', function(done) {
+			assert.equal(fetcher.getExtension('file.ext'), '.ext');
+			done();
 		})
 	})
 	describe('#getExtension', function() {
 		it('should return "ext" for file.ext', function(done) {
-			mockrequest(fetcher, done, function() {
+			assert(mockrequest(fetcher, done, function() {
 				assert(true === false);
-			})
+			}));
 		})
 	})
 })
