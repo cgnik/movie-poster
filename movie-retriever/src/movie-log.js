@@ -32,8 +32,8 @@ Log = function(level) {
 			self.level = level;
 		},
 		shouldLog : function(lev) {
-			console.log(self.levels[self.level] + ": " + self.level + " >= "
-					+ self.levels[lev] + ": " + lev);
+			// console.log(self.levels[self.level] + ": " + self.level + " >= "
+			// + self.levels[lev] + ": " + lev);
 			return (lev == 'always' || self.level == 'always')
 					|| (self.levels[self.level] >= self.levels[lev]);
 		}

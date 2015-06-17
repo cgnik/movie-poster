@@ -5,18 +5,19 @@ if (themoviedbKey == null) {
 	process.exit(1);
 }
 moviedb = module.require("moviedb")(themoviedbKey);
-module.exports = MovieQueue();
-MovieQueue = function() {
-	self = {
+var MovieQueue = function() {
+	var self = {
 		movies : {},
-		log : global['log'],
-		fuzzy : module.require('fuzzy'),
-		rateLimit : require("rate-limit"),
-		_ : module.require('underscore'),
-		request : module.require('request'),
-		queue : self.rateLimit.createQueue({
-			interval : 500
-		}),
+		movieImages : {},
+		init : function() {
+			self.log = global['log'];
+			self.fuzzy = module.require('fuzzy');
+			self.rateLimit = require("rate-limit");
+			self._ = module.require('underscore');
+			self.queue = self.rateLimit.createQueue({
+				interval : 500
+			});
+		},
 		configuration : {
 			base_url : '/'
 		},
@@ -39,11 +40,8 @@ MovieQueue = function() {
 				}, self.movieImageFind(id));
 			});
 		},
-		queueMovieImage : function(id, imagePath) {
-			self.queue.add(function() {
-				self.log.debug("Enqueueing image " + id);
-				self.movieImageFetch(id, imagePath);
-			});
+		addMovieImage : function(id, imagePath) {
+			movieImages[id] = imagePath;
 		},
 		// handles movie fetch from movie id
 		movieImageFind : function(id) {
@@ -72,22 +70,10 @@ MovieQueue = function() {
 					self.log.info(res);
 					return;
 				}
-				self.queueMovieImage(id, image.file_path);
+				self.addMovieImage(id, image.file_path);
 			}
 		},
-		movieImageFetch : function(id, imageLoc) {
-			url = self.configuration.base_url + "w300" + imageLoc;
-			dotLoc = imageLoc.lastIndexOf('.');
-			ext = imageLoc.substr(dotLoc, imageLoc.length - dotLoc);
-			fileName = self.movies[id] + ext;
-			fileDestination = self.imagePath + fileName;
-			self.log.info("Writing out file " + fileDestination + " for movie "
-					+ self.movies[id]);
-			request.get(url).on('error', function(err) {
-				self.log.error(err)
-			}).pipe(self.fs.createWriteStream(fileDestination));
-			self.log.always("Wrote image '" + fileDestination + "'");
-		},
+		
 		// parses results from movies and finds exact title match
 		movieIdFind : function(name) {
 			return function(err, res) {
@@ -128,3 +114,4 @@ MovieQueue = function() {
 		}
 	}
 };
+module.exports = MovieQueue();
