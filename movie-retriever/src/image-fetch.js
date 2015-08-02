@@ -1,11 +1,11 @@
 var log = global['log'];
 path = require('path');
-FileFetch = function(params) {
+request = require('request');
+FileFetch = (function(params) {
 	if (params === null) {
 		params = {};
 	}
 	var self = {
-		request : require('request'),
 		fs : require('fs'),
 		fetch : function() {
 			url = self.getUrl();
@@ -42,5 +42,5 @@ FileFetch = function(params) {
 		})
 	}
 	return self;
-}
+});
 module.exports = FileFetch;

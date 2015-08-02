@@ -1,0 +1,13 @@
+General flow
+
+1. Read directory (or command line options) to find all movie files
+    - also find image files there
+    - Add command-line options for specifying which movie file, which image, which movie id, etc.?
+2. Figure out which movie file need info (images, descriptions, etc.)
+3. Figure out movie IDs for each movie
+    - may be specified in external file
+4. Find all images for the discovered/specified movie IDs
+5. Sift through found images to figure out which image is the "right image"
+    - filter based on language, image size
+6. Call to retrieve images that we still want
+7. Name the retrieved image appropriately to go with the movie file on disk
