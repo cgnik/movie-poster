@@ -9,10 +9,13 @@ var MovieDbQueue = (function (params) {
     if (params.themoviedbKey == null) {
         process.exit(1);
     }
+    // speed at which we process the queue in ms
+    var rateInterval = params.rateInterval ? params.rateInterval : 500;
+    // interface to themoviedb
     moviedb = module.require("moviedb")(params.themoviedbKey);
     var self = ({
-        queue : null,
-        log : null,
+        queue: null,
+        log: null,
         movies: {},
         movieImages: {},
         configuration: {
@@ -22,10 +25,9 @@ var MovieDbQueue = (function (params) {
         init: function () {
             self.log = global['log'];
             self.queue = self.rateLimit.createQueue({
-                interval: 500
+                interval: rateInterval
             });
         },
-
         queueMovieName: function (movieName) {
             self.queue.add(function () {
                 self.log.debug("Enqueueing name " + movieName);
@@ -40,14 +42,14 @@ var MovieDbQueue = (function (params) {
                 self.movies[id] = name;
                 moviedb.movieImages({
                     id: id
-                }, self.findMovieImage(id));
+                }, self.findMovieImage(id, self.addMovieImage));
             });
         },
         addMovieImage: function (id, imagePath) {
-            movieImages[id] = imagePath;
+            self.movieImages[id] = imagePath;
         },
         // handles movie fetch from movie id
-        findMovieImage: function (id) {
+        findMovieImage: function (id, callback) {
             return function (err, res) {
                 // validate
                 if (err || res == null || res.posters == null
@@ -73,7 +75,7 @@ var MovieDbQueue = (function (params) {
                     self.log.info(res);
                     return;
                 }
-                self.addMovieImage(id, image.file_path);
+                callback(id, image.file_path);
             }
         },
 
