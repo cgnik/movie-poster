@@ -11,3 +11,10 @@ General flow
     - filter based on language, image size
 6. Call to retrieve images that we still want
 7. Name the retrieved image appropriately to go with the movie file on disk
+
+
+
+movieImageMap = findMoviesMapToImages
+_.each(movieImageMap.keys, function(key) {
+
+});
