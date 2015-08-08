@@ -11,8 +11,8 @@ var MovieDbQueue = (function (params) {
     }
     moviedb = module.require("moviedb")(params.themoviedbKey);
     var self = ({
-        queue : null,
-        log : null,
+        queue: null,
+        log: null,
         movies: {},
         movieImages: {},
         configuration: {
@@ -25,28 +25,31 @@ var MovieDbQueue = (function (params) {
                 interval: 500
             });
         },
-
-        queueMovieName: function (movieName) {
+        addMovieImage: function (id, imagePath) {
+            movieImages[id] = imagePath;
+        },
+// queueMovieName(name, self.findMovieId)
+        queueMovieName: function (movieName, callback) {
             self.queue.add(function () {
                 self.log.debug("Enqueueing name " + movieName);
                 moviedb.searchMovie({
                     query: '"' + movieName + '"'
-                }, self.findMovieId(movieName));
+                }, callback(movieName));
             });
         },
-        queueMovieId: function (id, name) {
+        // queueMovieId(id,name,self.findMovieImage)
+        queueMovieId: function (id, name, callback) {
             self.queue.add(function () {
                 self.log.debug("Enqueueing id " + id);
                 self.movies[id] = name;
                 moviedb.movieImages({
                     id: id
-                }, self.findMovieImage(id));
+                }, callback(id));
             });
         },
-        addMovieImage: function (id, imagePath) {
-            movieImages[id] = imagePath;
-        },
+
         // handles movie fetch from movie id
+        // findMovieImage(id, self.addMovieImage)
         findMovieImage: function (id) {
             return function (err, res) {
                 // validate
@@ -73,12 +76,12 @@ var MovieDbQueue = (function (params) {
                     self.log.info(res);
                     return;
                 }
-                self.addMovieImage(id, image.file_path);
+                callback(id, image.file_path);
             }
         },
 
         // parses results from movies and finds exact title match
-        findMovieId: function (name) {
+        findMovieId: function (name, success, faillure) {
             return function (err, res) {
                 if (err) {
                     self.log.error("ERROR: " + err);
