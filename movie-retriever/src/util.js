@@ -1,0 +1,1 @@
+global.merge = require('merge')

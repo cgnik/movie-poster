@@ -3,12 +3,12 @@
   "description": "Packaging for the MovieDB art retriever",
   "author": "Christopher King <cking@enmobile.biz>",
   "dependencies": {
-    "moviedb": "0.2.0",
-    "rate-limit": "0.1.1",
-    "request": "2.55.0",
-    "sleep": "3.0.0",
-    "fuzzy": "0.1.0",
-    "underscore": "1.8.3"
+    "moviedb": "*",
+    "rate-limit": "*",
+    "sleep": "*",
+    "fuzzy": "*",
+    "underscore": "*",
+    "merge": "*"
   },
   "devDependencies": {
     "chai": "*",
