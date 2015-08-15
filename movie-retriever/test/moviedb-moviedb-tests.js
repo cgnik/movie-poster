@@ -2,7 +2,7 @@ var testConfig = {testConfig: '1'};
 var shouldntFunc = function () {
     assert(false);
 };
-describe('MovieDbQueue', function () {
+describe('MovieDbMovieDb', function () {
     var mockMoviedb = module.require("moviedb")('test-moviedb-key');
     var mockLog = sinon.mock(require('../src/movie-log.js'));
     var queue = require('../src/moviedb-moviedb.js')({moviedb: mockMoviedb, log: mockLog});

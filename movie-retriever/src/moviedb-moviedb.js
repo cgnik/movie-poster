@@ -3,7 +3,7 @@ require('./util.js');
 fuzzy = module.require('fuzzy');
 _ = module.require('underscore');
 
-var MovieDbQueue = (function (params) {
+var MovieDbMovieDb = (function (params) {
     // we require the key for api access to be in this file
     if (params.themoviedbKey == undefined && params.moviedb == undefined) {
         throw new Exception("Unable to proceed.  The MovieDB API cannot be used without a valid key.")
@@ -99,4 +99,4 @@ var MovieDbQueue = (function (params) {
     }
     return self;
 });
-module.exports = MovieDbQueue;
+module.exports = MovieDbMovieDb;
