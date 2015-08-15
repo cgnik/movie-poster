@@ -134,6 +134,7 @@ var MovieDbQueue = (function (params) {
     });
     merge(self, params);
     if (self.moviedb == undefined) {
+        log.info("Initializing moviedb");
         self.moviedb = require('moviedb')(self.themoviedbKey);
     }
     return self;
