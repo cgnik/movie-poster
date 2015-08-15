@@ -54,44 +54,35 @@ var MovieDbQueue = (function (params) {
         // findMovieImage(id, self.addMovieImage)
         findMovieImage: function (id, callback) {
             return function (err, res) {
-                // validate
-                if (err || res == null || res.posters == null
-                    || res.posters.length < 1) {
-                    log.error("Couldn't retrieve '" + self.movies[id]
-                        + "': " + err);
-                    return;
-                }
-                // default
-                image = res.posters[0];
-                // find first english
-                englishImages = self._.filter(res.posters, function (poster) {
-                    return poster.iso_639_1 != null
-                        && poster.iso_639_1.toLowerCase() == 'en';
-                });
-                if (englishImages) {
-                    image = englishImages[0];
-                }
-                // give up if nothing's worked
-                if (image == null) {
-                    log.error("ERROR FINDING ENGLISH POSTER: "
-                        + movies[id] + " (" + id + "): ");
-                    log.info(res);
-                    return;
-                }
-                callback(id, image.file_path);
+                // call matchMovieImage
             }
         },
-        // parses results from movies and finds exact title match
-        findMovieId: function (name, success, faillure) {
-            return function (err, res) {
-                if (err) {
-                    log.error("ERROR: " + err);
-                } else {
-                    var movieResult = self.matchMovieName(name, _.map(function (result) {
-                        return result.title;
-                    }));
-                }
-            };
+        // res.posters from moviedb poster search
+        matchMovieImage: function (movieId, movieName, movieImageList) {
+            // validate
+            if (movieId == null || movieId == undefined || movieName == null || movieName == undefined ||
+                movieImageList == null || movieImageList == null) {
+                throw new Error("Couldn't retrieve '" + movieId);
+            } else if (movieImageList.length < 1) {
+                return null;
+            }
+            // default
+            image = movieImageList[0];
+            // find first english
+            englishImages = _.filter(movieImageList, function (poster) {
+                return poster.iso_639_1 != null
+                    && poster.iso_639_1.toLowerCase() == 'en';
+            });
+            if (englishImages && englishImages.length > 0) {
+                image = englishImages[0];
+            }
+            // give up if nothing's worked
+            if (image == null) {
+                log.error("ERROR FINDING ENGLISH POSTER: " + movieName);
+                log.info(movieImageList);
+                return;
+            }
+            return image.file_path;
         },
         matchMovieName: function (name, nameList) {
             if (name === undefined || name == null || nameList == undefined || nameList == null) {
