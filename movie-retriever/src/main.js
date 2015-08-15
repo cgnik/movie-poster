@@ -4,7 +4,7 @@ log = global['log'];
 log.always("Logging configured with level " + log.level);
 
 // modules
-var queue = module.require('./moviedb-queue.js')(({'themoviedbKey': fs.readFileSync('themoviedb-key.txt')}));
+var queue = module.require('./moviedb-moviedb.js')(({'themoviedbKey': fs.readFileSync('themoviedb-key.txt')}));
 moviedb = module.require("moviedb")(params.themoviedbKey);
 
 var moviedir = module.require('./movie-dir.js');

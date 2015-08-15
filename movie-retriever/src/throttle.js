@@ -6,14 +6,14 @@ rateLimit = require("rate-limit");
 var Throttle = function (params) {
     var self = ({
         init: function (params) {
-// speed at which we process the queue in ms
             var rateInterval = params.rateInterval ? params.rateInterval : 500;
-            if (self.queue == undefined) {
-                log.info("Initializing rate limit queue");
-                self.queue = rateLimit.createQueue({
-                    interval: rateInterval
-                });
-            }
+            log.info("Initializing rate limit queue");
+            self.queue = rateLimit.createQueue({
+                interval: rateInterval
+            });
+        },
+        add: function (callable) {
+            queue.add(callable);
         }
     });
     merge(self, params);

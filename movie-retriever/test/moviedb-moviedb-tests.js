@@ -5,7 +5,7 @@ var shouldntFunc = function () {
 describe('MovieDbQueue', function () {
     var mockMoviedb = module.require("moviedb")('test-moviedb-key');
     var mockLog = sinon.mock(require('../src/movie-log.js'));
-    var queue = require('../src/moviedb-queue.js')({moviedb: mockMoviedb, log: mockLog});
+    var queue = require('../src/moviedb-moviedb.js')({moviedb: mockMoviedb, log: mockLog});
     describe('#configure', function () {
         beforeEach(function () {
             sinon.stub(mockMoviedb, 'configuration').callsArgWith(1, null, testConfig);
