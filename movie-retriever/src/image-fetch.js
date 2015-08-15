@@ -1,4 +1,5 @@
 require('./util.js');
+
 FileFetch = (function (params) {
     if (params === null) {
         params = {};
@@ -8,12 +9,12 @@ FileFetch = (function (params) {
             url = self.getUrl();
             var fileTarget = self.getTargetFile();
             log.info("Fetching " + fileTarget + " from " + url);
-            self.http.get(url).on('error', function (error) {
+            http.get(url).on('error', function (error) {
                 log.error(error)
-            }).pipe(self.fs.createWriteStream(fileTarget));
+            }).pipe(fs.createWriteStream(fileTarget));
         },
         getTargetFile: function () {
-            return self.path.join(self.path.normalize(self.imagePath), self.fileName
+            return path.join(path.normalize(self.imagePath), self.fileName
                 + self.getExtension(self.imageLoc));
         },
         getUrl: function () {
@@ -33,9 +34,6 @@ FileFetch = (function (params) {
         imageLoc: '',
         baseUrl: ''
     };
-    self.fs = require('fs');
-    self.path = require('path');
-    self.http = require('http');
     merge(self, params);
     return self;
 });
