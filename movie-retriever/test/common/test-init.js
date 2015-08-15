@@ -5,6 +5,5 @@ global.assertEqual = global.chai.assertEqual;
 global.should = chai.should();
 global.TIMEOUT = 200;
 global.sinon = require('sinon');
-
-global.log = require('../../src/movie-log.js');
+global.log = sinon.mock(require('../../src/movie-log.js'));
 global.log.level = 'debug';

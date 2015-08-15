@@ -7,7 +7,7 @@ FileFetch = (function (params) {
         fetch: function () {
             url = self.getUrl();
             var fileTarget = self.getTargetFile();
-            log.always("Fetching " + fileTarget + " from " + url);
+            log.info("Fetching " + fileTarget + " from " + url);
             self.http.get(url).on('error', function (error) {
                 log.error(error)
             }).pipe(self.fs.createWriteStream(fileTarget));

@@ -23,7 +23,7 @@ var MovieDbQueue = (function (params) {
         },
         imagePath: './',
         init: function () {
-            self.log = global['log'];
+            log = global['log'];
             self.queue = self.rateLimit.createQueue({
                 interval: rateInterval
             });
@@ -34,7 +34,7 @@ var MovieDbQueue = (function (params) {
         queueMovieName: function (movieName, callback) {
             // queueMovieName(name, self.findMovieId)
             self.queue.add(function () {
-                self.log.debug("Enqueueing name " + movieName);
+                log.debug("Enqueueing name " + movieName);
                 moviedb.searchMovie({
                     query: '"' + movieName + '"'
                 }, callback(movieName));
@@ -43,14 +43,13 @@ var MovieDbQueue = (function (params) {
         queueMovieId: function (id, name, callback) {
             // queueMovieId(id,name,self.findMovieImage)
             self.queue.add(function () {
-                self.log.debug("Enqueueing id " + id);
+                log.debug("Enqueueing id " + id);
                 self.movies[id] = name;
                 moviedb.movieImages({
                     id: id
                 }, callback(id, name));
             });
         },
-
         // handles movie fetch from movie id
         // findMovieImage(id, self.addMovieImage)
         findMovieImage: function (id, callback) {
@@ -58,7 +57,7 @@ var MovieDbQueue = (function (params) {
                 // validate
                 if (err || res == null || res.posters == null
                     || res.posters.length < 1) {
-                    self.log.error("Couldn't retrieve '" + self.movies[id]
+                    log.error("Couldn't retrieve '" + self.movies[id]
                         + "': " + err);
                     return;
                 }
@@ -74,52 +73,54 @@ var MovieDbQueue = (function (params) {
                 }
                 // give up if nothing's worked
                 if (image == null) {
-                    self.log.error("ERROR FINDING ENGLISH POSTER: "
+                    log.error("ERROR FINDING ENGLISH POSTER: "
                         + movies[id] + " (" + id + "): ");
-                    self.log.info(res);
+                    log.info(res);
                     return;
                 }
                 callback(id, image.file_path);
             }
-        }
-        ,
-
+        },
         // parses results from movies and finds exact title match
         findMovieId: function (name, success, faillure) {
             return function (err, res) {
                 if (err) {
-                    self.log.error("ERROR: " + err);
-                    return;
-                }
-                fuzzymatches = fuzzy.filter(name, res.results
-                    .map(function (result) {
+                    log.error("ERROR: " + err);
+                } else {
+                    var movieResult = self.matchMovieName(name, _.map(function (result) {
                         return result.title;
                     }));
-                bestmatch = self._.max(fuzzymatches, function (fuzzymatch) {
-                    return fuzzymatch.score;
-                });
-                // failsafe -- if no best and only one result, trust the moviedb
-                if (self._.isEmpty(bestmatch) && res.results.length == 1) {
-                    bestmatch = {
-                        index: 0
-                    };
-                }
-                self.log.info("best match '" + name + "'");
-                self.log.debug(bestmatch);
-                if (!self._.isEmpty(bestmatch)) {
-                    id = res.results[bestmatch.index].id;
-                    self.log.info("Chose id " + res.results[bestmatch.index].id
-                        + " for " + name);
-                    self.log.debug(res.results[bestmatch.index]);
-                    self.movies[id] = name;
-                    self.queueMovieId(id, name);
-                } else {
-                    self.log.error("NO MATCH for title " + name);
-                    self.log.debug(res.results);
-                    self.log.debug("fuzzymatches");
-                    self.log.debug(fuzzymatches);
                 }
             };
+        },
+        matchMovieName: function (name, nameList) {
+            if (name === undefined || name == null || nameList == undefined || nameList == null) {
+                throw Error("Cannot match movie name or list which is null.");
+            }
+            var reduced = nameList
+                .map(function (n) {
+                    return n.title;
+                });
+            fuzzymatches = fuzzy.filter(name, reduced);
+            bestmatch = _.max(fuzzymatches, function (fuzzymatch) {
+                return fuzzymatch.score;
+            });
+            // failsafe -- if no best and only one result, trust the moviedb
+            if (_.isEmpty(bestmatch) && nameList.length == 1) {
+                bestmatch = {
+                    index: 0
+                };
+            }
+            // log and respond
+            var id = null;
+            if (!_.isEmpty(bestmatch)) {
+                id = nameList[bestmatch.index].id;
+                log.info("Chose id " + nameList[bestmatch.index].id
+                    + " for " + name);
+            } else {
+                log.error("NO MATCH for title " + name);
+            }
+            return id;
         },
         configure: function (callback) {
             self.moviedb.configuration('', function (err, config) {
@@ -136,6 +137,12 @@ var MovieDbQueue = (function (params) {
     if (self.moviedb == undefined) {
         log.info("Initializing moviedb");
         self.moviedb = require('moviedb')(self.themoviedbKey);
+    }
+    if (self.queue == undefined) {
+        log.info("Initializing rate limit queue");
+        self.queue = rateLimit.createQueue({
+            interval: rateInterval
+        });
     }
     return self;
 });
