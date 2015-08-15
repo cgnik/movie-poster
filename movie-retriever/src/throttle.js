@@ -3,20 +3,23 @@
  */
 rateLimit = require("rate-limit");
 
-var Throttle = function (params) {
+var Throttle = function () {
     var self = ({
         init: function (params) {
-            var rateInterval = params.rateInterval ? params.rateInterval : 500;
-            log.info("Initializing rate limit queue");
+            self.interval = 500;
+            if (params) {
+                merge(self, params);
+            }
             self.queue = rateLimit.createQueue({
-                interval: rateInterval
+                interval: self.interval
             });
+            return self;
         },
         add: function (callable) {
-            queue.add(callable);
-        }
+            self.queue.add(callable);
+        },
     });
-    merge(self, params);
+    return self.init();
 };
 
-module.exports = Throttle;
+module.exports = Throttle();
