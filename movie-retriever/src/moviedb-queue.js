@@ -14,10 +14,6 @@ var MovieDbQueue = (function (params) {
     var rateInterval = params.rateInterval ? params.rateInterval : 500;
     // interface to themoviedb
     var self = ({
-        queue: null,
-        log: null,
-        movies: {},
-        movieImages: {},
         configuration: {
             base_url: '/'
         },
@@ -119,6 +115,7 @@ var MovieDbQueue = (function (params) {
                     log.error(err);
                 } else {
                     log.always("Configured; Requesting images");
+                    self.configuration = config;
                     callback(config);
                 }
             });
