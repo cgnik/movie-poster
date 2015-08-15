@@ -1,62 +1,73 @@
 // dependencies
 require('./util.js');
 fuzzy = module.require('fuzzy');
-rateLimit = require("rate-limit");
 _ = module.require('underscore');
-fs = module.require("fs");
 
 var MovieDbQueue = (function (params) {
     // we require the key for api access to be in this file
     if (params.themoviedbKey == undefined && params.moviedb == undefined) {
         throw new Exception("Unable to proceed.  The MovieDB API cannot be used without a valid key.")
     }
-    // speed at which we process the queue in ms
-    var rateInterval = params.rateInterval ? params.rateInterval : 500;
     // interface to themoviedb
     var self = ({
-        configuration: {
-            base_url: '/'
-        },
-        imagePath: './',
-        init: function () {
-            log = global['log'];
-            self.queue = self.rateLimit.createQueue({
-                interval: rateInterval
+        configure: function (callback) {
+            self.moviedb.configuration('', function (err, config) {
+                if (err) {
+                    log.error(err);
+                } else {
+                    log.always("Configured; Requesting images");
+                    self.configuration = config;
+                    callback(config);
+                }
             });
         },
-        addMovieImage: function (id, imagePath) {
-            movieImages[id] = imagePath;
-        },
-        queueMovieName: function (movieName, callback) {
-            // queueMovieName(name, self.findMovieId)
-            self.queue.add(function () {
-                log.debug("Enqueueing name " + movieName);
-                moviedb.searchMovie({
-                    query: '"' + movieName + '"'
-                }, callback(movieName));
-            });
-        },
-        queueMovieId: function (id, name, callback) {
-            // queueMovieId(id,name,self.findMovieImage)
-            self.queue.add(function () {
-                log.debug("Enqueueing id " + id);
-                self.movies[id] = name;
-                moviedb.movieImages({
-                    id: id
-                }, callback(id, name));
-            });
-        },
-        // handles movie fetch from movie id
-        // findMovieImage(id, self.addMovieImage)
-        findMovieImage: function (id, callback) {
-            return function (err, res) {
-                // call matchMovieImage
+        searchMovies: function (movieName, callback, failback) {
+            if (movieName == undefined || movieName == null || callback == undefined || callback == null) {
+                throw new Error("Cannot search movies with null name or null callback");
             }
+            self.moviedb.searchMovie({
+                query: '"' + movieName + '"'
+            }, function (error, searchResults) {
+                if (error && failback) {
+                    failback(movieName, error);
+                } else {
+                    callback(movieName, searchResults.results);
+                }
+            });
+        },
+        findBestTitleMatch: function (title, titleList) {
+            if (title === undefined || title == null || titleList == undefined || titleList == null) {
+                throw Error("Cannot match movie name or list which is null.");
+            }
+            var reduced = titleList
+                .map(function (n) {
+                    return n.title;
+                });
+            fuzzymatches = fuzzy.filter(title, reduced);
+            bestmatch = _.max(fuzzymatches, function (fuzzymatch) {
+                return fuzzymatch.score;
+            });
+            // failsafe -- if no best and only one result, trust the moviedb
+            if (_.isEmpty(bestmatch) && titleList.length == 1) {
+                bestmatch = {
+                    index: 0
+                };
+            }
+            // log and respond
+            var id = null;
+            if (!_.isEmpty(bestmatch)) {
+                id = titleList[bestmatch.index].id;
+                log.info("Chose id " + titleList[bestmatch.index].id
+                    + " for " + title);
+            } else {
+                log.error("NO MATCH for title " + title);
+            }
+            return id;
         },
         // res.posters from moviedb poster search
-        matchMovieImage: function (movieId, movieName, movieImageList) {
+        findBestPoster: function (movieId, movieImageList) {
             // validate
-            if (movieId == null || movieId == undefined || movieName == null || movieName == undefined ||
+            if (movieId == null || movieId == undefined ||
                 movieImageList == null || movieImageList == null) {
                 throw new Error("Couldn't retrieve '" + movieId);
             } else if (movieImageList.length < 1) {
@@ -74,63 +85,17 @@ var MovieDbQueue = (function (params) {
             }
             // give up if nothing's worked
             if (image == null) {
-                log.error("ERROR FINDING ENGLISH POSTER: " + movieName);
+                log.error("ERROR FINDING ENGLISH POSTER: " + mmovieId);
                 log.info(movieImageList);
                 return;
             }
             return image.file_path;
         },
-        matchMovieName: function (name, nameList) {
-            if (name === undefined || name == null || nameList == undefined || nameList == null) {
-                throw Error("Cannot match movie name or list which is null.");
-            }
-            var reduced = nameList
-                .map(function (n) {
-                    return n.title;
-                });
-            fuzzymatches = fuzzy.filter(name, reduced);
-            bestmatch = _.max(fuzzymatches, function (fuzzymatch) {
-                return fuzzymatch.score;
-            });
-            // failsafe -- if no best and only one result, trust the moviedb
-            if (_.isEmpty(bestmatch) && nameList.length == 1) {
-                bestmatch = {
-                    index: 0
-                };
-            }
-            // log and respond
-            var id = null;
-            if (!_.isEmpty(bestmatch)) {
-                id = nameList[bestmatch.index].id;
-                log.info("Chose id " + nameList[bestmatch.index].id
-                    + " for " + name);
-            } else {
-                log.error("NO MATCH for title " + name);
-            }
-            return id;
-        },
-        configure: function (callback) {
-            self.moviedb.configuration('', function (err, config) {
-                if (err) {
-                    log.error(err);
-                } else {
-                    log.always("Configured; Requesting images");
-                    self.configuration = config;
-                    callback(config);
-                }
-            });
-        }
     });
     merge(self, params);
     if (self.moviedb == undefined) {
         log.info("Initializing moviedb");
         self.moviedb = require('moviedb')(self.themoviedbKey);
-    }
-    if (self.queue == undefined) {
-        log.info("Initializing rate limit queue");
-        self.queue = rateLimit.createQueue({
-            interval: rateInterval
-        });
     }
     return self;
 });
