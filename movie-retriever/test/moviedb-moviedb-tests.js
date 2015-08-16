@@ -40,9 +40,9 @@ describe('MovieDbMovieDb', function () {
             }, TIMEOUT);
         })
         it('errors when called with a null movie name', function () {
-            expect(movieDbMovieDb.searchMovies.bind(null, null, null)).to.throw();
-            expect(movieDbMovieDb.searchMovies.bind("Blah", null, shouldntFunc)).to.throw();
-            expect(movieDbMovieDb.searchMovies.bind(null, shouldntFunc, shouldntFunc)).to.throw();
+            expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null, null, null)).to.throw();
+            expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, "Blah", null, shouldntFunc)).to.throw();
+            expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null, shouldntFunc, shouldntFunc)).to.throw();
         });
         it('calls the failback when given a null movie id', function (done) {
             setTimeout(function () {
@@ -110,16 +110,16 @@ describe('MovieDbMovieDb', function () {
             expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, '', null)).to.throw();
         })
         it('should return null if the list is empty', function () {
-            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, [])).to.be.empty;
+            expect(movieDbMovieDb.findBestPoster(123, [])).to.be.empty;
         })
         it('should return a file path for a straight match', function () {
-            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, testMovieList)).to.equal("/success/result");
+            expect(movieDbMovieDb.findBestPoster(123, testMovieList)).to.equal("/success/result");
         })
         it('should return a file path for an english over a non-english match', function () {
-            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, testMovieListForeign)).to.equal("/success/english");
+            expect(movieDbMovieDb.findBestPoster(123, testMovieListForeign)).to.equal("/success/english");
         })
         it('should return the first image even if nothing matches expected state', function () {
-            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, testMovieListForeignNoEnglish)).to.equal("/success/french");
+            expect(movieDbMovieDb.findBestPoster(123, testMovieListForeignNoEnglish)).to.equal("/success/french");
         })
     })
     describe('#fetchMovieImages', function () {

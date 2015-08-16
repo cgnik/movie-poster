@@ -71,7 +71,7 @@ var MovieDbMovieDb = (function (params) {
                 movieImageList == null || movieImageList == null) {
                 throw new Error("Couldn't retrieve '" + movieId);
             } else if (movieImageList.length < 1) {
-                return null;
+                return undefined;
             }
             // default
             image = movieImageList[0];
