@@ -6,7 +6,7 @@ _ = module.require('underscore');
 var MovieDbMovieDb = (function (params) {
     // we require the key for api access to be in this file
     if (params.themoviedbKey == undefined && params.moviedb == undefined) {
-        throw new Exception("Unable to proceed.  The MovieDB API cannot be used without a valid key.")
+        throw new Error("Unable to proceed.  The MovieDB API cannot be used without a valid key.")
     }
     // interface to themoviedb
     var self = ({

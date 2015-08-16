@@ -1,31 +1,39 @@
-// log -- needed pervasively
-global['log'] = module.require('./movie-log.js');
-log = global['log'];
-log.always("Logging configured with level " + log.level);
-
 // modules
-var queue = module.require('./moviedb-moviedb.js')(({'themoviedbKey': fs.readFileSync('themoviedb-key.txt')}));
-moviedb = module.require("moviedb")(params.themoviedbKey);
+require('./util.js');
+queue = module.require('./moviedb-moviedb.js');
+moviedb = module.require("moviedb");
 
 var moviedir = module.require('./movie-dir.js');
 var _ = module.require('underscore');
-
+var count = 1;
 // configuration
-var retrieve = {
+var MainRetriever = (function () {
+    return {
         imagePath: [],
-        moviedbKey: null,
-        init: function () {
-        },
         // note -- if the movie name is already in here, we don't re-search it
-        moviesNames: {},
-        configure: function () {
-            // initialize static named movies
-            if (fs.existsSync('./movie-ids.json')) {
-                retrieve.moviesNames = JSON.parse(fs.readFileSync(
-                    './movie-ids.json', 'utf8'));
-                log.always("Using static movie IDs ");
-                log.debug(retrieve.moviesNames);
+        movieIds: {},
+        init: function (params) {
+            merge(MainRetriever, params);
+            initMovieDb();
+            initMovieIds();
+        },
+        initMoviedb: function () {
+            if (this.themoviedbKey == undefined) {
+                this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
             }
+            this.moviedb = queue({'themoviedbKey': this.themoviedbKey});
+        },
+        initMovieIds: function () {
+            // initialize static named movies
+            if (fs.existsSync('movie-ids.json')) {
+                this.movieIds = JSON.parse(fs.readFileSync(
+                    'movie-ids.json', 'utf8'));
+                log.always("Using static movie IDs ");
+                log.debug(this.movieIds);
+            }
+        },
+        configure: function () {
+
             process.argv.forEach(function (val, index, array) {
                 if (val.indexOf("--") == 0) {
                     return;
@@ -62,8 +70,8 @@ var retrieve = {
                     }).forEach(retrieve.enqueueMissing);
                 });
         },
-        enqueueMissing: function checkOrEnqueueFetch(movieName) {
-            movieId = retrieve.moviesNames[movieName.toLowerCase()];
+        enqueueMissing: function (movieName) {
+            movieId = retrieve.movieIds[movieName.toLowerCase()];
             if (movieId != null) {
                 log.info("Enqueueing image fetch: " + movieName + " : movie id "
                     + movieId);
@@ -80,11 +88,12 @@ var retrieve = {
             queue.configuration = config.images;
         },
     }
-    ;
+});
+module.exports = MainRetriever;
 
 // exec
-retrieve.configure();
-retrieve.start(retrieve.configureAndSpawnRetrieve)
+//retrieve.configure();
+//retrieve.start(MainRetriever.configureAndSpawnRetrieve)
 
 /*
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg
