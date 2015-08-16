@@ -5,7 +5,7 @@ var shouldntFunc = function () {
 describe('MovieDbMovieDb', function () {
     var mockMoviedb = module.require("moviedb")('test-moviedb-key');
     var mockLog = sinon.mock(require('../src/movie-log.js'));
-    var queue = require('../src/moviedb-moviedb.js')({moviedb: mockMoviedb, log: mockLog});
+    var movieDbMovieDb = require('../src/moviedb-moviedb.js')({moviedb: mockMoviedb, log: mockLog});
     describe('#configure', function () {
         beforeEach(function () {
             sinon.stub(mockMoviedb, 'configuration').callsArgWith(1, null, testConfig);
@@ -15,7 +15,7 @@ describe('MovieDbMovieDb', function () {
         })
         it('calls moviedb get configuration', function (done) {
             setTimeout(function () {
-                queue.configure(function (config) {
+                movieDbMovieDb.configure(function (config) {
                     expect(config).to.equal(testConfig);
                     done();
                 })
@@ -32,7 +32,7 @@ describe('MovieDbMovieDb', function () {
         })
         it('calls moviedb to find movie, calls callback with results', function (done) {
             setTimeout(function () {
-                queue.searchMovies("Test Movie", function (movieName, searchResults) {
+                movieDbMovieDb.searchMovies("Test Movie", function (movieName, searchResults) {
                     expect(movieName).to.equal("Test Movie");
                     expect(JSON.stringify(searchResults)).to.equal(JSON.stringify(testResults.results));
                     done();
@@ -40,13 +40,13 @@ describe('MovieDbMovieDb', function () {
             }, TIMEOUT);
         })
         it('errors when called with a null movie name', function () {
-            expect(queue.searchMovies.bind(null, null, null)).to.throw();
-            expect(queue.searchMovies.bind("Blah", null, shouldntFunc)).to.throw();
-            expect(queue.searchMovies.bind(null, shouldntFunc, shouldntFunc)).to.throw();
+            expect(movieDbMovieDb.searchMovies.bind(null, null, null)).to.throw();
+            expect(movieDbMovieDb.searchMovies.bind("Blah", null, shouldntFunc)).to.throw();
+            expect(movieDbMovieDb.searchMovies.bind(null, shouldntFunc, shouldntFunc)).to.throw();
         });
         it('calls the failback when given a null movie id', function (done) {
             setTimeout(function () {
-                queue.searchMovies("Test Movie", function () {
+                movieDbMovieDb.searchMovies("Test Movie", function () {
                         assert(false);
                         return;
                     },
@@ -64,20 +64,20 @@ describe('MovieDbMovieDb', function () {
             {id: 789, title: "Movie Name More"}
         ];
         it('returns an exact match', function () {
-            expect(queue.findBestTitleMatch("Movie Name", testList)).to.equal(456);
+            expect(movieDbMovieDb.findBestTitleMatch("Movie Name", testList)).to.equal(456);
         });
         it('returns null for no match', function () {
-            expect(queue.findBestTitleMatch("blargh", testList))
+            expect(movieDbMovieDb.findBestTitleMatch("blargh", testList))
         })
         it('throws for a null name', function () {
-            expect(queue.findBestTitleMatch.bind(null, testList)).to.throw();
+            expect(movieDbMovieDb.findBestTitleMatch.bind(movieDbMovieDb, null, testList)).to.throw();
         })
         it('throws for a null list', function () {
-            expect(queue.findBestTitleMatch.bind("booboo", null)).to.throw();
+            expect(movieDbMovieDb.findBestTitleMatch.bind(movieDbMovieDb, "booboo", null)).to.throw();
         })
         it('matches near titles', function () {
-            expect(queue.findBestTitleMatch("ovie N", testList)).to.equal(456);
-            expect(queue.findBestTitleMatch("Mov", testList)).to.equal(123);
+            expect(movieDbMovieDb.findBestTitleMatch("ovie N", testList)).to.equal(456);
+            expect(movieDbMovieDb.findBestTitleMatch("Mov", testList)).to.equal(123);
         })
     });
     describe('#searchMovies', function () {
@@ -104,22 +104,23 @@ describe('MovieDbMovieDb', function () {
                 file_path: "/success/italian"
             }];
         it('should throw if no id was provided', function () {
-            expect(queue.findBestPoster.bind(null, {})).to.throw();
+            expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, null, {})).to.throw();
+            movieDbMovieDb.findBestPoster();
         })
         it('should throw if no list was provided', function () {
-            expect(queue.findBestPoster.bind('', '', null)).to.throw();
+            expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, '', '', null)).to.throw();
         })
         it('should return null if the list is empty', function () {
-            expect(queue.findBestPoster(123, [])).to.equal(null);
+            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, [])).to.equal(null);
         })
         it('should return a file path for a straight match', function () {
-            expect(queue.findBestPoster(123, testMovieList)).to.equal("/success/result");
+            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, testMovieList)).to.equal("/success/result");
         })
         it('should return a file path for an english over a non-english match', function () {
-            expect(queue.findBestPoster(123, testMovieListForeign)).to.equal("/success/english");
+            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, testMovieListForeign)).to.equal("/success/english");
         })
         it('should return the first image even if nothing matches expected state', function () {
-            expect(queue.findBestPoster(123, testMovieListForeignNoEnglish)).to.equal("/success/french");
+            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, testMovieListForeignNoEnglish)).to.equal("/success/french");
         })
     })
     describe('#fetchMovieImages', function () {

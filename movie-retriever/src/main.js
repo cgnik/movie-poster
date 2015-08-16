@@ -8,7 +8,7 @@ var _ = module.require('underscore');
 var count = 1;
 // configuration
 var MainRetriever = (function () {
-    return {
+    self = {
         imagePath: [],
         // note -- if the movie name is already in here, we don't re-search it
         movieIds: {},
@@ -32,30 +32,34 @@ var MainRetriever = (function () {
                 log.debug(this.movieIds);
             }
         },
-        configure: function () {
+        configure: function (props) {
 
-            process.argv.forEach(function (val, index, array) {
+            props.forEach(function (val, index, array) {
                 if (val.indexOf("--") == 0) {
-                    return;
+                    whole = val.substr(2);
+                    name = whole.substr(0, whole.indexOf('='));
+                    value = whole.substr(whole.indexOf('=') + 1);
+                    if (name && value) {
+                        self[name] = value;
+                    }
                 } else if (!(val.indexOf('--') >= 0)) {
                     stats = fs.statSync(val);
-                    if (stats.isDirectory()) {
+                    if (stats && stats.isDirectory()) {
                         log.always("Adding scan dir " + val);
                         moviePath = val;
                         if (moviePath.charAt(moviePath.length - 1) != '/') {
                             moviePath = moviePath + '/';
                         }
-                        retrieve.imagePath.push(moviePath);
-                    } // else if(stats.isFile() -- it's a movie file to be retrieved
+                        self.imagePath.push(moviePath);
+                    } else {
+                        throw new Error("Cannot scan nonexistent dir " + val);
+                    }// else if(stats.isFile() -- it's a movie file to be retrieved
                 }
             });
-            if (this.imagePath.length < 1) {
+            if (self.imagePath.length < 1) {
                 log.always("No diretory specified.  Defaulting to ./");
-                retrieve.imagePath.push("./");
+                self.imagePath.push("./");
             }
-            // where we're putting the images
-            queue.configuration = {};
-            queue.imagePath = retrieve.imagePath;
         },
         // Finds missing posters in moviedir and enqueues fetches
         spawnMovieImageRetrievals: function (nameSerch, idSearch) {
@@ -88,12 +92,13 @@ var MainRetriever = (function () {
             queue.configuration = config.images;
         },
     }
+    return self;
 });
 module.exports = MainRetriever;
 
 // exec
-//retrieve.configure();
-//retrieve.start(MainRetriever.configureAndSpawnRetrieve)
+//MainRetriever.configure(process.argv);
+//MainRetriever.start(MainRetriever.configureAndSpawnRetrieve)
 
 /*
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg

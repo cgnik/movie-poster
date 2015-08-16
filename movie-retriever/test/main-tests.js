@@ -33,4 +33,31 @@ describe('main', function () {
             fs.existsSync.restore();
         })
     })
+    describe('#initProcessArgs', function () {
+        it('should make all -- arguments part of "this"', function () {
+            props = ['--one=1', '--two=2'];
+            m = main();
+            m.configure(props);
+            expect(m.one).to.equal('1');
+            expect(m.two).to.equal('2');
+        })
+        it('should make all non- -- arguments into additions to the imagepath', function () {
+            props = ['--one=maximum', "/some/dir/"];
+            sinon.stub(fs, 'statSync').withArgs('/some/dir/').returns({
+                isDirectory: function () {
+                    return true;
+                }
+            })
+            m = main();
+            m.configure(props);
+            index = m.imagePath.indexOf("/some/dir/");
+            expect(index).to.equal(0);
+        })
+        it('should check all file and dir arguments to see if they exist', function (done) {
+            params = ['/dir/that/definitely/does/not/exist'];
+            m = main();
+            expect(m.configure.bind(m, params)).to.throw();
+            done();
+        })
+    })
 })

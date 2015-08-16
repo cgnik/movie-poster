@@ -11,8 +11,8 @@
     "merge": "*"
   },
   "devDependencies": {
-    "chai": "*",
     "mocha": "*",
+    "chai": "*",
     "sinon": "*",
     "sinon-chai": "*"
   },
