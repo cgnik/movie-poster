@@ -85,7 +85,7 @@ var MovieDbMovieDb = (function (params) {
             }
             // give up if nothing's worked
             if (image == null) {
-                log.error("ERROR FINDING ENGLISH POSTER: " + mmovieId);
+                log.error("ERROR FINDING ENGLISH POSTER: " + movieId);
                 log.info(movieImageList);
                 return;
             }

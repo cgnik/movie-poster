@@ -105,13 +105,12 @@ describe('MovieDbMovieDb', function () {
             }];
         it('should throw if no id was provided', function () {
             expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, null, {})).to.throw();
-            movieDbMovieDb.findBestPoster();
         })
         it('should throw if no list was provided', function () {
-            expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, '', '', null)).to.throw();
+            expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, '', null)).to.throw();
         })
         it('should return null if the list is empty', function () {
-            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, [])).to.equal(null);
+            expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, [])).to.be.empty;
         })
         it('should return a file path for a straight match', function () {
             expect(movieDbMovieDb.findBestPoster(movieDbMovieDb, 123, testMovieList)).to.equal("/success/result");
