@@ -13,3 +13,7 @@ global.mockFs = require('mock-fs');
 var sinonChai = require("sinon-chai");
 chai.should();
 chai.use(sinonChai);
+
+global.expectify = function (x) {
+    return JSON.stringify(x);
+}

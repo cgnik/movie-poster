@@ -37,7 +37,7 @@ describe('main', function () {
         it('should make all -- arguments part of "this"', function () {
             props = ['--one=1', '--two=2'];
             m = main();
-            m.configure(props);
+            m.initProcessArgs(props);
             expect(m.one).to.equal('1');
             expect(m.two).to.equal('2');
         })
@@ -49,14 +49,17 @@ describe('main', function () {
                 }
             })
             m = main();
-            m.configure(props);
+            m.initProcessArgs(props);
             index = m.imagePath.indexOf("/some/dir/");
             expect(index).to.equal(0);
         })
         it('should check all file and dir arguments to see if they exist', function () {
             params = ['/dir/that/definitely/does/not/exist'];
             m = main();
-            expect(m.configure.bind(m, params)).to.throw();
+            expect(m.initProcessArgs.bind(m, params)).to.throw();
         })
+    })
+    describe('#mapMoviePaths', function () {
+        it('should iterate moviePaths and call mapMoviePath')
     })
 })

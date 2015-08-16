@@ -3,7 +3,7 @@ require('./util.js');
 queue = module.require('./moviedb-moviedb.js');
 moviedb = module.require("moviedb");
 
-var moviedir = module.require('./movie-dir.js');
+var moviedir = module.require('./movie-map.js');
 var _ = module.require('underscore');
 var count = 1;
 // configuration
@@ -12,6 +12,7 @@ var Retriever = (function () {
         imagePath: [],
         // note -- if the movie name is already in here, we don't re-search it
         movieIds: {},
+        movies: {},
         init: function (params) {
             merge(Retriever, params);
             initMovieDb();
@@ -32,8 +33,8 @@ var Retriever = (function () {
                 log.debug(this.movieIds);
             }
         },
-        configure: function (props) {
-            props.forEach(function (val, index, array) {
+        initProcessArgs: function (args) {
+            args.forEach(function (val, index, array) {
                 if (val.indexOf("--") == 0) {
                     whole = val.substr(2);
                     name = whole.substr(0, whole.indexOf('='));
@@ -60,18 +61,24 @@ var Retriever = (function () {
                 self.imagePath.push("./");
             }
         },
-        // Finds missing posters in moviedir and enqueues fetches
-        spawnMovieImageRetrievals: function (nameSerch, idSearch) {
-            retrieve.imagePath
+        mapMoviePaths: function () {
+            self.imagePath
                 .forEach(function (path) {
-                    // gets movie results for each file in movie dir
-                    var movieImageMap = moviedir.MovieImageMap(path)
-                        .getMovieImageMap();
-                    log.debug(movieImageMap);
-                    _.keys(movieImageMap).filter(function (key) {
-                        return movieImageMap[key] == null;
-                    }).forEach(retrieve.enqueueMissing);
+                    mapMoviePath(path);
                 });
+        },
+        mapMoviePath: function (dir) {
+            // gets movie results for each file in movie dir
+            var movieImageMap = moviedir(path)
+                .getMovieMap();
+            log.debug(movieImageMap);
+            merge(self.movies, movieImageMap);
+        },
+        // Finds missing posters in moviedir and enqueues fetches
+        findMissingMovieImages: function (nameSerch, idSearch) {
+            missing = _.keys(self.movies).filter(function (key) {
+                return movieImageMap[key] == null;
+            });
         },
         enqueueMissing: function (movieName) {
             movieId = retrieve.movieIds[movieName.toLowerCase()];
