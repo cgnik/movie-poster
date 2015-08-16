@@ -3,7 +3,7 @@
  */
 
 describe('main', function () {
-    main = require('../src/main.js');
+    main = require('../src/retriever.js');
     describe('#initMoviedb', function () {
         it('should set the moviedb key from a file', function () {
             sinon.stub(fs, 'readFileSync').returns('blahblah');
@@ -12,7 +12,7 @@ describe('main', function () {
             fs.readFileSync.restore();
         })
         it('should initialize from provided key and not the file', function () {
-            main = require('../src/main.js');
+            main = require('../src/retriever.js');
             sinon.stub(fs, 'readFileSync').returns('blahblah');
             var m = main();
             m.themoviedbKey = "blahblah";
@@ -53,11 +53,10 @@ describe('main', function () {
             index = m.imagePath.indexOf("/some/dir/");
             expect(index).to.equal(0);
         })
-        it('should check all file and dir arguments to see if they exist', function (done) {
+        it('should check all file and dir arguments to see if they exist', function () {
             params = ['/dir/that/definitely/does/not/exist'];
             m = main();
             expect(m.configure.bind(m, params)).to.throw();
-            done();
         })
     })
 })
