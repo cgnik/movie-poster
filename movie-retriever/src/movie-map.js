@@ -11,7 +11,7 @@ MovieMap = function () {
             self.movieDirectories = [];
         },
         addMovieDirectory: function (dir) {
-            self.mapMovieFiles(this.movieImages, fs
+            self.addMovieFiles(fs
                 .readdirSync(dir));
             self.movieDirectories.push(dir);
         },
@@ -26,6 +26,7 @@ MovieMap = function () {
             name = path.basename(fileFullName, extname).toLowerCase();
             // get or create mapped name
             existing = self.movieMap[name] || {};
+            existing.name = name;
             // shuffle in the right props
             if (self.isMovieExtension(extname)) {
                 existing.file = fileFullName;

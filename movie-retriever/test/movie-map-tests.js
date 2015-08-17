@@ -1,15 +1,13 @@
 fileList = ['/path/something.file', '/path/something.m4v', '/path/something.png', '/path/other.m4v'];
 fileListMapResult = {
     something: {
-        id: null,
         name: 'something',
         file: '/path/something.m4v',
         image: '/path/something.png'
     },
     other: {
-        id: null,
+        name: 'other',
         file: '/path/other.m4v',
-        image: null
     }
 };
 
@@ -29,21 +27,40 @@ describe('MovieMap', function () {
             expect(mim.movieDirectories).to.be.empty;
         })
     })
-    describe('#addMOvieDirectory', function () {
-
+    describe('#addMovieDirectory', function () {
+        sinon.stub(fs, 'readdirSync').withArgs('/path/').returns(fileList);
+        mim.clear();
+        expect(mim.movieDirectories).to.be.empty;
+        mim.addMovieDirectory('/path/');
+        expect(mim.movieDirectories).to.not.be.empty;
+        expect(mim.movieDirectories).to.deep.equal(['/path/']);
+        mim.movieMap.should.deep.equal(fileListMapResult);
+        fs.readdirSync.restore();
     })
     describe('#addMovieFiles', function () {
         it('should add movie files to the map, respecting existing entries', function () {
             mim.addMovieFiles(["/path/something.mpg", "/path/SomeThing.jpg"]);
-            expect(expectify(mim.movieMap)).to.equal('{"something":{"file":"/path/something.mpg","image":"/path/SomeThing.jpg"}}');
+            mim.movieMap.should.deep.equal({
+                "something": {
+                    "name": "something",
+                    "file": "/path/something.mpg",
+                    "image": "/path/SomeThing.jpg"
+                }
+            });
         })
     })
     describe("#addMovieFile", function () {
         it('should add a movie file to the map, taking care to augment existing entries when there', function () {
             mim.addMovieFile("/path/something.mpg");
-            expect(expectify(mim.movieMap)).to.equal('{"something":{"file":"/path/something.mpg"}}');
+            mim.movieMap.should.deep.equal({"something": {"name": "something", "file": "/path/something.mpg"}});
             mim.addMovieFile("/path/SomeThing.jpg");
-            expect(expectify(mim.movieMap)).to.equal('{"something":{"file":"/path/something.mpg","image":"/path/SomeThing.jpg"}}');
+            mim.movieMap.should.deep.equal({
+                "something": {
+                    "name": "something",
+                    "file": "/path/something.mpg",
+                    "image": "/path/SomeThing.jpg"
+                }
+            });
         })
     })
     describe('#isMovieExtension', function () {
