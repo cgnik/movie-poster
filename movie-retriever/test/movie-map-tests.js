@@ -49,6 +49,16 @@ describe('MovieMap', function () {
             });
         })
     })
+    describe('#toList', function () {
+        mim.clear();
+        mim.addMovieFile("/path/something.mpg");
+        mim.addMovieFile("/path/else.mpg");
+        mim.toList().should.deep.equal([
+            {"name": "something", "file": "/path/something.mpg"}, {
+                "name": "else",
+                "file": "/path/else.mpg"
+            }]);
+    })
     describe("#addMovieFile", function () {
         it('should add a movie file to the map, taking care to augment existing entries when there', function () {
             mim.addMovieFile("/path/something.mpg");

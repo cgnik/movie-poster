@@ -1,7 +1,5 @@
 // dependencies
 require('./globals.js');
-fuzzy = module.require('fuzzy');
-_ = module.require('underscore');
 
 var MovieDbMovieDb = (function (params) {
     // we require the key for api access to be in this file

@@ -6,6 +6,11 @@ MovieMap = function () {
     var self = {
         movieDirectories: [],
         movieMap: {},
+        toList: function () {
+            return _.map(self.movieMap, function (k, v) {
+                return k;
+            });
+        },
         clear: function () {
             self.movieMap = {};
             self.movieDirectories = [];

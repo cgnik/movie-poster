@@ -63,7 +63,9 @@ var Retriever = (function () {
         },
         // Finds missing posters in moviemap and enqueues fetches
         findMissingMovieIds: function () {
-
+            return self.movieMap.toList().filter(function (movie) {
+                return movie.id == undefined;
+            })
         },
     }
     return self;
