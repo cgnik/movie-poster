@@ -61,35 +61,9 @@ var Retriever = (function () {
                 self.movieMap.addMovieDirectory('./');
             }
         },
-        mapMoviePath: function (dir) {
-            // gets movie results for each file in movie dir
-            var movieImageMap = moviemap(path)
-                .getMovieMap();
-            log.debug(movieImageMap);
-            merge(self.movies, movieImageMap);
-        },
         // Finds missing posters in moviemap and enqueues fetches
         findMissingMovieImages: function (nameSerch, idSearch) {
-            missing = _.keys(self.movies).filter(function (key) {
-                return movieImageMap[key] == null;
-            });
-        },
-        enqueueMissing: function (movieName) {
-            movieId = retrieve.movieIds[movieName.toLowerCase()];
-            if (movieId != null) {
-                log.info("Enqueueing image fetch: " + movieName + " : movie id "
-                    + movieId);
-                queue.queueMovieId(movieId, movieName);
-            } else {
-                log.info("Enqueueing search: " + movieName);
-                queue.queueMovieName(movieName);
-            }
-        },
-        start: function (callback) {
-            queue.configure(callback);
-        },
-        configureAndSpawnRetrieve: function (configuration) {
-            queue.configuration = config.images;
+
         },
     }
     return self;
