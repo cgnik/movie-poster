@@ -2,8 +2,8 @@
 require('./globals.js');
 queue = module.require('./moviedb-moviedb.js');
 moviedb = module.require("moviedb");
+moviemap = module.require('./movie-map.js');
 
-var moviedir = module.require('./movie-map.js');
 var _ = module.require('underscore');
 var count = 1;
 // configuration
@@ -13,10 +13,11 @@ var Retriever = (function () {
         // note -- if the movie name is already in here, we don't re-search it
         movieIds: {},
         movies: {},
+        movieMap: moviemap,
         init: function (params) {
-            merge(Retriever, params);
-            initMovieDb();
-            initMovieIds();
+            merge(self, params);
+            self.initMoviedb();
+            self.initMovieIds();
         },
         initMoviedb: function () {
             if (this.themoviedbKey == undefined) {
@@ -45,36 +46,29 @@ var Retriever = (function () {
                 } else if (!(val.indexOf('--') >= 0)) {
                     stats = fs.statSync(val);
                     if (stats && stats.isDirectory()) {
-                        log.always("Adding scan dir " + val);
-                        moviePath = val;
-                        if (moviePath.charAt(moviePath.length - 1) != '/') {
-                            moviePath = moviePath + '/';
-                        }
-                        self.imagePath.push(moviePath);
+                        log.always("Adding movie dir " + val);
+                        self.movieMap.addMovieDirectory(val);
+                    } else if (stats.isFile()) {
+                        log.always("Adding movie file " + val);
+                        self.movieMap.addMovieFile(val);
                     } else {
                         throw new Error("Cannot scan nonexistent dir " + val);
-                    }// else if(stats.isFile() -- it's a movie file to be retrieved
+                    }
                 }
             });
-            if (self.imagePath.length < 1) {
+            if (self.movieMap.movieDirectories.length < 1) {
                 log.always("No diretory specified.  Defaulting to ./");
-                self.imagePath.push("./");
+                self.movieMap.addMovieDirectory('./');
             }
-        },
-        mapMoviePaths: function () {
-            self.imagePath
-                .forEach(function (path) {
-                    mapMoviePath(path);
-                });
         },
         mapMoviePath: function (dir) {
             // gets movie results for each file in movie dir
-            var movieImageMap = moviedir(path)
+            var movieImageMap = moviemap(path)
                 .getMovieMap();
             log.debug(movieImageMap);
             merge(self.movies, movieImageMap);
         },
-        // Finds missing posters in moviedir and enqueues fetches
+        // Finds missing posters in moviemap and enqueues fetches
         findMissingMovieImages: function (nameSerch, idSearch) {
             missing = _.keys(self.movies).filter(function (key) {
                 return movieImageMap[key] == null;
