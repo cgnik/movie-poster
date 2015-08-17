@@ -8,8 +8,6 @@ global.sinon = require('sinon');
 global.log = sinon.mock(require('../../src/movie-log.js'));
 global.log.level = 'debug';
 
-global.mockFs = require('mock-fs');
-
 var sinonChai = require("sinon-chai");
 chai.should();
 chai.use(sinonChai);

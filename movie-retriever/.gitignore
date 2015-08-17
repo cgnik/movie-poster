@@ -6,3 +6,4 @@ movie-retriever.iml
 npm-debug.log
 /movie-ids.json
 .nide
+.idea/

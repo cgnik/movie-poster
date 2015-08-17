@@ -14,9 +14,9 @@ describe('retriever', function () {
         it('should initialize from provided key and not the file', function () {
             retriever = require('../src/retriever.js');
             sinon.stub(fs, 'readFileSync').returns('blahblah');
-            var m = retriever();
-            m.themoviedbKey = "blahblah";
-            m.initMoviedb();
+            var r = retriever();
+            r.themoviedbKey = "blahblah";
+            r.initMoviedb();
             fs.readFileSync.should.have.not.been.calledWith('themoviedb-key.txt');
             fs.readFileSync.restore();
         })
@@ -62,5 +62,9 @@ describe('retriever', function () {
             expect(m.initProcessArgs.bind(m, params)).to.throw();
         })
     })
+    describe('#findMissingMovieIds', function () {
+        it('should figure out which mapped movies don"t have IDs', function () {
 
+        })
+    })
 })

@@ -62,7 +62,7 @@ var Retriever = (function () {
             }
         },
         // Finds missing posters in moviemap and enqueues fetches
-        findMissingMovieImages: function (nameSerch, idSearch) {
+        findMissingMovieIds: function () {
 
         },
     }
