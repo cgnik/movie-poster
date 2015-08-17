@@ -1,5 +1,5 @@
 // modules
-require('./util.js');
+require('./globals.js');
 queue = module.require('./moviedb-moviedb.js');
 moviedb = module.require("moviedb");
 

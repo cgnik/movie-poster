@@ -1,4 +1,4 @@
-require('./util.js');
+require('./globals.js');
 
 FileFetch = (function (params) {
     if (params === null) {

@@ -1,5 +1,5 @@
 // dependencies
-require('./util.js');
+require('./globals.js');
 fuzzy = module.require('fuzzy');
 _ = module.require('underscore');
 
