@@ -18,6 +18,10 @@ var Retriever = (function () {
             self.initMoviedb();
             self.initMovieIds();
         },
+        clear: function () {
+            self.movieIds = {};
+            self.movieMap.clear();
+        },
         initMoviedb: function () {
             if (this.themoviedbKey == undefined) {
                 this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
@@ -60,18 +64,18 @@ var Retriever = (function () {
                 self.movieMap.addMovieDirectory('./');
             }
         },
-        // Finds missing ids in moviemap and enqueues fetches
-        findMissingMovieIds: function () {
-            return self.movieMap.toList().filter(function (movie) {
-                return movie.id == undefined;
-            })
-        },
         // Overlays the movieIds to the movieMap
         applyMovieIdsToMap: function () {
             _.keys(self.movieIds).forEach(function (movieKey) {
                 if (self.movieMap.movieMap[movieKey]) {
                     self.movieMap.movieMap[movieKey].id = self.movieIds[movieKey];
                 }
+            })
+        },
+        // Finds missing ids in moviemap and enqueues fetches
+        findMissingMovieIds: function () {
+            return self.movieMap.toList().filter(function (movie) {
+                return movie.id == undefined;
             })
         },
         // Finds missing posters in moviemap and enqueues fetches
