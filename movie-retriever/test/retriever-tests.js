@@ -5,7 +5,7 @@
 describe('retriever', function () {
     retriever = require('../src/retriever.js');
     var r = null;
-    beforeEach(function() {
+    beforeEach(function () {
         r = retriever();
         r.clear();
     })
@@ -75,7 +75,7 @@ describe('retriever', function () {
     })
     describe('#applyMovieIdsToMap', function () {
         it('should apply the movieIds to the movieMap by lower-case title', function () {
-            r.movieMap.clear();
+            r.clear();
             r.movieMap.addMovieFile("/path/Alien.mpg");
             r.movieIds = {"alien": "123"};
             r.applyMovieIdsToMap();
@@ -84,7 +84,7 @@ describe('retriever', function () {
     })
     describe('#findMissingMovieIds', function () {
         it('should figure out which mapped movies don"t have IDs', function () {
-            r.movieMap.clear();
+            r.clear();
             testObject = [{
                 name: 'Alien',
                 file: '/path/Alien.mpg',
@@ -103,11 +103,6 @@ describe('retriever', function () {
             r.movieMap.addMovieFile("/path/Alien.jpg");
             r.movieMap.addMovieFile("/path/Aliens.mpg");
             r.findMissingMovieImages().should.deep.equal(testObject);
-        })
-    })
-    describe('#fetchMissingMovieIds', function () {
-        it('should enqueue moviedb searches using throttle', function () {
-
         })
     })
 })
