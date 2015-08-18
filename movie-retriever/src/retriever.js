@@ -12,7 +12,6 @@ var Retriever = (function () {
         imagePath: [],
         // note -- if the movie name is already in here, we don't re-search it
         movieIds: {},
-        movies: {},
         movieMap: moviemap,
         init: function (params) {
             merge(self, params);
@@ -65,6 +64,14 @@ var Retriever = (function () {
         findMissingMovieIds: function () {
             return self.movieMap.toList().filter(function (movie) {
                 return movie.id == undefined;
+            })
+        },
+        // Overlays the movieIds to the movieMap
+        applyMovieIdsToMap: function () {
+            _.keys(self.movieIds).forEach(function (movieKey) {
+                if (self.movieMap.movieMap[movieKey]) {
+                    self.movieMap.movieMap[movieKey].id = self.movieIds[movieKey];
+                }
             })
         },
         // Finds missing posters in moviemap and enqueues fetches

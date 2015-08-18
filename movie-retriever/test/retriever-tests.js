@@ -84,4 +84,13 @@ describe('retriever', function () {
             m.findMissingMovieImages().should.deep.equal(testObject);
         })
     })
+    describe('#applyMovieIdsToMap', function () {
+        it('should apply the movieIds to the movieMap by lower-case title', function () {
+            m.movieMap.clear();
+            m.movieMap.addMovieFile("/path/Alien.mpg");
+            m.movieIds = {"alien": "123"};
+            m.applyMovieIdsToMap();
+            m.movieMap.movieMap.should.deep.equal({"alien": {"id": "123", "name": "Alien", "file": "/path/Alien.mpg"}});
+        })
+    })
 })
