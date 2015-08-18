@@ -64,7 +64,11 @@ describe('retriever', function () {
     })
     describe('#findMissingMovieIds', function () {
         it('should figure out which mapped movies don"t have IDs', function () {
-            testObject = {"Aliens": {"name": "Aliens", "file": "Aliens.jpg"}};
+            testObject = [{
+                name: 'Alien',
+                file: '/path/Alien.mpg',
+                image: '/path/Alien.jpg'
+            }, {"name": "Aliens", "file": "/path/Aliens.mpg"}];
             m.movieMap.addMovieFile("/path/Alien.mpg");
             m.movieMap.addMovieFile("/path/Alien.jpg");
             m.movieMap.addMovieFile("/path/Aliens.mpg");
@@ -73,7 +77,7 @@ describe('retriever', function () {
     })
     describe('#findMissingMovieImages', function () {
         it('should figure out which mapped movies don"t have imagess', function () {
-            testObject = {"Aliens": {"name": "Aliens", "file": "Aliens.jpg"}};
+            testObject = [{"name": "Aliens", "file": "/path/Aliens.mpg"}];
             m.movieMap.addMovieFile("/path/Alien.mpg");
             m.movieMap.addMovieFile("/path/Alien.jpg");
             m.movieMap.addMovieFile("/path/Aliens.mpg");

@@ -28,10 +28,13 @@ MovieMap = function () {
         addMovieFile: function (fileFullName) {
             // figure out pieces parts of file name
             extname = path.extname(fileFullName);
-            name = path.basename(fileFullName, extname).toLowerCase();
+            mcname = path.basename(fileFullName, extname);
+            name = mcname.toLowerCase();
             // get or create mapped name
             existing = self.movieMap[name] || {};
-            existing.name = name;
+            if (existing.name == undefined) {
+                existing.name = mcname;
+            }
             // shuffle in the right props
             if (self.isMovieExtension(extname)) {
                 existing.file = fileFullName;

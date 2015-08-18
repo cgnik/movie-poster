@@ -61,10 +61,16 @@ var Retriever = (function () {
                 self.movieMap.addMovieDirectory('./');
             }
         },
-        // Finds missing posters in moviemap and enqueues fetches
+        // Finds missing ids in moviemap and enqueues fetches
         findMissingMovieIds: function () {
             return self.movieMap.toList().filter(function (movie) {
                 return movie.id == undefined;
+            })
+        },
+        // Finds missing posters in moviemap and enqueues fetches
+        findMissingMovieImages: function () {
+            return self.movieMap.toList().filter(function (movie) {
+                return movie.image == undefined;
             })
         },
     }

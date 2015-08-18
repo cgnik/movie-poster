@@ -51,10 +51,10 @@ describe('MovieMap', function () {
     })
     describe('#toList', function () {
         mim.clear();
-        mim.addMovieFile("/path/something.mpg");
+        mim.addMovieFile("/path/Something.mpg");
         mim.addMovieFile("/path/else.mpg");
         mim.toList().should.deep.equal([
-            {"name": "something", "file": "/path/something.mpg"}, {
+            {"name": "Something", "file": "/path/Something.mpg"}, {
                 "name": "else",
                 "file": "/path/else.mpg"
             }]);
@@ -71,6 +71,10 @@ describe('MovieMap', function () {
                     "image": "/path/SomeThing.jpg"
                 }
             });
+        })
+        it('should preserve the case of the movie title in the name element but not in the key', function () {
+            mim.addMovieFile("/path/Something.mpg");
+            mim.movieMap.should.deep.equal({'something': {'name': 'Something', 'file': '/path/Something.mpg'}});
         })
     })
     describe('#isMovieExtension', function () {
