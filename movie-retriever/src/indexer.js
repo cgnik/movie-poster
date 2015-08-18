@@ -9,7 +9,6 @@ var count = 1;
 // configuration
 var Retriever = (function () {
     self = {
-        imagePath: [],
         // note -- if the movie name is already in here, we don't re-search it
         movieIds: {},
         movieMap: moviemap,

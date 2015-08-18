@@ -1,7 +1,7 @@
-retriever = require('./retriever.js');
+indexer = require('./indexer.js');
 // exec
-retriever.configure(process.argv);
-retriever.start(retriever.configureAndSpawnRetrieve);
+indexer.configure(process.argv);
+indexer.start(indexer.configureAndSpawnRetrieve);
 
 /* Examples
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg
