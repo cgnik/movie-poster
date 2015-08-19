@@ -3,16 +3,18 @@ require('./globals.js');
 queue = module.require('./moviedb-moviedb.js');
 moviedb = module.require("moviedb");
 moviemap = module.require('./movie-map.js');
+throttle = module.require('./throttle.js');
 
 var _ = module.require('underscore');
 var count = 1;
 // configuration
-var Retriever = (function () {
+var Indexer = (function () {
     self = {
         // note -- if the movie name is already in here, we don't re-search it
         movieIds: {},
         movieMap: moviemap,
-        init: function (params) {
+        throttle: throttle,
+        initialize: function (params) {
             merge(self, params);
             self.initMoviedb();
             self.initMovieIds();
@@ -83,8 +85,41 @@ var Retriever = (function () {
                 return movie.image == undefined;
             })
         },
+        enqueueMissingIds: function () {
+            self.applyMovieIdsToMap();
+            self.findMissingMovieIds().forEach(function (movie) {
+                self.enqueueMissingId(movie.name);
+            });
+        },
+        enqueueMissingId: function (movieName) {
+            throttle.add(self.moviedb.searchMovies(movieName, function (movieName, results) {
+                bestMatch = self.moviedb.findBestTitleMatch(movieName, results);
+                if (bestMatch) {
+                    self.movieMap.movieMap[movieName].id = bestMatch.id;
+                } else {
+                    self.movieMap.movieMap[movieName].error = "Not Found";
+                    self.movieMap.movieMap[movieName].results = results;
+                }
+            }, function (error) {
+                log.error("Unable to find match for " + movieName + " : " + error);
+            }))
+        },
+        enqueueMissingImage: function (movieId) {
+            throttle.add(self.moviedb.searchMovies(movieName, function (movieName, results) {
+                bestMatch = self.moviedb.findBestTitleMatch(movieName, results);
+                if (bestMatch) {
+                    self.movieMap.movieMap[movieName].id = bestMatch.id;
+                } else {
+                    self.movieMap.movieMap[movieName].error = "Not Found";
+                    self.movieMap.movieMap[movieName].results = results;
+                }
+            }, function (error) {
+                log.error("Unable to find match for " + movieName + " : " + error);
+            }))
+        }
+
     }
     return self;
 });
-module.exports = Retriever;
+module.exports = Indexer;
 

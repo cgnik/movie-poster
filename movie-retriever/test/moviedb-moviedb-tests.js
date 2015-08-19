@@ -33,8 +33,8 @@ describe('MovieDbMovieDb', function () {
         it('calls moviedb to find movie, calls callback with results', function (done) {
             setTimeout(function () {
                 movieDbMovieDb.searchMovies("Test Movie", function (movieName, searchResults) {
-                    expect(movieName).to.equal("Test Movie");
-                    expect(JSON.stringify(searchResults)).to.equal(JSON.stringify(testResults.results));
+                    movieName.should.equal("Test Movie");
+                    searchResults.should.deep.equal(testResults.results);
                     done();
                 })
             }, TIMEOUT);
@@ -80,11 +80,6 @@ describe('MovieDbMovieDb', function () {
             expect(movieDbMovieDb.findBestTitleMatch("Mov", testList)).to.equal(123);
         })
     });
-    describe('#searchMovies', function () {
-        it('should throw if no movie name provided', function () {
-            //expect(queue.searchMovies)
-        })
-    })
     describe('#findBestPoster', function () {
         var testMovieList = [{iso_639_1: 'en', file_path: "/success/result"}];
         var testMovieListForeign = [
@@ -123,5 +118,19 @@ describe('MovieDbMovieDb', function () {
         })
     })
     describe('#fetchMovieImages', function () {
+        testImages = {
+            'posters': [{"iso_639_1": "en", "file_path": "/some/path.png"}, {
+                "iso_639_1": "fr",
+                "file_path": "/other/else.png"
+            }]
+        }
+        beforeEach(function () {
+            sinon.stub(mockMoviedb, 'movieImages').withExactArgs(123).callsArgWith(1, null, testImages);
+        })
+        afterEach(function () {
+            mockMovieDb.movieImages.restore();
+        })
+        // like, tests, 'n' stuff.
+        it('should call the ')
     });
 })

@@ -33,6 +33,13 @@ var MovieDbMovieDb = (function (params) {
                 }
             });
         },
+        fetchMovieImages: function (movieId, callback) {
+            moviedb.movieImages({
+                id: id
+            }, function (error, results) {
+                callback(id, results.posters);
+            });
+        },
         findBestTitleMatch: function (title, titleList) {
             if (title === undefined || title == null || titleList == undefined || titleList == null) {
                 throw Error("Cannot match movie name or list which is null.");

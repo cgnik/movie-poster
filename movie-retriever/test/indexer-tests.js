@@ -61,7 +61,7 @@ describe('indexer', function () {
                     return true;
                 }
             })
-            index.init();
+            index.initialize();
             sinon.stub(index.movieMap, 'addMovieDirectory');
             index.initProcessArgs(props);
             index.movieMap.addMovieDirectory.should.have.been.called;
