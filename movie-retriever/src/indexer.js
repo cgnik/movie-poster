@@ -105,19 +105,18 @@ var Indexer = (function () {
             }))
         },
         enqueueMissingImage: function (movieId) {
-            throttle.add(self.moviedb.searchMovies(movieName, function (movieName, results) {
-                bestMatch = self.moviedb.findBestTitleMatch(movieName, results);
-                if (bestMatch) {
-                    self.movieMap.movieMap[movieName].id = bestMatch.id;
-                } else {
-                    self.movieMap.movieMap[movieName].error = "Not Found";
-                    self.movieMap.movieMap[movieName].results = results;
-                }
-            }, function (error) {
-                log.error("Unable to find match for " + movieName + " : " + error);
-            }))
+            throttle.add(function () {
+                self.moviedb.fetchMovieImages(movieId, function (movieId, images) {
+                    self.movieMap.setMovieProperty(movieId, 'imageUrl', self.moviedb.findBestPoster(movieId, images));
+                });
+            });
+        },
+        enqueueFetchImages: function (movieId) {
+            throttle.add(function(){
+                imageFetcher
+                self.movieMap.getMovie(movieId).imageUrl
+            })
         }
-
     }
     return self;
 });

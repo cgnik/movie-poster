@@ -105,4 +105,14 @@ describe('MovieMap', function () {
             expect(mim.isImageFile('.Jpg')).to.be.true;
         })
     })
+    describe('#setMovieProperty', function () {
+        it('should set the named property for the specified movie id to the specified value', function () {
+            mim.addMovieFile("/path/some.mpg");
+            mim.movieMap['some'].id = 123;
+            mim.movieMap['some'].id.should.equal(123);
+            expect(mim.movieMap['some'].prop).to.be.empty;
+            mim.setMovieProperty(123,'prop', 'propValue');
+            mim.movieMap['some'].prop.should.equal('propValue');
+        })
+    })
 });

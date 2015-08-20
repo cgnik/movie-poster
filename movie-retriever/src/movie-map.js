@@ -51,6 +51,14 @@ MovieMap = function () {
         },
         isImageFile: function (fileName) {
             return IMAGE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
+        },
+        setMovieProperty: function (movieId, propertyName, propertyValue) {
+            movie = _.keys(self.movieMap).some(function (key) {
+                if (self.movieMap[key].id === movieId) {
+                    self.movieMap[key][propertyName] = propertyValue;
+                    return true;
+                }
+            })
         }
     };
     return self;
