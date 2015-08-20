@@ -34,10 +34,10 @@ var MovieDbMovieDb = (function (params) {
             });
         },
         fetchMovieImages: function (movieId, callback) {
-            moviedb.movieImages({
-                id: id
+            self.moviedb.movieImages({
+                id: movieId
             }, function (error, results) {
-                callback(id, results.posters);
+                callback(movieId, results.posters);
             });
         },
         findBestTitleMatch: function (title, titleList) {

@@ -118,19 +118,25 @@ describe('MovieDbMovieDb', function () {
         })
     })
     describe('#fetchMovieImages', function () {
-        testImages = {
-            'posters': [{"iso_639_1": "en", "file_path": "/some/path.png"}, {
-                "iso_639_1": "fr",
-                "file_path": "/other/else.png"
-            }]
-        }
+        testImages = {posters : [{"iso_639_1": "en", "file_path": "/some/path.png"}, {
+            "iso_639_1": "fr",
+            "file_path": "/other/else.png"}
+        ]};
         beforeEach(function () {
-            sinon.stub(mockMoviedb, 'movieImages').withExactArgs(123).callsArgWith(1, null, testImages);
+            sinon.stub(mockMoviedb, 'movieImages').callsArgWith(1, 123, testImages);
         })
         afterEach(function () {
-            mockMovieDb.movieImages.restore();
+            mockMoviedb.movieImages.restore();
         })
         // like, tests, 'n' stuff.
-        it('should call the ')
+        it('should call the moviedb api to fetch the image list', function (done) {
+            setTimeout(function () {
+                movieDbMovieDb.fetchMovieImages(123, function (movieId, imagelist) {
+                    movieId.should.equal(123);
+                    imagelist.should.deep.equal(testImages.posters);
+                    done();
+                })
+            })
+        })
     });
 })
