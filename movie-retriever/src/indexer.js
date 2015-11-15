@@ -1,14 +1,12 @@
 // modules
-require('./globals.js');
 queue = module.require('./moviedb-moviedb.js');
 moviedb = module.require("moviedb");
-moviemap = module.require('./movie-map.js');
 throttle = module.require('./throttle.js');
 
 var _ = module.require('underscore');
 var count = 1;
 // configuration
-function Indexer() {
+function Indexer(moviemap) {
     this.movieIds = {};
     this.movieMap = moviemap;
     this.throttle = throttle;
@@ -21,7 +19,6 @@ Indexer.prototype.initialize = function (params) {
 };
 Indexer.prototype.clear = function () {
     this.movieIds = {};
-    this.movieMap.clear();
 };
 Indexer.prototype.initMoviedb = function () {
     if (this.themoviedbKey == undefined) {
@@ -40,10 +37,11 @@ Indexer.prototype.initMovieIds = function () {
 };
 // Overlays the movieIds to the movieMap
 Indexer.prototype.applyMovieIdsToMap = function () {
+    if( this.movieIds == undefined) {
+        return;
+    }
     _.keys(this.movieIds).forEach((function (movieKey) {
-        if (this.movieMap.movieMap[movieKey]) {
-            this.movieMap.movieMap[movieKey].id = this.movieIds[movieKey];
-        }
+        this.movieMap.setMovieProperties(movieKey, {'id': this.movieIds[movieKey]});
     }).bind(this));
 };
 // Finds missing ids in moviemap and enqueues fetches
@@ -80,7 +78,9 @@ Indexer.prototype.enqueueMissingId = function (movieName) {
 Indexer.prototype.enqueueMissingImage = function (movieId) {
     throttle.add(function () {
         this.moviedb.fetchMovieImages(movieId, function (movieId, images) {
-            this.movieMap.setMovieProperty(movieId, 'imageUrl', this.moviedb.findBestPoster(movieId, images));
+            this.movieMap.setMovieProperties(movieId, {
+                'imageUrl': this.moviedb.findBestPoster(movieId, images)
+            });
         });
     });
 };
