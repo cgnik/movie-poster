@@ -2,23 +2,21 @@
 require('./globals.js');
 var MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg"];
 var IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
-MovieMap = function () {
-    movieDirectories = [];
-    movieMap = {};
+MovieMap = function (directory) {
+    this.directory = directory;
+    this.movieMap = {};
 }
+
 MovieMap.prototype.toList = function () {
     return _.map(this.movieMap, function (k, v) {
         return k;
     });
 };
+
 MovieMap.prototype.clear = function () {
     this.movieMap = {};
-    this.movieDirectories = [];
 };
-MovieMap.prototype.addMovieDirectory = function (dir) {
-    this.addMovieFiles(fs.readdirSync(dir));
-    this.movieDirectories.push(dir);
-};
+
 MovieMap.prototype.addMovieFiles = function (files) {
     files.forEach((function (fileFullName) {
         this.addMovieFile(fileFullName);
@@ -54,12 +52,12 @@ MovieMap.prototype.isMovieExtension = function (fileName) {
 MovieMap.prototype.isImageFile = function (fileName) {
     return IMAGE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
 };
-MovieMap.prototype.setMovieProperty = function (movieId, propertyName, propertyValue) {
+MovieMap.prototype.setMovieProperties = function (movieId, properties) {
     movie = _.keys(this.movieMap).some((function (key) {
         if (this.movieMap[key].id === movieId) {
-            this.movieMap[key][propertyName] = propertyValue;
+            merge(this.movieMap[key], properties);
             return true;
         }
     }).bind(this));
 };
-module.exports = new MovieMap();
+module.exports = MovieMap;
