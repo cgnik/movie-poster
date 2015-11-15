@@ -13,7 +13,7 @@
   "devDependencies": {
     "mocha": "*",
     "chai": "*",
-    "sinon": "*",
+    "sinon": "latest",
     "sinon-chai": "*"
   },
   "engine": "node >= 0.4.1"

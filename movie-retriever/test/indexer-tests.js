@@ -12,7 +12,8 @@ describe('indexer', function () {
     describe('#clear', function () {
         it('should empty the movieIds and the movieMap', function () {
             index.initMovieIds();
-            index.movieIds.should.not.be.empty;
+            index.add
+            index.movieIds.should.be.empty;
             index.movieMap.addMovieFile('/path/Alien.mpg');
             index.movieMap.should.not.be.empty;
             index.movieMap.movieMap.should.not.be.empty;
