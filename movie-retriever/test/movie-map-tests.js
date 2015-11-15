@@ -77,6 +77,12 @@ describe('MovieMap', function () {
             mim.movieMap.should.deep.equal({'something': {'name': 'Something', 'file': '/path/Something.mpg'}});
         })
     })
+    describe('#getMovie', function () {
+        it('should return a movie from the map if it has one for that id', function () {
+            mim.addMovieFile("/path/something.mpg");
+            mim.getMovie("something").should.deep.equal({'name': 'something', 'file': '/path/something.mpg'});
+        })
+    })
     describe('#isMovieExtension', function () {
         it('should identify a movie file regardless of case', function () {
             expect(mim.isMovieExtension('.M4V')).to.be.true;
@@ -111,7 +117,7 @@ describe('MovieMap', function () {
             mim.movieMap['some'].id = 123;
             mim.movieMap['some'].id.should.equal(123);
             expect(mim.movieMap['some'].prop).to.be.empty;
-            mim.setMovieProperty(123,'prop', 'propValue');
+            mim.setMovieProperty(123, 'prop', 'propValue');
             mim.movieMap['some'].prop.should.equal('propValue');
         })
     })

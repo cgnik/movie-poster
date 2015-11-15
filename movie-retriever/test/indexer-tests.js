@@ -3,10 +3,10 @@
  */
 
 describe('indexer', function () {
-    indexer = require('../src/indexer.js');
+    Indexer = require('../src/indexer.js');
     var index = null;
     beforeEach(function () {
-        index = indexer();
+        index = new Indexer();
         index.clear();
     })
     describe('#clear', function () {
@@ -45,31 +45,6 @@ describe('indexer', function () {
             fs.readFileSync.should.have.been.calledWith('movie-ids.json');
             fs.readFileSync.restore();
             fs.existsSync.restore();
-        })
-    })
-    describe('#initProcessArgs', function () {
-        it('should make all -- arguments part of "this"', function () {
-            props = ['--one=1', '--two=2'];
-            index.initProcessArgs(props);
-            expect(index.one).to.equal('1');
-            expect(index.two).to.equal('2');
-        })
-        it('should make all non- -- arguments into additions to the movieMap', function () {
-            props = ['--one=maximum', "/some/dir/"];
-            sinon.stub(fs, 'statSync').withArgs('/some/dir/').returns({
-                isDirectory: function () {
-                    return true;
-                }
-            })
-            index.initialize();
-            sinon.stub(index.movieMap, 'addMovieDirectory');
-            index.initProcessArgs(props);
-            index.movieMap.addMovieDirectory.should.have.been.called;
-            index.movieMap.addMovieDirectory.restore();
-        })
-        it('should check all file and dir arguments to see if they exist', function () {
-            params = ['/dir/that/definitely/does/not/exist'];
-            expect(index.initProcessArgs.bind(index, params)).to.throw();
         })
     })
     describe('#applyMovieIdsToMap', function () {
