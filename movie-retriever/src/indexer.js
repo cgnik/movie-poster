@@ -58,9 +58,9 @@ Indexer.prototype.findMissingMovieImages = function () {
 };
 Indexer.prototype.enqueueMissingIds = function () {
     this.applyMovieIdsToMap();
-    this.findMissingMovieIds().forEach(function (movie) {
+    this.findMissingMovieIds().forEach((function (movie) {
         this.enqueueMissingId(movie.name);
-    });
+    }).bind(this));
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
     throttle.add(this.moviedb.searchMovies(movieName, function (movieName, results) {

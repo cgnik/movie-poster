@@ -1,6 +1,6 @@
 /build/
 movie-retriever.iml
-/themoviedb-key.txt
+themoviedb-key.txt
 /node_modules/
 /.DS_Store
 npm-debug.log

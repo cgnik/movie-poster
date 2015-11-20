@@ -5,10 +5,11 @@ function Main() {
     this.directories = [];
     this.files = [];
     this.movieMap = new MovieMap();
-    this.index = new Indexer();
+    this.index = new Indexer(this.movieMap);
 };
 Main.prototype.initProcessArgs = function (args) {
-    args.forEach((function (val, index, array) {
+    arguments = args.slice(2);
+    arguments.forEach((function (val, index, array) {
         if (val.indexOf("--") == 0) {
             whole = val.substr(2);
             name = whole.substr(0, whole.indexOf('='));
@@ -44,6 +45,11 @@ Main.prototype.initProcessArgs = function (args) {
             log.error("Skipping directory '" + directory + "' : " + e);
         }
     }).bind(this));
+};
+
+Main.prototype.runIndex = function() {
+    this.index.initialize();
+    this.index.enqueueMissingIds();
 };
 
 module.exports = Main;
