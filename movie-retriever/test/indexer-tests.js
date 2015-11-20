@@ -3,23 +3,19 @@
  */
 
 describe('indexer', function () {
-    indexer = require('../src/indexer.js');
-    var index = null;
+    Indexer = require('../src/indexer.js');
+    index = null;
+    moviemap = null;
     beforeEach(function () {
-        index = indexer();
-        index.clear();
+        moviemap = sinon.mock();
+        index = new Indexer(moviemap);
     })
     describe('#clear', function () {
         it('should empty the movieIds and the movieMap', function () {
-            index.initMovieIds();
-            index.add
-            index.movieIds.should.be.empty;
-            index.movieMap.addMovieFile('/path/Alien.mpg');
-            index.movieMap.should.not.be.empty;
-            index.movieMap.movieMap.should.not.be.empty;
+            index.movieIds['alien'] = { 'alien' : '123'};
+            index.movieIds.should.not.be.empty;
             index.clear();
             index.movieIds.should.be.empty;
-            index.movieMap.movieMap.should.be.empty;
         })
     })
     describe('#initMoviedb', function () {
@@ -48,44 +44,12 @@ describe('indexer', function () {
             fs.existsSync.restore();
         })
     })
-    describe('#initProcessArgs', function () {
-        it('should make all -- arguments part of "this"', function () {
-            props = ['--one=1', '--two=2'];
-            index.initProcessArgs(props);
-            expect(index.one).to.equal('1');
-            expect(index.two).to.equal('2');
-        })
-        it('should make all non- -- arguments into additions to the movieMap', function () {
-            props = ['--one=maximum', "/some/dir/"];
-            sinon.stub(fs, 'statSync').withArgs('/some/dir/').returns({
-                isDirectory: function () {
-                    return true;
-                }
-            })
-            index.initialize();
-            sinon.stub(index.movieMap, 'addMovieDirectory');
-            index.initProcessArgs(props);
-            index.movieMap.addMovieDirectory.should.have.been.called;
-            index.movieMap.addMovieDirectory.restore();
-        })
-        it('should check all file and dir arguments to see if they exist', function () {
-            params = ['/dir/that/definitely/does/not/exist'];
-            expect(index.initProcessArgs.bind(index, params)).to.throw();
-        })
-    })
     describe('#applyMovieIdsToMap', function () {
         it('should apply the movieIds to the movieMap by lower-case title', function () {
-            index.clear();
-            index.movieMap.addMovieFile("/path/Alien.mpg");
+            moviemap.setMovieProperties = sinon.stub();
             index.movieIds = {"alien": "123"};
             index.applyMovieIdsToMap();
-            index.movieMap.movieMap.should.deep.equal({
-                "alien": {
-                    "id": "123",
-                    "name": "Alien",
-                    "file": "/path/Alien.mpg"
-                }
-            });
+            expect(moviemap.setMovieProperties.calledOnce).to.be.truthy;
         })
     })
     describe('#findMissingMovieIds', function () {
@@ -96,18 +60,20 @@ describe('indexer', function () {
                 file: '/path/Alien.mpg',
                 image: '/path/Alien.jpg'
             }, {"name": "Aliens", "file": "/path/Aliens.mpg"}];
-            index.movieMap.addMovieFile("/path/Alien.mpg");
-            index.movieMap.addMovieFile("/path/Alien.jpg");
-            index.movieMap.addMovieFile("/path/Aliens.mpg");
+            testList = [{'id': 123, 'name': 'blah', 'image': '/path/image.jpg'}];
+            testList = testList.concat(testObject);
+            moviemap.toList = sinon.stub();
+            moviemap.toList.returns(testList);
             index.findMissingMovieIds().should.deep.equal(testObject);
         })
     })
     describe('#findMissingMovieImages', function () {
         it('should figure out which mapped movies don"t have imagess', function () {
             testObject = [{"name": "Aliens", "file": "/path/Aliens.mpg"}];
-            index.movieMap.addMovieFile("/path/Alien.mpg");
-            index.movieMap.addMovieFile("/path/Alien.jpg");
-            index.movieMap.addMovieFile("/path/Aliens.mpg");
+            testList = [{'id': 123, 'name': 'blah', 'image': '/path/image.jpg'}];
+            testList = testList.concat(testObject);
+            moviemap.toList = sinon.stub();
+            moviemap.toList.returns(testList);
             index.findMissingMovieImages().should.deep.equal(testObject);
         })
     })
