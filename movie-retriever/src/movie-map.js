@@ -2,9 +2,14 @@
 require('./globals.js');
 var MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg"];
 var IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
-MovieMap = function (directory) {
-    this.directory = directory;
+
+MovieMap = function () {
     this.movieMap = {};
+}
+
+MovieMap.prototype.init = function (directory) {
+    this.directory = directory;
+    self.addMovieFiles(fs.readdirSync(dir));
 }
 
 MovieMap.prototype.toList = function () {
@@ -43,15 +48,19 @@ MovieMap.prototype.addMovieFile = function (fileFullName) {
         log.info("Skipping non-image-non-movie file: " + fileFullName);
     }
 };
+
 MovieMap.prototype.getMovie = function (movieName) {
     return this.movieMap[movieName];
 };
+
 MovieMap.prototype.isMovieExtension = function (fileName) {
     return MOVIE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
 };
+
 MovieMap.prototype.isImageFile = function (fileName) {
     return IMAGE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
 };
+
 MovieMap.prototype.setMovieProperties = function (movieId, properties) {
     movie = _.keys(this.movieMap).some((function (key) {
         if (this.movieMap[key].id === movieId) {
@@ -60,4 +69,5 @@ MovieMap.prototype.setMovieProperties = function (movieId, properties) {
         }
     }).bind(this));
 };
+
 module.exports = MovieMap;

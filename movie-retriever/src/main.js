@@ -1,9 +1,11 @@
 Indexer = require('./indexer.js');
+MovieMap = require('./movie-map.js');
 
 function Main() {
-    this.indexer = new Indexer();
     this.directories = [];
     this.files = [];
+    this.map = new MovieMap();
+    this.index = new Indexer();
 };
 Main.prototype.initProcessArgs = function (args) {
     args.forEach((function (val, index, array) {
@@ -32,11 +34,11 @@ Main.prototype.initProcessArgs = function (args) {
         this.directories.push('./');
     }
     this.files.forEach((function (file) {
-        this.indexer.movieMap.addMovieFile(file);
+        this.movieMap.addMovieFile(file);
     }).bind(this))
     this.files.forEach((function (directory) {
         try {
-            this.indexer.movieMap.addMovieDirectory(directory);
+            this.movieMap.init(directory);
         } catch (e) {
             console.log(log);
             log.error("Skipping directory '" + directory + "' : " + e);
