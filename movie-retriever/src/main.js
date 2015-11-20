@@ -4,7 +4,7 @@ MovieMap = require('./movie-map.js');
 function Main() {
     this.directories = [];
     this.files = [];
-    this.map = new MovieMap();
+    this.movieMap = new MovieMap();
     this.index = new Indexer();
 };
 Main.prototype.initProcessArgs = function (args) {
@@ -35,17 +35,18 @@ Main.prototype.initProcessArgs = function (args) {
     }
     this.files.forEach((function (file) {
         this.movieMap.addMovieFile(file);
-    }).bind(this))
-    this.files.forEach((function (directory) {
+    }).bind(this));
+    this.directories.forEach((function (directory) {
         try {
-            this.movieMap.init(directory);
+            this.movieMap.initialize(directory);
         } catch (e) {
             console.log(log);
             log.error("Skipping directory '" + directory + "' : " + e);
         }
     }).bind(this));
 };
-module.exports = new Main();
+
+module.exports = Main;
 
 // exec
 //indexer.configure(process.argv);

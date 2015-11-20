@@ -1,16 +1,14 @@
-// local movies library -- functions re: movie dir
-require('./globals.js');
 var MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg"];
 var IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
 
 MovieMap = function () {
     this.movieMap = {};
-}
+};
 
-MovieMap.prototype.init = function (directory) {
+MovieMap.prototype.initialize = function (directory) {
     this.directory = directory;
     self.addMovieFiles(fs.readdirSync(dir));
-}
+};
 
 MovieMap.prototype.toList = function () {
     return _.map(this.movieMap, function (k, v) {

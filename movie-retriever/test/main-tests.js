@@ -1,17 +1,12 @@
 /**
  * Created by christo on 9/5/15.
  */
+Main = require('../src/main.js');
 
 describe('Main', function () {
     beforeEach(function () {
-        main = require('../src/main.js');
+        main = new Main();
         main.index = sinon.mock();
-    })
-    describe('#reset', function () {
-        it('should clear directories, movieMap, and indexer', function () {
-            // TODO: reset function
-            // FIXME: should it also clear the "this" properties?
-        })
     })
     describe('#initProcessArgs', function () {
         it('should make all -- arguments part of "this"', function () {
@@ -38,7 +33,7 @@ describe('Main', function () {
                 }
             })
             main.initProcessArgs(props);
-            main.directories.should.equal(['/some/dir/']);
+            main.directories.should.deep.equal(['/some/dir/']);
             main.movieMap.directory.should.equal('/some/dir/');
         })
         it('should check all file and dir arguments to see if they exist', function () {

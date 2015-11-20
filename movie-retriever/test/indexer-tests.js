@@ -12,7 +12,7 @@ describe('indexer', function () {
     })
     describe('#clear', function () {
         it('should empty the movieIds and the movieMap', function () {
-            index.initMovieIds();
+            index.movieIds['alien'] = { 'alien' : '123'};
             index.movieIds.should.not.be.empty;
             index.clear();
             index.movieIds.should.be.empty;
