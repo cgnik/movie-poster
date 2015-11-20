@@ -7,7 +7,7 @@ MovieMap = function () {
 
 MovieMap.prototype.initialize = function (directory) {
     this.directory = directory;
-    self.addMovieFiles(fs.readdirSync(dir));
+    this.addMovieFiles(fs.readdirSync(this.directory));
 };
 
 MovieMap.prototype.toList = function () {
