@@ -19,16 +19,16 @@ describe('MovieMap', function () {
     });
     describe('#clear', function () {
         it('should clear map', function () {
-            mm.movieMap['something'] = 'something-else';
-            expect(mm.movieMap).to.not.be.empty;
+            mm.movies['something'] = 'something-else';
+            expect(mm.movies).to.not.be.empty;
             mm.clear();
-            expect(mm.movieMap).to.be.empty;
+            expect(mm.movies).to.be.empty;
         })
     })
     describe('#addMovieFiles', function () {
         it('should add movie files to the map, respecting existing entries', function () {
             mm.addMovieFiles(["/path/something.mpg", "/path/SomeThing.jpg"]);
-            mm.movieMap.should.deep.equal({
+            mm.movies.should.deep.equal({
                 "something": {
                     "name": "something",
                     "file": "/path/something.mpg",
@@ -49,9 +49,9 @@ describe('MovieMap', function () {
     describe("#addMovieFile", function () {
         it('should add a movie file to the map, adding to existing entries', function () {
             mm.addMovieFile("/path/something.mpg");
-            mm.movieMap.should.deep.equal({"something": {"name": "something", "file": "/path/something.mpg"}});
+            mm.movies.should.deep.equal({"something": {"name": "something", "file": "/path/something.mpg"}});
             mm.addMovieFile("/path/SomeThing.jpg");
-            mm.movieMap.should.deep.equal({
+            mm.movies.should.deep.equal({
                 "something": {
                     "name": "something",
                     "file": "/path/something.mpg",
@@ -61,7 +61,7 @@ describe('MovieMap', function () {
         })
         it('should preserve the case of the movie title in the name element but not in the key', function () {
             mm.addMovieFile("/path/Something.mpg");
-            mm.movieMap.should.deep.equal({'something': {'name': 'Something', 'file': '/path/Something.mpg'}});
+            mm.movies.should.deep.equal({'something': {'name': 'Something', 'file': '/path/Something.mpg'}});
         })
     })
     describe('#getMovie', function () {
@@ -101,11 +101,11 @@ describe('MovieMap', function () {
     describe('#setMovieProperties', function () {
         it('should set the named property for the specified movie id to the specified value', function () {
             mm.addMovieFile("/path/some.mpg");
-            mm.movieMap['some'].id = 123;
-            mm.movieMap['some'].id.should.equal(123);
-            expect(mm.movieMap['some'].prop).to.be.empty;
+            mm.movies['some'].id = 123;
+            mm.movies['some'].id.should.equal(123);
+            expect(mm.movies['some'].prop).to.be.empty;
             mm.setMovieProperties(123, {'prop': 'propValue'});
-            mm.movieMap['some'].prop.should.equal('propValue');
+            mm.movies['some'].prop.should.equal('propValue');
         })
     })
 });

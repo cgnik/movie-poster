@@ -51,7 +51,7 @@ Log.prototype.always = function (message) {
 
 Log.prototype.target = console.log;
 
-//process.argv.forEach(function (val, index, array) {
+//process.argv.forEach(function (val, indexer, array) {
 //    if (val == '--debug') {
 //        console.log('Debug logging enabled');
 //        exports.level = 'debug';

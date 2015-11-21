@@ -5,8 +5,9 @@ function Main() {
     this.directories = [];
     this.files = [];
     this.movieMap = new MovieMap();
-    this.index = new Indexer(this.movieMap);
+    this.indexer = new Indexer(this.movieMap);
 };
+
 Main.prototype.initProcessArgs = function (args) {
     arguments = args.slice(2);
     arguments.forEach((function (val, index, array) {
@@ -26,7 +27,9 @@ Main.prototype.initProcessArgs = function (args) {
                 log.always("Adding movie file " + val);
                 this.files.push(val);
             } else {
-                throw new Error("Cannot scan nonexistent dir " + val);
+                msg = "Cannot scan nonexistent dir " + val;
+                log.error(msg)
+                throw new Error(msg);
             }
         }
     }).bind(this));
@@ -41,22 +44,17 @@ Main.prototype.initProcessArgs = function (args) {
         try {
             this.movieMap.initialize(directory);
         } catch (e) {
-            console.log(log);
-            log.error("Skipping directory '" + directory + "' : " + e);
+            log.error("Skipping directory '" + directory + "'");
         }
     }).bind(this));
 };
 
-Main.prototype.runIndex = function() {
-    this.index.initialize();
-    this.index.enqueueMissingIds();
+Main.prototype.process = function () {
+    this.indexer.setUp(this);
+    this.indexer.enqueueMissingIds();
 };
 
 module.exports = Main;
-
-// exec
-//indexer.configure(process.argv);
-//indexer.start(indexer.configureAndSpawnRetrieve);
 
 /* Examples
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg

@@ -3,16 +3,18 @@ queue = module.require('./moviedb-moviedb.js');
 moviedb = module.require("moviedb");
 throttle = module.require('./throttle.js');
 
-var _ = module.require('underscore');
-var count = 1;
 // configuration
 function Indexer(moviemap) {
+    this._ = module.require('underscore');
     this.movieIds = {};
     this.movieMap = moviemap;
     this.throttle = throttle;
 };
 // note -- if the movie name is already in here, we don't re-search it
-Indexer.prototype.initialize = function (params) {
+Indexer.prototype.setUp = function (params) {
+    if (typeof params === 'undefined') {
+        params = {};
+    }
     merge(this, params);
     this.initMoviedb();
     this.initMovieIds();
@@ -37,10 +39,10 @@ Indexer.prototype.initMovieIds = function () {
 };
 // Overlays the movieIds to the movieMap
 Indexer.prototype.applyMovieIdsToMap = function () {
-    if( this.movieIds == undefined) {
+    if (this.movieIds == undefined) {
         return;
     }
-    _.keys(this.movieIds).forEach((function (movieKey) {
+    this._.keys(this.movieIds).forEach((function (movieKey) {
         this.movieMap.setMovieProperties(movieKey, {'id': this.movieIds[movieKey]});
     }).bind(this));
 };
