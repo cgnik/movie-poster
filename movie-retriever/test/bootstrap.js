@@ -11,3 +11,5 @@ global.log.level = 'info';
 var sinonChai = require("sinon-chai");
 chai.should();
 chai.use(sinonChai);
+
+require('../src/globals.js');

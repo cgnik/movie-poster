@@ -27,6 +27,9 @@ Indexer.prototype.initMoviedb = function () {
         this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
     }
     this.moviedb = queue({'themoviedbKey': this.themoviedbKey});
+    if( this.moviedb === undefined) {
+        throw new Error("Unable to initialize moviedb searching");
+    }
 };
 Indexer.prototype.initMovieIds = function () {
     // initialize static named movies

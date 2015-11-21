@@ -1,5 +1,3 @@
-// dependencies
-require('./globals.js');
 
 function MovieDbMovieDb(params) {
     // we require the key for api access to be in this file
@@ -10,6 +8,9 @@ function MovieDbMovieDb(params) {
     if (this.moviedb == undefined) {
         log.info("Initializing moviedb");
         this.moviedb = require('moviedb')(this.themoviedbKey);
+    }
+    if( this.moviedb === undefined ) {
+        throw new Error("Unable to load moviedb");
     }
 }
 MovieDbMovieDb.prototype.configure = function (callback) {
