@@ -1,20 +1,20 @@
 {
-  "name": "themoviedb-art-retriever",
-  "description": "Packaging for the MovieDB art retriever",
+  "name": "media-art-retriever",
+  "description": "Packaging for media art retriever",
   "author": "Christopher King <cking@enmobile.biz>",
   "dependencies": {
-    "moviedb": "*",
-    "rate-limit": "*",
-    "sleep": "*",
-    "fuzzy": "*",
-    "underscore": "*",
-    "merge": "*"
+    "moviedb": "latest",
+    "rate-limit": "latest",
+    "sleep": "latest",
+    "fuzzy": "latest",
+    "underscore": "latest",
+    "merge": "latest"
   },
   "devDependencies": {
-    "mocha": "*",
-    "chai": "*",
+    "mocha": "latest",
+    "chai": "latest",
     "sinon": "latest",
-    "sinon-chai": "*"
+    "sinon-chai": "latest"
   },
   "engine": "node >= 0.4.1"
 }
