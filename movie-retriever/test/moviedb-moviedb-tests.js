@@ -1,3 +1,5 @@
+MovieDbMovieDb = require('../src/moviedb-moviedb.js');
+
 var testConfig = {testConfig: '1'};
 var shouldntFunc = function () {
     assert(false);
@@ -5,7 +7,7 @@ var shouldntFunc = function () {
 describe('MovieDbMovieDb', function () {
     var mockMoviedb = module.require("moviedb")('test-moviedb-key');
     var mockLog = sinon.mock(require('../src/movie-log.js'));
-    var movieDbMovieDb = require('../src/moviedb-moviedb.js')({moviedb: mockMoviedb, log: mockLog});
+    var movieDbMovieDb = new MovieDbMovieDb({moviedb: mockMoviedb, log: mockLog});
     describe('#configure', function () {
         beforeEach(function () {
             sinon.stub(mockMoviedb, 'configuration').callsArgWith(1, null, testConfig);

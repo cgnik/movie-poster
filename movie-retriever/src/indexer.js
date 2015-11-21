@@ -65,17 +65,19 @@ Indexer.prototype.enqueueMissingIds = function () {
     }).bind(this));
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
-    throttle.add(this.moviedb.searchMovies(movieName, function (movieName, results) {
-        bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
-        if (bestMatch) {
-            this.movieMap.movieMap[movieName].id = bestMatch.id;
-        } else {
-            this.movieMap.movieMap[movieName].error = "Not Found";
-            this.movieMap.movieMap[movieName].results = results;
-        }
-    }, function (error) {
-        log.error("Unable to find match for " + movieName + " : " + error);
-    }))
+    throttle.add(function () {
+        this.moviedb.searchMovies(movieName, function (movieName, results) {
+            bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
+            if (bestMatch) {
+                this.movieMap.movieMap[movieName].id = bestMatch.id;
+            } else {
+                this.movieMap.movieMap[movieName].error = "Not Found";
+                this.movieMap.movieMap[movieName].results = results;
+            }
+        }, function (error) {
+            log.error("Unable to find match for " + movieName + " : " + error);
+        })
+    });
 };
 Indexer.prototype.enqueueMissingImage = function (movieId) {
     throttle.add(function () {
