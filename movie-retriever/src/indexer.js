@@ -27,7 +27,7 @@ Indexer.prototype.initMoviedb = function () {
         this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
     }
     this.moviedb = new Queue({'themoviedbKey': this.themoviedbKey});
-    if( this.moviedb === undefined) {
+    if (this.moviedb === undefined) {
         throw new Error("Unable to initialize moviedb searching");
     }
 };
@@ -68,20 +68,23 @@ Indexer.prototype.enqueueMissingIds = function () {
     }).bind(this));
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
-    throttle.add(function () {
-        this.moviedb.searchMovies(movieName, function (movieName, results) {
-            bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
-            if (bestMatch) {
-                this.movieMap.movieMap[movieName].id = bestMatch.id;
-            } else {
-                this.movieMap.movieMap[movieName].error = "Not Found";
-                this.movieMap.movieMap[movieName].results = results;
-            }
-        }, function (error) {
-            log.error("Unable to find match for " + movieName + " : " + error);
-        })
-    });
+    throttle.add((function () {
+        this.moviedb.searchMovies(movieName, this.movieSearchResults, this.movieSearchError);
+    }).bind(this));
 };
+Indexer.prototype.movieSearchError = function (error) {
+    log.error("Unable to find movie match " );
+    console.log(error);
+};
+Indexer.prototype.movieSearchResults = function (movieName, results) {
+    bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
+    if (bestMatch) {
+        this.movieMap.movieMap[movieName].id = bestMatch.id;
+    } else {
+        this.movieMap.movieMap[movieName].error = "Not Found";
+        this.movieMap.movieMap[movieName].results = results;
+    }
+}
 Indexer.prototype.enqueueMissingImage = function (movieId) {
     throttle.add(function () {
         this.moviedb.fetchMovieImages(movieId, function (movieId, images) {

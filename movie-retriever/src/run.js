@@ -1,3 +1,4 @@
+require('./globals.js');
 Main = require('./main.js');
 
 main = new Main();
