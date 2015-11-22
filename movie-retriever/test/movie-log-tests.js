@@ -98,4 +98,11 @@ describe('Log', function () {
             captured.should.equal('duh');
         })
     })
+    describe('#debugObject', function() {
+        log.level = log.levels.debug;
+        it('should output delimiters plus object serialized', function () {
+            log.debugObject({"thing" : "otherThing"});
+            captured.should.equal('__DEBUG_OBJECT__{"thing":"otherThing"}__DEBUG_OBJECT__');
+        })
+    })
 })

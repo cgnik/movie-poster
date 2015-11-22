@@ -17,6 +17,7 @@ LogLevels = {
 function Log() {
     this.levels = LogLevels;
     this.level = LogLevels.error;
+    this.target = console.log;
 };
 
 Log.prototype.setLevel = function (level) {
@@ -29,6 +30,7 @@ Log.prototype.shouldLog = function (lev) {
 
 Log.prototype.log = function (message, level) {
     if (this.shouldLog(level)) {
+        console.log(message);
         this.target(message);
     }
 };
@@ -49,19 +51,8 @@ Log.prototype.always = function (message) {
     this.log(message, this.levels.always);
 };
 
-Log.prototype.target = console.log;
-
-//process.argv.forEach(function (val, indexer, array) {
-//    if (val == '--debug') {
-//        console.log('Debug logging enabled');
-//        exports.level = 'debug';
-//    } else if (val == '--error') {
-//        console.log('Error logging enabled');
-//        exports.level = 'error';
-//    } else if (val == '--info') {
-//        console.log('Info logging enabled');
-//        exports.level = 'info';
-//    }
-//});
+Log.prototype.debugObject = function (o) {
+    this.log('__DEBUG_OBJECT__' + JSON.stringify(o) + '__DEBUG_OBJECT__', this.levels.debug);
+}
 
 module.exports = new Log();
