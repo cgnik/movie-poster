@@ -1,3 +1,4 @@
+moviedb = module.require("moviedb");
 
 function MovieDbMovieDb(params) {
     // we require the key for api access to be in this file

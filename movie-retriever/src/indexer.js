@@ -1,17 +1,15 @@
 // modules
-Queue = module.require('./moviedb-moviedb.js');
-moviedb = module.require("moviedb");
-throttle = module.require('./throttle.js');
+Queue = require('./moviedb-moviedb.js');
 
 // configuration
 function Indexer(moviemap) {
     this._ = module.require('underscore');
     this.movieIds = {};
     this.movieMap = moviemap;
-    this.throttle = throttle;
+    this.throttle = require('./throttle.js');
 };
 // note -- if the movie name is already in here, we don't re-search it
-Indexer.prototype.setUp = function (params) {
+Indexer.prototype.initialize = function (params) {
     if (typeof params === 'undefined') {
         params = {};
     }
@@ -69,7 +67,7 @@ Indexer.prototype.enqueueMissingIds = function () {
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
     throttle.add((function () {
-        this.moviedb.searchMovies(movieName, this.movieSearchResults, this.movieSearchError);
+        this.moviedb.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
     }).bind(this));
 };
 Indexer.prototype.movieSearchError = function (error) {
@@ -77,7 +75,6 @@ Indexer.prototype.movieSearchError = function (error) {
     console.log(error);
 };
 Indexer.prototype.movieSearchResults = function (movieName, results) {
-    log.debugObject(this);
     bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
     if (bestMatch) {
         this.movieMap.movieMap[movieName].id = bestMatch.id;

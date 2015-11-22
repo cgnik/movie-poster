@@ -50,7 +50,7 @@ Main.prototype.initProcessArgs = function (args) {
 };
 
 Main.prototype.process = function () {
-    this.indexer.setUp(this);
+    this.indexer.initialize(this);
     this.indexer.enqueueMissingIds();
 };
 

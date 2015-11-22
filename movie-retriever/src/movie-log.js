@@ -52,7 +52,7 @@ Log.prototype.always = function (message) {
 };
 
 Log.prototype.debugObject = function (o) {
-    this.log('__DEBUG_OBJECT__' + JSON.stringify(o) + '__DEBUG_OBJECT__', this.levels.debug);
+    this.log('__DEBUG_OBJECT__' + JSON.stringify(o) + '__DEBUG_OBJECT__', this.levels.always);
 }
 
 module.exports = new Log();
