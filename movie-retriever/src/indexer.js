@@ -55,6 +55,7 @@ Indexer.prototype.findMissingMovieIds = function () {
 };
 // Finds missing posters in moviemap and enqueues fetches
 Indexer.prototype.findMissingMovieImages = function () {
+    log.info("Enqueueing missing movie images");
     return this.movieMap.toList().filter(function (movie) {
         return movie.image == undefined;
     })
@@ -64,6 +65,7 @@ Indexer.prototype.enqueueMissingIds = function () {
     this.findMissingMovieIds().forEach((function (movie) {
         this.enqueueMissingId(movie.name);
     }).bind(this));
+    this.throttle.add(this.findMissingMovieImages.bind(this));
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
     this.throttle.add((function () {
@@ -86,8 +88,9 @@ Indexer.prototype.movieSearchResults = function (movieName, results) {
 Indexer.prototype.enqueueMissingImage = function (movieId) {
     this.throttle.add(function () {
         this.moviedb.fetchMovieImages(movieId, function (movieId, images) {
+            poster = this.moviedb.findBestPoster(movieId, images);
             this.movieMap.setMovieProperties(movieId, {
-                'imageUrl': this.moviedb.findBestPoster(movieId, images)
+                'imageUrl': poster
             });
         });
     });
@@ -101,7 +104,7 @@ Indexer.prototype.enqueueFetchImages = function (movieId) {
             imageLoc: '',
             baseUrl: ''
         };
-        fetch = require('./image-fetch')(props);
+        fetch = require('./image-fetch.js')(props);
         fetch.fetch();
     })
 }
