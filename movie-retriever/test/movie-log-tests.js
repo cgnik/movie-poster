@@ -4,7 +4,7 @@ describe('Log', function () {
         captured = '';
         log = require('../src/movie-log.js');
         log.target = function (blah) {
-            captured += blah;
+            captured += blah + '\n';
         };
     });
     describe('#always', function () {
