@@ -66,7 +66,7 @@ Indexer.prototype.enqueueMissingIds = function () {
     }).bind(this));
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
-    throttle.add((function () {
+    this.throttle.add((function () {
         this.moviedb.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
     }).bind(this));
 };
@@ -84,7 +84,7 @@ Indexer.prototype.movieSearchResults = function (movieName, results) {
     }
 }
 Indexer.prototype.enqueueMissingImage = function (movieId) {
-    throttle.add(function () {
+    this.throttle.add(function () {
         this.moviedb.fetchMovieImages(movieId, function (movieId, images) {
             this.movieMap.setMovieProperties(movieId, {
                 'imageUrl': this.moviedb.findBestPoster(movieId, images)
@@ -93,7 +93,7 @@ Indexer.prototype.enqueueMissingImage = function (movieId) {
     });
 };
 Indexer.prototype.enqueueFetchImages = function (movieId) {
-    throttle.add(function () {
+    this.throttle.add(function () {
         movie = this.movieMap.getMovie(movieId);
         props = {
             fileName: '',
