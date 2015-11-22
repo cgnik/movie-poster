@@ -47,7 +47,7 @@ MovieMap.prototype.addMovieFile = function (fileFullName) {
 };
 
 MovieMap.prototype.getMovie = function (movieName) {
-    return this.movies[movieName];
+    return this.movies[this.keyify(movieName)];
 };
 
 MovieMap.prototype.isMovieExtension = function (fileName) {
@@ -66,5 +66,12 @@ MovieMap.prototype.setMovieProperties = function (movieId, properties) {
         }
     }).bind(this));
 };
+
+MovieMap.prototype.keyify = function (s) {
+    if (s === undefined) {
+        return undefined;
+    }
+    return s.toString().toLowerCase();
+}
 
 module.exports = MovieMap;

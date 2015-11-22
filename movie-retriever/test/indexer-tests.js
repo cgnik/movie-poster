@@ -49,7 +49,7 @@ describe('indexer', function () {
             moviemap.setMovieProperties = sinon.stub();
             index.movieIds = {"alien": "123"};
             index.applyMovieIdsToMap();
-            expect(moviemap.setMovieProperties.calledOnce).to.be.truthy;
+            expect(moviemap.setMovieProperties.calledOnce).to.be.true;
         })
     })
     describe('#findMissingMovieIds', function () {

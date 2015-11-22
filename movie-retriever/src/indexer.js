@@ -71,16 +71,16 @@ Indexer.prototype.enqueueMissingId = function (movieName) {
     }).bind(this));
 };
 Indexer.prototype.movieSearchError = function (error) {
-    log.error("Unable to find movie match " );
+    log.error("Unable to find movie match ");
     console.log(error);
 };
 Indexer.prototype.movieSearchResults = function (movieName, results) {
     bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
     if (bestMatch) {
-        this.movieMap.movieMap[movieName].id = bestMatch.id;
+        this.movieMap.getMovie(movieName).id = bestMatch.id;
     } else {
-        this.movieMap.movieMap[movieName].error = "Not Found";
-        this.movieMap.movieMap[movieName].results = results;
+        this.movieMap.getMovie(movieName).error = "Not Found";
+        this.movieMap.getMovie(movieName).results = results;
     }
 }
 Indexer.prototype.enqueueMissingImage = function (movieId) {

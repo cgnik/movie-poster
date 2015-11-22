@@ -108,4 +108,9 @@ describe('MovieMap', function () {
             mm.movies['some'].prop.should.equal('propValue');
         })
     })
+    describe('#keyify', function () {
+        it('should make the provided string lower-case for use as a map key for the movie', function () {
+            mm.keyify('BlAh').should.equal('blah');
+        })
+    })
 });
