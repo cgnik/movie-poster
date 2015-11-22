@@ -74,11 +74,10 @@ Indexer.prototype.enqueueMissingId = function (movieName) {
 };
 Indexer.prototype.movieSearchError = function (error) {
     log.error("Unable to find movie match ");
-    console.log(error);
 };
 Indexer.prototype.movieSearchResults = function (movieName, results) {
     bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
-    if (bestMatch) {
+    if (bestMatch !== undefined) {
         this.movieMap.getMovie(movieName).id = bestMatch.id;
     } else {
         this.movieMap.getMovie(movieName).error = "Not Found";

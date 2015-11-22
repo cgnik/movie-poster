@@ -30,7 +30,6 @@ Log.prototype.shouldLog = function (lev) {
 
 Log.prototype.log = function (message, level) {
     if (this.shouldLog(level)) {
-        console.log(message);
         this.target(message + "\n");
     }
 };
