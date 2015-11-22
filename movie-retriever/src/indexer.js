@@ -1,5 +1,5 @@
 // modules
-queue = module.require('./moviedb-moviedb.js');
+Queue = module.require('./moviedb-moviedb.js');
 moviedb = module.require("moviedb");
 throttle = module.require('./throttle.js');
 
@@ -26,7 +26,7 @@ Indexer.prototype.initMoviedb = function () {
     if (this.themoviedbKey == undefined) {
         this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
     }
-    this.moviedb = queue({'themoviedbKey': this.themoviedbKey});
+    this.moviedb = new Queue({'themoviedbKey': this.themoviedbKey});
     if( this.moviedb === undefined) {
         throw new Error("Unable to initialize moviedb searching");
     }
