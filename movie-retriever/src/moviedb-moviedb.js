@@ -10,7 +10,7 @@ function MovieDbMovieDb(params) {
         log.info("Initializing moviedb");
         this.moviedb = require('moviedb')(this.themoviedbKey);
     }
-    if( this.moviedb === undefined ) {
+    if (this.moviedb === undefined) {
         throw new Error("Unable to load moviedb");
     }
 }
@@ -43,7 +43,14 @@ MovieDbMovieDb.prototype.fetchMovieImages = function (movieId, callback) {
     this.moviedb.movieImages({
         id: movieId
     }, function (error, results) {
-        callback(movieId, results.posters);
+        log.debugObject(error);
+        log.debugObject(results);
+        if (error === undefined || (error.status >= 200 && error.status < 300)) {
+            callback(movieId, results.posters);
+        } else {
+            log.error("Could not fetch image for movie Id '" + movieId + "'");
+            log.error(error);
+        }
     });
 };
 MovieDbMovieDb.prototype.findBestTitleMatch = function (title, titleList) {

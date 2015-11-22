@@ -9,10 +9,11 @@ describe('indexer', function () {
     beforeEach(function () {
         moviemap = sinon.mock();
         index = new Indexer(moviemap);
+        index.throttle = sinon.mock();
     })
     describe('#clear', function () {
         it('should empty the movieIds and the movieMap', function () {
-            index.movieIds['alien'] = { 'alien' : '123'};
+            index.movieIds['alien'] = {'alien': '123'};
             index.movieIds.should.not.be.empty;
             index.clear();
             index.movieIds.should.be.empty;
@@ -75,6 +76,16 @@ describe('indexer', function () {
             moviemap.toList = sinon.stub();
             moviemap.toList.returns(testList);
             index.findMissingMovieImages().should.deep.equal(testObject);
+        })
+    })
+    describe('#enqueueMissingMovieImages', function () {
+        it('should filter the movie map and add fetches for missing images', function () {
+            testList = [{'id': 123, 'name': 'blah', 'image': '/path/blah.jpg'}, {'id': 345, 'name': 'bloo'}];
+            moviemap.toList = sinon.stub();
+            moviemap.toList.returns(testList);
+            throttle.add = sinon.stub();
+            index.enqueueMissingImages();
+            throttle.add.should.have.been.calledOnce;
         })
     })
 })

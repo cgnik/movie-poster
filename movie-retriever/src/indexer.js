@@ -64,7 +64,7 @@ Indexer.prototype.enqueueMissingIds = function () {
     this.findMissingMovieIds().forEach((function (movie) {
         this.enqueueMissingId(movie.name);
     }).bind(this));
-    this.throttle.add(this.findMissingMovieImages.bind(this));
+    this.throttle.add(this.enqueueSearchImages.bind(this));
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
     this.throttle.add((function () {
@@ -88,19 +88,24 @@ Indexer.prototype.movieSearchResults = function (movieName, results) {
         log.warning("Somehow got result for movie not searched: '" + movieName + "'");
     }
 }
-Indexer.prototype.enqueueMissingImages = function() {
-
+Indexer.prototype.enqueueSearchImages = function () {
+    this.findMissingMovieImages().forEach((function (movie) {
+        log.debug("ENQUEUE MOVIE IMAGE SEARCH");
+        log.debugObject(movie);
+        this.enqueueSearchImage(movie.id);
+    }).bind(this));
 };
 
-Indexer.prototype.enqueueMissingImage = function (movieId) {
-    this.throttle.add(function () {
-        this.moviedb.fetchMovieImages(movieId, function (movieId, images) {
+Indexer.prototype.enqueueSearchImage = function (movieId) {
+    this.throttle.add((function () {
+        log.info("Enqueueing image fetch for movieId " + movieId);
+        this.moviedb.fetchMovieImages(movieId, (function (movieId, images) {
             poster = this.moviedb.findBestPoster(movieId, images);
             this.movieMap.setMovieProperties(movieId, {
                 'imageUrl': poster
             });
-        });
-    });
+        }).bind(this));
+    }).bind(this));
 };
 Indexer.prototype.enqueueFetchImages = function () {
     this.throttle.add(function () {
