@@ -28,7 +28,7 @@ MovieMap.prototype.addMovieFile = function (fileFullName) {
     // figure out pieces parts of file name
     extname = path.extname(fileFullName);
     mcname = path.basename(fileFullName, extname);
-    name = mcname.toLowerCase();
+    name = this.keyify(mcname);
     // get or create mapped name
     existing = this.movies[name] || {};
     if (existing.name == undefined) {
