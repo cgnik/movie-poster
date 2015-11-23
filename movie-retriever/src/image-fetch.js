@@ -13,9 +13,23 @@ ImageFetch.prototype.fetch = function () {
     url = this.getUrl();
     var fileTarget = this.getTargetFile();
     log.info("Fetching '" + fileTarget + "' from '" + url + "'");
-    http.get(url).on('error', function (error) {
-        log.error(error);
-    }).pipe(fs.createWriteStream(fileTarget));
+    //http.get(url).on('error', function (error) {
+    //    log.error(error);
+    //}).pipe(fs.createWriteStream(fileTarget));
+
+    dest = fs.createWriteStream(fileTarget);
+    http
+        .get(url, function (res) {
+            res.on('data', function (data) {
+                dest.write(data);
+            });
+            res.on('end', function () {
+                dest.close();
+            });
+        })
+        .on('error', function (error) {
+            log.error(error);
+        });
 };
 
 ImageFetch.prototype.getTargetFile = function () {
