@@ -54,11 +54,12 @@ MovieDbMovieDb.prototype.fetchMovieImages = function (movieId, callback) {
 };
 
 MovieDbMovieDb.prototype.fetchMovieImage = function(movie) {
+    console.log("CONFIG " + this.configuration.images.base_url);
     props = {
         fileName: movie.name,
         imagePath: movie.directory,
         imageLoc: movie.imageUrl,
-        baseUrl: this.configuration.baseUrl
+        baseUrl: this.configuration.images.base_url
     };
     fetch = new Fetcher(props);
     fetch.fetch();

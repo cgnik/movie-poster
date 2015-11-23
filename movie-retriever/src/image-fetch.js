@@ -16,7 +16,8 @@ ImageFetch.prototype.fetch = function () {
     var fileTarget = this.getTargetFile();
     log.info("Fetching " + fileTarget + " from " + url);
     http.get(url).on('error', function (error) {
-        log.error(error)
+        log.error(error);
+        console.log(error);
     }).pipe(fs.createWriteStream(fileTarget));
 };
 
