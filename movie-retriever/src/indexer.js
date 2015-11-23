@@ -77,9 +77,9 @@ Indexer.prototype.movieSearchError = function (error) {
 Indexer.prototype.movieSearchResults = function (movieName, results) {
     movie = this.movieMap.getMovie(movieName);
     if (movie !== undefined) {
-        bestMatch = this.moviedb.findBestTitleMatch(movieName, results);
-        if (bestMatch !== undefined) {
-            movie.id = bestMatch.id;
+        bestMatchId = this.moviedb.findBestTitleMatch(movieName, results);
+        if (bestMatchId !== undefined) {
+            movie.id = bestMatchId;
         } else {
             this.movieMap.getMovie(movieName).error = "Not Found";
             this.movieMap.getMovie(movieName).results = results;

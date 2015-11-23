@@ -6,6 +6,7 @@ describe('indexer', function () {
     Indexer = require('../src/indexer.js');
     index = null;
     moviemap = null;
+
     beforeEach(function () {
         moviemap = sinon.mock();
         index = new Indexer(moviemap);
@@ -83,9 +84,9 @@ describe('indexer', function () {
             testList = [{'id': 123, 'name': 'blah', 'image': '/path/blah.jpg'}, {'id': 345, 'name': 'bloo'}];
             moviemap.toList = sinon.stub();
             moviemap.toList.returns(testList);
-            throttle.add = sinon.stub();
-            index.enqueueMissingImages();
-            throttle.add.should.have.been.calledOnce;
+            index.throttle.add = sinon.stub();
+            index.enqueueSearchImages();
+            index.throttle.add.should.have.been.calledOnce;
         })
     })
 })

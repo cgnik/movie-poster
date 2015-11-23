@@ -1,6 +1,7 @@
 fs = require('fs');
 http = require('http');
 PassThrough = require('stream').PassThrough;
+Fetcher = require('../src/image-fetch.js');
 ffetcher = function () {
     this.params = ({
         baseUrl: 'BASEURL',
@@ -10,11 +11,12 @@ ffetcher = function () {
         http: http,
         fs: fs
     });
-    return require('../src/image-fetch.js')(this.params);
+    return new Fetcher(this.params);
 };
-describe('FileFetch', function () {
+describe('ImageFetch', function () {
     var teststream = PassThrough();
     var testfile = PassThrough();
+
     beforeEach(function () {
         teststream.pipe = sinon.spy();
         sinon.stub(http, 'get').returns(teststream);
@@ -25,6 +27,7 @@ describe('FileFetch', function () {
         http.get.restore();
         fs.createWriteStream.restore();
     })
+
     describe('#getUrl', function () {
         it('should assemble the url BASEURLw300IMAGE/LOC', function () {
             ffetcher().getUrl().should.equal('BASEURLw300IMAGE/LOC');
