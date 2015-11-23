@@ -1,5 +1,3 @@
-require('./globals.js');
-
 ImageFetch = function (params) {
     if (params === null) {
         params = {};
@@ -14,7 +12,7 @@ ImageFetch = function (params) {
 ImageFetch.prototype.fetch = function () {
     url = this.getUrl();
     var fileTarget = this.getTargetFile();
-    log.info("Fetching " + fileTarget + " from " + url);
+    log.info("Fetching '" + fileTarget + "' from '" + url + "'");
     http.get(url).on('error', function (error) {
         log.error(error);
     }).pipe(fs.createWriteStream(fileTarget));
