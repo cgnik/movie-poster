@@ -101,27 +101,17 @@ Indexer.prototype.enqueueSearchImage = function (movieId) {
         this.moviedb.fetchMovieImages(movieId, (function (movieId, images) {
             poster = this.moviedb.findBestPoster(movieId, images);
             log.debugObject(poster);
-            this.movieMap.setMovieProperties(movieId, {
-                'imageUrl': poster
-            });
-
+            movie = this.movieMap.getMovieById(movieId);
+            movie['imageUrl'] = poster;
+            this.enqueueFetchImage(movieId);
         }).bind(this));
     }).bind(this));
 };
-Indexer.prototype.enqueueFetchImage = function (movieName) {
+Indexer.prototype.enqueueFetchImage = function (movieId) {
     movie = this.movieMap.getMovieById(movieId);
-    log.debugObject(this.configuration);
-    this.throttle.add(function () {
-        movie = this.movieMap.getMovie(movieId);
-        props = {
-            fileName: '',
-            imagePath: '',
-            imageLoc: '',
-            baseUrl: this.configuration.baseUrl
-        };
-        fetch = require('./image-fetch.js')(props);
-        fetch.fetch();
-    })
+    this.throttle.add((function () {
+        this.moviedb.fetchMovieImage(movie);
+    }).bind(this));
 }
 
 module.exports = Indexer;

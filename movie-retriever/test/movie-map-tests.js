@@ -3,11 +3,13 @@ fileListMapResult = {
     something: {
         name: 'something',
         file: '/path/something.m4v',
-        image: '/path/something.png'
+        image: '/path/something.png',
+        directory: '/path/'
     },
     other: {
         name: 'other',
         file: '/path/other.m4v',
+        directory: '/path/'
     }
 };
 
@@ -32,7 +34,8 @@ describe('MovieMap', function () {
                 "something": {
                     "name": "something",
                     "file": "/path/something.mpg",
-                    "image": "/path/SomeThing.jpg"
+                    "image": "/path/SomeThing.jpg",
+                    "directory": "/path/"
                 }
             });
         })
@@ -41,33 +44,49 @@ describe('MovieMap', function () {
         mm.addMovieFile("/path/Something.mpg");
         mm.addMovieFile("/path/else.mpg");
         mm.toList().should.deep.equal([
-            {"name": "Something", "file": "/path/Something.mpg"}, {
+            {
+                "name": "Something",
+                "file": "/path/Something.mpg",
+                "directory": "/path/"
+            }, {
                 "name": "else",
-                "file": "/path/else.mpg"
+                "file": "/path/else.mpg",
+                "directory": "/path/"
             }]);
     })
     describe("#addMovieFile", function () {
         it('should add a movie file to the map, adding to existing entries', function () {
             mm.addMovieFile("/path/something.mpg");
-            mm.movies.should.deep.equal({"something": {"name": "something", "file": "/path/something.mpg"}});
+            mm.movies.should.deep.equal({
+                "something": {
+                    "name": "something", "file": "/path/something.mpg", "directory": "/path/"
+                }
+            });
             mm.addMovieFile("/path/SomeThing.jpg");
             mm.movies.should.deep.equal({
                 "something": {
                     "name": "something",
                     "file": "/path/something.mpg",
-                    "image": "/path/SomeThing.jpg"
+                    "image": "/path/SomeThing.jpg",
+                    "directory": "/path/"
                 }
             });
         })
         it('should preserve the case of the movie title in the name element but not in the key', function () {
             mm.addMovieFile("/path/Something.mpg");
-            mm.movies.should.deep.equal({'something': {'name': 'Something', 'file': '/path/Something.mpg'}});
+            mm.movies.should.deep.equal({
+                'something': {
+                    'name': 'Something', 'file': '/path/Something.mpg', "directory": "/path/"
+                }
+            });
         })
     })
     describe('#getMovie', function () {
         it('should return a movie from the map if it has one for that id', function () {
             mm.addMovieFile("/path/something.mpg");
-            mm.getMovie("something").should.deep.equal({'name': 'something', 'file': '/path/something.mpg'});
+            mm.getMovie("something").should.deep.equal({
+                'name': 'something', 'file': '/path/something.mpg', "directory": "/path/"
+            });
         })
     })
     describe('#isMovieExtension', function () {

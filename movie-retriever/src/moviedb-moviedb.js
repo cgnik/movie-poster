@@ -1,4 +1,5 @@
 moviedb = module.require("moviedb");
+Fetcher = require('./image-fetch.js');
 
 function MovieDbMovieDb(params) {
     // we require the key for api access to be in this file
@@ -51,6 +52,18 @@ MovieDbMovieDb.prototype.fetchMovieImages = function (movieId, callback) {
         }
     });
 };
+
+MovieDbMovieDb.prototype.fetchMovieImage = function(movie) {
+    props = {
+        fileName: movie.name,
+        imagePath: movie.directory,
+        imageLoc: movie.imageUrl,
+        baseUrl: this.configuration.baseUrl
+    };
+    fetch = new Fetcher(props);
+    fetch.fetch();
+};
+
 MovieDbMovieDb.prototype.findBestTitleMatch = function (title, titleList) {
     if (title === undefined || title == null || titleList == undefined || titleList == null) {
         throw Error("Cannot match movie name or list which is null.");

@@ -34,6 +34,9 @@ MovieMap.prototype.addMovieFile = function (fileFullName) {
     if (existing.name == undefined) {
         existing.name = mcname;
     }
+    if (existing.directory == undefined) {
+        existing.directory = path.dirname(fileFullName) + "/";
+    }
     // shuffle in the right props
     if (this.isMovieExtension(extname)) {
         existing.file = fileFullName;
