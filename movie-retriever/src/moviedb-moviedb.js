@@ -15,15 +15,15 @@ function MovieDbMovieDb(params) {
     }
 }
 MovieDbMovieDb.prototype.configure = function (callback) {
-    this.moviedb.configuration('', function (err, config) {
+    this.moviedb.configuration('', (function (err, config) {
         if (err) {
             log.error(err);
         } else {
             log.always("Configured; Requesting images");
             this.configuration = config;
-            callback(config);
+            callback();
         }
-    });
+    }).bind(this));
 };
 MovieDbMovieDb.prototype.searchMovies = function (movieName, callback, failback) {
     if (movieName == undefined || movieName == null || callback == undefined || callback == null) {
@@ -43,9 +43,7 @@ MovieDbMovieDb.prototype.fetchMovieImages = function (movieId, callback) {
     this.moviedb.movieImages({
         id: movieId
     }, function (error, results) {
-        log.debugObject(error);
-        log.debugObject(results);
-        if (error == null  || (error.status >= 200 && error.status < 300)) {
+        if (error == null || (error.status >= 200 && error.status < 300)) {
             callback(movieId, results.posters);
         } else {
             log.error("Could not fetch image for movie Id '" + movieId + "'");

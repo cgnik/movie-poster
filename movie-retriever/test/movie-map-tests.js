@@ -113,4 +113,12 @@ describe('MovieMap', function () {
             mm.keyify('BlAh').should.equal('blah');
         })
     })
+    describe('#getMovieById', function () {
+        it('should retrieve a movie object when given the id', function () {
+            mm.movies['aaa'] = {id: 012, "name": "AAA"};
+            mm.movies['alien'] = {id: 123, "name": "Alien"};
+            mm.movies['bobo'] = {id: 234, "name": "BoBo"};
+            mm.getMovieById(123).should.deep.equal({id: 123, "name": "Alien"});
+        })
+    })
 });

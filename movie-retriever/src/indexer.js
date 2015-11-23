@@ -16,7 +16,7 @@ Indexer.prototype.initialize = function (params) {
     merge(this, params);
     this.initMoviedb();
     this.initMovieIds();
-    this.moviedb.configure(this.enqueueMissingIds());
+    this.moviedb.configure(this.enqueueMissingIds.bind(this));
 };
 Indexer.prototype.clear = function () {
     this.movieIds = {};
@@ -91,8 +91,6 @@ Indexer.prototype.movieSearchResults = function (movieName, results) {
 }
 Indexer.prototype.enqueueSearchImages = function () {
     this.findMissingMovieImages().forEach((function (movie) {
-        log.debug("ENQUEUE MOVIE IMAGE SEARCH");
-        log.debugObject(movie);
         this.enqueueSearchImage(movie.id);
     }).bind(this));
 };
@@ -102,20 +100,24 @@ Indexer.prototype.enqueueSearchImage = function (movieId) {
         log.info("Enqueueing image fetch for movieId " + movieId);
         this.moviedb.fetchMovieImages(movieId, (function (movieId, images) {
             poster = this.moviedb.findBestPoster(movieId, images);
+            log.debugObject(poster);
             this.movieMap.setMovieProperties(movieId, {
                 'imageUrl': poster
             });
+
         }).bind(this));
     }).bind(this));
 };
-Indexer.prototype.enqueueFetchImages = function () {
+Indexer.prototype.enqueueFetchImage = function (movieName) {
+    movie = this.movieMap.getMovieById(movieId);
+    log.debugObject(this.configuration);
     this.throttle.add(function () {
         movie = this.movieMap.getMovie(movieId);
         props = {
             fileName: '',
             imagePath: '',
             imageLoc: '',
-            baseUrl: ''
+            baseUrl: this.configuration.baseUrl
         };
         fetch = require('./image-fetch.js')(props);
         fetch.fetch();

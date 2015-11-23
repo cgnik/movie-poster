@@ -18,7 +18,7 @@ describe('MovieDbMovieDb', function () {
         it('calls moviedb get configuration', function (done) {
             setTimeout(function () {
                 movieDbMovieDb.configure(function (config) {
-                    expect(config).to.equal(testConfig);
+                    expect(movieDbMovieDb.configuration).to.deep.equal(testConfig);
                     done();
                 })
             }, TIMEOUT);

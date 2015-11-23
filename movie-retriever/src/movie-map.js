@@ -50,6 +50,17 @@ MovieMap.prototype.getMovie = function (movieName) {
     return this.movies[this.keyify(movieName)];
 };
 
+MovieMap.prototype.getMovieById = function (movieId) {
+    movie = null;
+    _.keys(this.movies).some((function (key) {
+        if (this.movies[key].id === movieId) {
+            movie = this.movies[key];
+            return true;
+        }
+    }).bind(this));
+    return movie;
+}
+
 MovieMap.prototype.isMovieExtension = function (fileName) {
     return this.MOVIE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
 };
@@ -59,12 +70,12 @@ MovieMap.prototype.isImageFile = function (fileName) {
 };
 
 MovieMap.prototype.setMovieProperties = function (movieId, properties) {
-    movie = _.keys(this.movies).some((function (key) {
-        if (this.movies[key].id === movieId) {
-            merge(this.movies[key], properties);
-            return true;
-        }
-    }).bind(this));
+    movie = this.getMovieById(movieId);
+    if (movie !== undefined && movie != null) {
+        merge(movie, properties);
+        return true;
+    }
+    return false;
 };
 
 MovieMap.prototype.keyify = function (s) {
