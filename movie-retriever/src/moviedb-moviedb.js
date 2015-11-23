@@ -53,8 +53,7 @@ MovieDbMovieDb.prototype.fetchMovieImages = function (movieId, callback) {
     });
 };
 
-MovieDbMovieDb.prototype.fetchMovieImage = function(movie) {
-    console.log("CONFIG " + this.configuration.images.base_url);
+MovieDbMovieDb.prototype.fetchMovieImage = function (movie) {
     props = {
         fileName: movie.name,
         imagePath: movie.directory,

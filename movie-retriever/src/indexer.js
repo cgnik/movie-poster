@@ -88,7 +88,7 @@ Indexer.prototype.movieSearchResults = function (movieName, results) {
     } else {
         log.warning("Somehow got result for movie not searched: '" + movieName + "'");
     }
-}
+};
 Indexer.prototype.enqueueSearchImages = function () {
     this.findMissingMovieImages().forEach((function (movie) {
         this.enqueueSearchImage(movie.id);
@@ -109,12 +109,10 @@ Indexer.prototype.enqueueSearchImage = function (movieId) {
 };
 Indexer.prototype.enqueueFetchImage = function (movieId) {
     movie = this.movieMap.getMovieById(movieId);
-    console.log("fetching")
-    console.log(movie);
     this.throttle.add((function (movie) {
         this.moviedb.fetchMovieImage(movie);
     }).bind(this, movie));
-}
+};
 
 module.exports = Indexer;
 

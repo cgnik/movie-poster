@@ -131,7 +131,6 @@ describe('MovieDbMovieDb', function () {
             sinon.stub(mockMoviedb, 'movieImages').callsArgWith(1, null, testImages);
         })
         afterEach(function () {
-            console.log("restoring");
             mockMoviedb.movieImages.restore();
         })
         // like, tests, 'n' stuff.
