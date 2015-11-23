@@ -109,9 +109,11 @@ Indexer.prototype.enqueueSearchImage = function (movieId) {
 };
 Indexer.prototype.enqueueFetchImage = function (movieId) {
     movie = this.movieMap.getMovieById(movieId);
-    this.throttle.add((function () {
+    console.log("fetching")
+    console.log(movie);
+    this.throttle.add((function (movie) {
         this.moviedb.fetchMovieImage(movie);
-    }).bind(this));
+    }).bind(this, movie));
 }
 
 module.exports = Indexer;
