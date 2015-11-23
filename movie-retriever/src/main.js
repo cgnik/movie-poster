@@ -51,7 +51,6 @@ Main.prototype.initProcessArgs = function (args) {
 
 Main.prototype.process = function () {
     this.indexer.initialize(this);
-    this.indexer.enqueueMissingIds();
 };
 
 module.exports = Main;

@@ -16,6 +16,7 @@ Indexer.prototype.initialize = function (params) {
     merge(this, params);
     this.initMoviedb();
     this.initMovieIds();
+    this.moviedb.configure(this.enqueueMissingIds());
 };
 Indexer.prototype.clear = function () {
     this.movieIds = {};

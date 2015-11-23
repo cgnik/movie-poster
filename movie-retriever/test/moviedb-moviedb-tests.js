@@ -120,14 +120,18 @@ describe('MovieDbMovieDb', function () {
         })
     })
     describe('#fetchMovieImages', function () {
-        testImages = {posters : [{"iso_639_1": "en", "file_path": "/some/path.png"}, {
-            "iso_639_1": "fr",
-            "file_path": "/other/else.png"}
-        ]};
+        testImages = {
+            posters: [{"iso_639_1": "en", "file_path": "/some/path.png"}, {
+                "iso_639_1": "fr",
+                "file_path": "/other/else.png"
+            }
+            ]
+        };
         beforeEach(function () {
-            sinon.stub(mockMoviedb, 'movieImages').callsArgWith(1, 123, testImages);
+            sinon.stub(mockMoviedb, 'movieImages').callsArgWith(1, null, testImages);
         })
         afterEach(function () {
+            console.log("restoring");
             mockMoviedb.movieImages.restore();
         })
         // like, tests, 'n' stuff.
@@ -138,7 +142,7 @@ describe('MovieDbMovieDb', function () {
                     imagelist.should.deep.equal(testImages.posters);
                     done();
                 })
-            })
+            }, TIMEOUT);
         })
     });
 })

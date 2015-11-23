@@ -48,12 +48,10 @@ describe('Main', function () {
             main = new Main();
             main.indexer = sinon.mock(main.indexer.constructor.prototype);
             main.indexer.initialize = sinon.stub();
-            main.indexer.enqueueMissingIds = sinon.stub();
         })
         it('should initialize the indexer', function () {
             main.process();
             main.indexer.initialize.calledOnce.should.be.true;
-            main.indexer.enqueueMissingIds.calledOnce.should.be.true;
         })
     })
 })

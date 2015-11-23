@@ -45,7 +45,7 @@ MovieDbMovieDb.prototype.fetchMovieImages = function (movieId, callback) {
     }, function (error, results) {
         log.debugObject(error);
         log.debugObject(results);
-        if (error === undefined || (error.status >= 200 && error.status < 300)) {
+        if (error == null  || (error.status >= 200 && error.status < 300)) {
             callback(movieId, results.posters);
         } else {
             log.error("Could not fetch image for movie Id '" + movieId + "'");
