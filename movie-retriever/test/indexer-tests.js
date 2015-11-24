@@ -56,6 +56,13 @@ describe('indexer', function () {
             expect(moviemap.getMovie.calledOnce).to.be.true;
             expect(test.id).to.equal("123");
         })
+        it('should tolerate ids for movies not in the map', function () {
+            moviemap.getMovie = sinon.stub();
+            moviemap.getMovie.withArgs('alien').returns(null);
+            index.movieIds = {"alien": "123"};
+            index.applyMovieIdsToMap();
+            expect(moviemap.getMovie.calledOnce).to.be.true;
+        })
     })
     describe('#findMissingMovieIds', function () {
         it('should figure out which mapped movies don"t have IDs', function () {
