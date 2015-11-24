@@ -144,15 +144,37 @@ describe('MovieMap', function () {
         it('should look for the file', function () {
             fs = sinon.stub();
             fs.readFileSync = sinon.stub();
-            fs.readFileSync.withArgs('movie-map.json').returns(JSON.stringify(fileListMapResult));
+            fs.readFileSync.withArgs(mm.persistentMapFileName).returns(JSON.stringify(fileListMapResult));
+            fs.existsSync = sinon.stub();
+            fs.existsSync.withArgs(mm.persistentMapFileName).returns(true);
             fs.statSync = sinon.stub();
-            fs.statSync.withArgs('movie-map.json').returns({
+            fs.statSync.withArgs(mm.persistentMapFileName).returns({
                 isFile: function () {
                     return true;
                 }
             });
             mm.load();
             mm.movies.should.deep.equal(fileListMapResult);
+            fs.existsSync.should.have.been.calledOnce;
+            fs.statSync.should.have.been.called;
+            fs.readFileSync.should.have.been.called;
+        })
+        it('should not try to load when file doesn not exist', function () {
+            fs = sinon.stub();
+            fs.readFileSync = sinon.stub();
+            fs.readFileSync.withArgs(mm.persistentMapFileName).throws;
+            fs.existsSync = sinon.stub();
+            fs.existsSync.withArgs(mm.persistentMapFileName).returns(false);
+            fs.statSync = sinon.stub();
+            fs.statSync.withArgs(mm.persistentMapFileName).returns({
+                isFile: function () {
+                    return false;
+                }
+            });
+            mm.load();
+            fs.existsSync.should.have.been.calledOnce;
+            fs.statSync.should.not.have.been.called;
+            fs.readFileSync.should.not.have.been.called;
         })
     })
     describe('#persist', function () {

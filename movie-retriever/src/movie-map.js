@@ -5,19 +5,26 @@ function MovieMap() {
 };
 
 MovieMap.prototype.initialize = function (directory) {
+    this.persistentMapFileName = directory + 'movie-map.json';
     this.directory = directory;
     this.load();
     this.addMovieFiles(fs.readdirSync(this.directory));
 };
 
 MovieMap.prototype.load = function () {
-    fstat = fs.statSync('movie-map.json');
-    if (fstat && fstat.isFile()) {
-        try {
-            this.movies = JSON.parse(fs.readFileSync('movie-map.json'));
-        } catch (e) {
-            log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
+    if (fs.existsSync(this.persistentMapFileName)) {
+        fstat = fs.statSync(this.persistentMapFileName);
+        if (fstat && fstat.isFile()) {
+            try {
+                this.movies = JSON.parse(fs.readFileSync(this.persistentMapFileName));
+            } catch (e) {
+                log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
+            }
+        } else {
+            log.warning(this.persistentMapFileName + " Exists but is not a file. Unable to load initial map. Continuing.");
         }
+    } else {
+        log.info("Pre-existing map file " + this.persistentMapFileName + " not found.");
     }
 };
 
