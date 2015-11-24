@@ -6,8 +6,20 @@ function MovieMap() {
 
 MovieMap.prototype.initialize = function (directory) {
     this.directory = directory;
+    this.load();
     this.addMovieFiles(fs.readdirSync(this.directory));
 };
+
+MovieMap.prototype.load = function () {
+    fstat = fs.statSync('movie-map.json');
+    if (fstat && fstat.isFile()) {
+        try {
+            this.movies = JSON.parse(fs.readFileSync('movie-map.json'));
+        } catch (e) {
+            log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
+        }
+    }
+}
 
 MovieMap.prototype.toList = function () {
     return _.map(this.movies, function (k, v) {

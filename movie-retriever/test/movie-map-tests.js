@@ -140,4 +140,19 @@ describe('MovieMap', function () {
             mm.getMovieById(123).should.deep.equal({id: 123, "name": "Alien"});
         })
     })
+    describe('#load', function () {
+        it('should look for the file', function () {
+            fs = sinon.stub();
+            fs.readFileSync = sinon.stub();
+            fs.readFileSync.withArgs('movie-map.json').returns(JSON.stringify(fileListMapResult));
+            fs.statSync = sinon.stub();
+            fs.statSync.withArgs('movie-map.json').returns({
+                isFile: function () {
+                    return true;
+                }
+            });
+            mm.load();
+            mm.movies.should.deep.equal(fileListMapResult);
+        })
+    })
 });
