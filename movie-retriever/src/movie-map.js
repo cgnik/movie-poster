@@ -19,7 +19,15 @@ MovieMap.prototype.load = function () {
             log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
         }
     }
-}
+};
+
+MovieMap.prototype.persist = function () {
+    if (this.movies !== undefined && Object.keys(this.movies).length > 0) {
+        fs.createWriteStream(this.directory + 'movie-map.json').write(JSON.stringify(this.movies)).close();
+    } else {
+        log.info("Skipping map persist -- nothing to write.");
+    }
+};
 
 MovieMap.prototype.toList = function () {
     return _.map(this.movies, function (k, v) {

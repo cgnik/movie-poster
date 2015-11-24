@@ -155,4 +155,22 @@ describe('MovieMap', function () {
             mm.movies.should.deep.equal(fileListMapResult);
         })
     })
+    describe('#persist', function () {
+        it('should try to save the current movie map to a file', function () {
+            fs = sinon.stub();
+            mockStream = {
+                close: sinon.stub(),
+                write: sinon.stub()
+            };
+            mockStream.write.returns(mockStream);
+            fs.createWriteStream = sinon.stub();
+            fs.createWriteStream.withArgs('./movie-map.json').returns(mockStream);
+            mm.directory = "./";
+            mm.movies = fileListMapResult;
+            mm.persist();
+            fs.createWriteStream.should.have.been.calledWith('./movie-map.json');
+            mockStream.write.should.have.been.calledWith(JSON.stringify(fileListMapResult));
+            mockStream.close.should.have.been.calledOnce;
+        })
+    })
 });
