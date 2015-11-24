@@ -58,7 +58,7 @@ describe('indexer', function () {
         })
         it('should tolerate ids for movies not in the map', function () {
             moviemap.getMovie = sinon.stub();
-            moviemap.getMovie.withArgs('alien').returns(null);
+            moviemap.getMovie.withArgs('alien').returns(undefined);
             index.movieIds = {"alien": "123"};
             index.applyMovieIdsToMap();
             expect(moviemap.getMovie.calledOnce).to.be.true;

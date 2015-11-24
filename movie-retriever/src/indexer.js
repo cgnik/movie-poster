@@ -46,7 +46,7 @@ Indexer.prototype.applyMovieIdsToMap = function () {
     }
     this._.keys(this.movieIds).forEach((function (movieKey) {
         var movie = this.movieMap.getMovie(movieKey);
-        if (movie !== null) {
+        if (movie !== undefined) {
             movie.id = this.movieIds[movieKey];
         }
     }).bind(this));
