@@ -50,8 +50,11 @@ Main.prototype.initProcessArgs = function (args) {
 };
 
 Main.prototype.process = function () {
-    this.indexer.initialize(this);
+    this.indexer.initialize(this, this.finish.bind(this));
 };
+Main.prototype.finish = function () {
+    this.movieMap.persist();
+}
 
 module.exports = Main;
 

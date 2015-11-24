@@ -9,7 +9,7 @@ function Indexer(moviemap) {
     this.throttle = require('./throttle.js');
 };
 // note -- if the movie name is already in here, we don't re-search it
-Indexer.prototype.initialize = function (params) {
+Indexer.prototype.initialize = function (params, callback) {
     if (typeof params === 'undefined') {
         params = {};
     }
