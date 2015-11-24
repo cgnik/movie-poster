@@ -45,7 +45,7 @@ Indexer.prototype.applyMovieIdsToMap = function () {
         return;
     }
     this._.keys(this.movieIds).forEach((function (movieKey) {
-        this.movieMap.setMovieProperties(movieKey, {'id': this.movieIds[movieKey]});
+        this.movieMap.getMovie(movieKey).id = this.movieIds[movieKey];
     }).bind(this));
 };
 // Finds missing ids in moviemap and enqueues fetches

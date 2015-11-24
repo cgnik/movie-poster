@@ -48,10 +48,13 @@ describe('indexer', function () {
     })
     describe('#applyMovieIdsToMap', function () {
         it('should apply the movieIds to the movieMap by lower-case title', function () {
-            moviemap.setMovieProperties = sinon.stub();
+            test = {};
+            moviemap.getMovie = sinon.stub();
+            moviemap.getMovie.withArgs('alien').returns(test);
             index.movieIds = {"alien": "123"};
             index.applyMovieIdsToMap();
-            expect(moviemap.setMovieProperties.calledOnce).to.be.true;
+            expect(moviemap.getMovie.calledOnce).to.be.true;
+            expect(test.id).to.equal("123");
         })
     })
     describe('#findMissingMovieIds', function () {

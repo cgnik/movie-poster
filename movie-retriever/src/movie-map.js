@@ -1,6 +1,6 @@
 function MovieMap() {
     this.movies = {};
-    this.MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg"];
+    this.MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg", ".avi"];
     this.IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
 };
 

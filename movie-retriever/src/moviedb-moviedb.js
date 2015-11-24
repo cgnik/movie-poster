@@ -14,6 +14,7 @@ function MovieDbMovieDb(params) {
     if (this.moviedb === undefined) {
         throw new Error("Unable to load moviedb");
     }
+    this.configuration = {};
 }
 MovieDbMovieDb.prototype.configure = function (callback) {
     this.moviedb.configuration('', (function (err, config) {
@@ -70,8 +71,9 @@ MovieDbMovieDb.prototype.findBestTitleMatch = function (title, titleList) {
     }
     var reduced = titleList
         .map(function (n) {
-            return n.title;
+                return n.title || '';
         });
+    log.debug("fuzzy-searching title: " + title + "; reduced: " + reduced);
     fuzzymatches = fuzzy.filter(title, reduced);
     bestmatch = _.max(fuzzymatches, function (fuzzymatch) {
         return fuzzymatch.score;
@@ -86,8 +88,7 @@ MovieDbMovieDb.prototype.findBestTitleMatch = function (title, titleList) {
     var id = null;
     if (!_.isEmpty(bestmatch)) {
         id = titleList[bestmatch.index].id;
-        log.info("Chose id " + titleList[bestmatch.index].id
-            + " for " + title);
+        log.info("Chose id " + titleList[bestmatch.index].id + " for " + title);
     } else {
         log.error("NO MATCH for title " + title);
     }
