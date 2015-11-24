@@ -12,4 +12,4 @@ chai.use(sinonChai);
 
 require('../src/globals.js');
 
-global.log.level = 'debug';
+global.log.level = log.level.debug;
