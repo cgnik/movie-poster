@@ -126,8 +126,10 @@ describe('indexer', function () {
             index.enqueueFetchImage.should.have.been.calledOnce;
         })
         it('should enqueue this.finish() after all of the image fetches', function () {
+            index.finish = sinon.stub();
             index.enqueueFetchImages();
             index.enqueueFetchImage.should.have.been.calledOnce;
+            index.throttle.add.should.have.been.calledWith(index.finish);
         })
         it('should not enqueue movies missing an id', function () {
             index.enqueueFetchImages();

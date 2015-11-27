@@ -117,6 +117,9 @@ Indexer.prototype.enqueueFetchImages = function () {
             log.warn("Cannot fetch movie with no id: " + JSON.stringify(fetchable));
         }
     }).bind(this));
+    if (this.finish !== undefined) {
+        this.throttle.add(this.finish);
+    }
 };
 Indexer.prototype.enqueueFetchImage = function (movieId) {
     movie = this.movieMap.getMovieById(movieId);
