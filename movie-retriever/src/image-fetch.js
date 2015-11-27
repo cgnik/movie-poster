@@ -41,6 +41,9 @@ ImageFetch.prototype.getUrl = function () {
 
 ImageFetch.prototype.getExtension = function () {
     var extension = '';
+    if (this.imageLoc == null || this.imageLoc === undefined) {
+        return;
+    }
     var dotLoc = this.imageLoc.lastIndexOf('.');
     if (dotLoc >= 0) {
         extension = this.imageLoc.substr(dotLoc, this.imageLoc.length
