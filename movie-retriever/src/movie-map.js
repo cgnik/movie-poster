@@ -5,7 +5,7 @@ function MovieMap() {
 };
 
 MovieMap.prototype.initialize = function (directory) {
-    this.persistentMapFileName = directory + 'movie-map.json';
+    this.persistentMapFileName = directory + '.movie-map.json';
     this.directory = directory;
     this.load();
     this.addMovieFiles(fs.readdirSync(this.directory));

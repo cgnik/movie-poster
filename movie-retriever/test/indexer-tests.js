@@ -20,21 +20,7 @@ describe('indexer', function () {
             index.movieIds.should.be.empty;
         })
     })
-    describe('#initMoviedb', function () {
-        it('should set the moviedb key from a file', function () {
-            sinon.stub(fs, 'readFileSync').returns('blahblah');
-            index.initMoviedb();
-            fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
-            fs.readFileSync.restore();
-        })
-        it('should initialize from provided key and not the file', function () {
-            sinon.stub(fs, 'readFileSync').returns('blahblah');
-            index.themoviedbKey = "blahblah";
-            index.initMoviedb();
-            fs.readFileSync.should.have.not.been.calledWith('themoviedb-key.txt');
-            fs.readFileSync.restore();
-        })
-    })
+
     describe('#initMovieIds', function () {
         it('should load existing movie ids from a file', function () {
             sinon.stub(fs, 'readFileSync').withArgs('movie-ids.json').returns('{"aliens" : 679}');

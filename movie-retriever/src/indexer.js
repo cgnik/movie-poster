@@ -1,11 +1,10 @@
-// modules
-Queue = require('./moviedb-moviedb.js');
 
 // configuration
-function Indexer(moviemap) {
+function Indexer(moviemap, moviedb) {
     this._ = module.require('underscore');
     this.movieIds = {};
     this.movieMap = moviemap;
+    this.db = moviedb;
     this.throttle = require('./throttle.js');
 };
 // note -- if the movie name is already in here, we don't re-search it
@@ -16,20 +15,12 @@ Indexer.prototype.initialize = function (params, callback) {
     merge(this, params);
     this.initMoviedb();
     this.initMovieIds();
-    this.moviedb.configure(this.enqueueMissingIds.bind(this));
+    this.db.configure(this.enqueueMissingIds.bind(this));
 };
 Indexer.prototype.clear = function () {
     this.movieIds = {};
 };
-Indexer.prototype.initMoviedb = function () {
-    if (this.themoviedbKey == undefined) {
-        this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
-    }
-    this.moviedb = new Queue({'themoviedbKey': this.themoviedbKey});
-    if (this.moviedb === undefined) {
-        throw new Error("Unable to initialize moviedb searching");
-    }
-};
+
 Indexer.prototype.initMovieIds = function () {
     // initialize static named movies
     if (fs.existsSync('movie-ids.json')) {
@@ -72,7 +63,7 @@ Indexer.prototype.enqueueMissingIds = function () {
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
     this.throttle.add((function () {
-        this.moviedb.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
+        this.db.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
     }).bind(this));
 };
 Indexer.prototype.movieSearchError = function (error) {
@@ -81,7 +72,7 @@ Indexer.prototype.movieSearchError = function (error) {
 Indexer.prototype.movieSearchResults = function (movieName, results) {
     movie = this.movieMap.getMovie(movieName);
     if (movie !== undefined) {
-        bestMatchId = this.moviedb.findBestTitleMatch(movieName, results);
+        bestMatchId = this.db.findBestTitleMatch(movieName, results);
         if (bestMatchId !== undefined) {
             movie.id = bestMatchId;
         } else {
@@ -101,8 +92,8 @@ Indexer.prototype.enqueueSearchImages = function () {
 Indexer.prototype.enqueueSearchImage = function (movieId) {
     this.throttle.add((function () {
         log.info("Enqueueing image fetch for movieId " + movieId);
-        this.moviedb.fetchMovieImages(movieId, (function (movieId, images) {
-            poster = this.moviedb.findBestPoster(movieId, images);
+        this.db.fetchMovieImages(movieId, (function (movieId, images) {
+            poster = this.db.findBestPoster(movieId, images);
             log.debugObject(poster);
             movie = this.movieMap.getMovieById(movieId);
             movie['imageUrl'] = poster;
@@ -113,7 +104,7 @@ Indexer.prototype.enqueueSearchImage = function (movieId) {
 Indexer.prototype.enqueueFetchImage = function (movieId) {
     movie = this.movieMap.getMovieById(movieId);
     this.throttle.add((function (movie) {
-        this.moviedb.fetchMovieImage(movie);
+        this.db.fetchMovieImage(movie);
     }).bind(this, movie));
 };
 
