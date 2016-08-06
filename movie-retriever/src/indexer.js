@@ -1,5 +1,7 @@
 let MovieMap = require("./movie-map.js");
 
+const MOVIE_IDS_FILE = 'movie-ids.json';
+
 // configuration
 class Indexer {
     constructor(moviedb, dir) {
@@ -28,9 +30,9 @@ class Indexer {
 
     initMovieIds() {
         // initialize static named movies
-        if (fs.existsSync('movie-ids.json')) {
+        if (fs.existsSync(MOVIE_IDS_FILE)) {
             this.movieIds = JSON.parse(fs.readFileSync(
-                'movie-ids.json', 'utf8'));
+                MOVIE_IDS_FILE, 'utf8'));
             log.always("Using static movie IDs ");
             log.debug(this.movieIds);
         }

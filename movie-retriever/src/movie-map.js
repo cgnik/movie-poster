@@ -1,10 +1,11 @@
 const MAPFILE = 'movie-map.json';
 
+const MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg", ".avi"];
+const IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
+
 class MovieMap {
     constructor() {
         this.movies = {};
-        this.MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg", ".avi"];
-        this.IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
     }
 
     initialize(directory) {
@@ -27,7 +28,7 @@ class MovieMap {
                 log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
             }
         } else {
-            log.info("Pre-existing map file " + this.persistentMapFileName + " not found.");
+            log.info("Pre-existing map file " + this._persistentMapFileName + " not found.");
         }
     }
 
@@ -50,7 +51,9 @@ class MovieMap {
     }
 
     addMovieFiles(files) {
+        log.debug("Mapping " + files.length + " files");
         files.forEach((function (fileFullName) {
+            log.debug("Mapping file " + fileFullName);
             this.addMovieFile(fileFullName);
         }).bind(this));
     }
@@ -96,11 +99,11 @@ class MovieMap {
     }
 
     isMovieExtension(fileName) {
-        return this.MOVIE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
+        return MOVIE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
     }
 
     isImageFile(fileName) {
-        return this.IMAGE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
+        return IMAGE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
     }
 
     setMovieProperties(movieId, properties) {
