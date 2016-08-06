@@ -9,7 +9,7 @@
     "fuzzy": "latest",
     "underscore": "latest",
     "merge": "latest",
-    "underscore":"latest"
+    "underscore": "latest"
   },
   "devDependencies": {
     "mocha": "latest",
@@ -17,5 +17,9 @@
     "sinon": "latest",
     "sinon-chai": "latest"
   },
-  "engine": "node >= 0.4.1"
+  "engine": "node >= 0.4.1",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha",
+    "test-run":"node src/run.js ./test-dir/"
+  }
 }
