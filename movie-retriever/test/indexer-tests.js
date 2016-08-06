@@ -2,14 +2,16 @@
  * Created by christo on 8/15/15.
  */
 
-describe('indexer', function () {
+let MovieMap = sinon.createStubInstance(require("../src/movie-map.js"));
+
+describe('Indexer', function () {
     Indexer = require('../src/indexer.js');
     index = null;
     moviemap = null;
 
     beforeEach(function () {
-        moviemap = sinon.mock();
-        index = new Indexer(moviemap);
+        index = new Indexer();
+        moviemap = index.movieMap;
         index.throttle = sinon.mock();
     })
     describe('#clear', function () {

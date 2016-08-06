@@ -2,16 +2,18 @@
  * Created by christo on 9/5/15.
  */
 Main = require('../src/main.js');
-MovieMap = require('../src/main.js');
+MovieMap = require('../src/movie-map.js');
 Indexer = require('../src/indexer.js');
 
 describe('Main', function () {
+    Main.MovieMap = sinon.createStubInstance(MovieMap);
+    Main.Indexer = sinon.createStubInstance(Indexer);
+    beforeEach(function () {
+        main = new Main();
+    })
+
     var main = null;
     describe('#initMoviedb', function () {
-        beforeEach(function () {
-            main = new Main();
-            main.movieMap = sinon.mock(MovieMap.prototype);
-        })
         it('should set the moviedb key from a file', function () {
             sinon.stub(fs, 'readFileSync').returns('blahblah');
             main.initMoviedb();
@@ -27,18 +29,13 @@ describe('Main', function () {
         })
     })
     describe('#initProcessArgs', function () {
-        beforeEach(function () {
-            main = new Main();
-            main.movieMap = sinon.mock(MovieMap.prototype);
-        })
         it('should make all -- arguments part of "this"', function () {
             props = ['node.command', 'script.myself', '--one=1', '--two=2'];
             main.initProcessArgs(props);
             main.one.should.equal('1');
             main.two.should.equal('2');
         })
-        it('should make non-"--" arguments into a movie map', function () {
-            main.movieMap.expects('initialize').once().withExactArgs('/some/dir/');
+        it('should make non-"--" arguments into main.dirs entries', function () {
             props = ['node.command', 'self.scriptline', '--one=maximum', "/some/dir/"];
             statSyncStub = sinon.stub(fs, 'statSync');
             statSyncStub.withArgs('/some/dir/').returns({
@@ -63,15 +60,14 @@ describe('Main', function () {
         })
     })
     describe('#process', function () {
-        beforeEach(function () {
-            main = new Main();
-            main.indexer = sinon.mock(main.indexer.constructor.prototype);
-            main.indexer.initialize = sinon.stub();
-        })
         it('should initialize the indexer', function () {
             sinon.stub(fs, 'readFileSync').returns('blahblah');
+            main.directories = ['./'];
+
             main.process();
-            main.indexer.initialize.calledOnce.should.be.true;
+            main.indexers['./'].should.exist;
+            console.log( main.indexers['./']);
+            main.indexers['./'].initialize.should.have.been.calledOnce;
             fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
             fs.readFileSync.restore();
         })
