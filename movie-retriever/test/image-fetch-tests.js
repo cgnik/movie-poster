@@ -43,6 +43,11 @@ describe('ImageFetch', function () {
             fetcher = ffetcher();
             expect(fetcher.getExtension()).to.equal('');
         })
+        it('should tolerate a null imageLoc', function () {
+            fetcher = ffetcher();
+            fetcher.imageLoc = undefined;
+            fetcher.getExtension.bind(fetcher, null).should.not.throw;
+        })
     })
     describe('#getTargetFile', function () {
         it('should return "IMAGE/PATH/target.ext" for IMAGE/LOC, file',

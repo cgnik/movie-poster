@@ -7,6 +7,25 @@ Indexer = require('../src/indexer.js');
 
 describe('Main', function () {
     var main = null;
+    describe('#initMoviedb', function () {
+        beforeEach(function () {
+            main = new Main();
+            main.movieMap = sinon.mock(MovieMap.prototype);
+        })
+        it('should set the moviedb key from a file', function () {
+            sinon.stub(fs, 'readFileSync').returns('blahblah');
+            main.initMoviedb();
+            fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
+            fs.readFileSync.restore();
+        })
+        it('should initialize from provided key and not the file', function () {
+            sinon.stub(fs, 'readFileSync').returns('blahblah');
+            main.themoviedbKey = "blahblah";
+            main.initMoviedb();
+            fs.readFileSync.should.have.not.been.calledWith('themoviedb-key.txt');
+            fs.readFileSync.restore();
+        })
+    })
     describe('#initProcessArgs', function () {
         beforeEach(function () {
             main = new Main();
@@ -50,8 +69,11 @@ describe('Main', function () {
             main.indexer.initialize = sinon.stub();
         })
         it('should initialize the indexer', function () {
+            sinon.stub(fs, 'readFileSync').returns('blahblah');
             main.process();
             main.indexer.initialize.calledOnce.should.be.true;
+            fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
+            fs.readFileSync.restore();
         })
     })
 })

@@ -1,11 +1,9 @@
-// modules
-Queue = require('./moviedb-moviedb.js');
-
 // configuration
-function Indexer(moviemap) {
+function Indexer(moviemap, moviedb) {
     this._ = module.require('underscore');
     this.movieIds = {};
     this.movieMap = moviemap;
+    this.db = moviedb;
     this.throttle = require('./throttle.js');
 };
 // note -- if the movie name is already in here, we don't re-search it
@@ -16,20 +14,12 @@ Indexer.prototype.initialize = function (params, callback) {
     merge(this, params);
     this.initMoviedb();
     this.initMovieIds();
-    this.moviedb.configure(this.enqueueMissingIds.bind(this));
+    this.db.configure(this.enqueueMissingIds.bind(this));
 };
 Indexer.prototype.clear = function () {
     this.movieIds = {};
 };
-Indexer.prototype.initMoviedb = function () {
-    if (this.themoviedbKey == undefined) {
-        this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
-    }
-    this.moviedb = new Queue({'themoviedbKey': this.themoviedbKey});
-    if (this.moviedb === undefined) {
-        throw new Error("Unable to initialize moviedb searching");
-    }
-};
+
 Indexer.prototype.initMovieIds = function () {
     // initialize static named movies
     if (fs.existsSync('movie-ids.json')) {
@@ -45,20 +35,31 @@ Indexer.prototype.applyMovieIdsToMap = function () {
         return;
     }
     this._.keys(this.movieIds).forEach((function (movieKey) {
-        this.movieMap.getMovie(movieKey).id = this.movieIds[movieKey];
+        var movie = this.movieMap.getMovie(movieKey);
+        if (movie !== undefined) {
+            movie.id = this.movieIds[movieKey];
+        }
     }).bind(this));
 };
 // Finds missing ids in moviemap and enqueues fetches
 Indexer.prototype.findMissingMovieIds = function () {
     return this.movieMap.toList().filter(function (movie) {
         return movie.id == undefined;
-    })
+    });
 };
 // Finds missing posters in moviemap and enqueues fetches
 Indexer.prototype.findMissingMovieImages = function () {
     return this.movieMap.toList().filter(function (movie) {
         return movie.image == undefined;
-    })
+    });
+};
+// Finds movies that have an imageLoc and no image property
+Indexer.prototype.findFetchableImages = function () {
+    return this.movieMap.toList().filter(function (movie) {
+        fetchable = movie.imageLoc !== undefined && movie.image === undefined;
+        log.debug("Fetchable? " + JSON.stringify(movie));
+        return fetchable;
+    });
 };
 Indexer.prototype.enqueueMissingIds = function () {
     this.applyMovieIdsToMap();
@@ -69,7 +70,7 @@ Indexer.prototype.enqueueMissingIds = function () {
 };
 Indexer.prototype.enqueueMissingId = function (movieName) {
     this.throttle.add((function () {
-        this.moviedb.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
+        this.db.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
     }).bind(this));
 };
 Indexer.prototype.movieSearchError = function (error) {
@@ -78,7 +79,7 @@ Indexer.prototype.movieSearchError = function (error) {
 Indexer.prototype.movieSearchResults = function (movieName, results) {
     movie = this.movieMap.getMovie(movieName);
     if (movie !== undefined) {
-        bestMatchId = this.moviedb.findBestTitleMatch(movieName, results);
+        bestMatchId = this.db.findBestTitleMatch(movieName, results);
         if (bestMatchId !== undefined) {
             movie.id = bestMatchId;
         } else {
@@ -98,8 +99,8 @@ Indexer.prototype.enqueueSearchImages = function () {
 Indexer.prototype.enqueueSearchImage = function (movieId) {
     this.throttle.add((function () {
         log.info("Enqueueing image fetch for movieId " + movieId);
-        this.moviedb.fetchMovieImages(movieId, (function (movieId, images) {
-            poster = this.moviedb.findBestPoster(movieId, images);
+        this.db.fetchMovieImages(movieId, (function (movieId, images) {
+            poster = this.db.findBestPoster(movieId, images);
             log.debugObject(poster);
             movie = this.movieMap.getMovieById(movieId);
             movie['imageUrl'] = poster;
@@ -107,12 +108,27 @@ Indexer.prototype.enqueueSearchImage = function (movieId) {
         }).bind(this));
     }).bind(this));
 };
+// retrieves all after queue is empty of search Image items
+Indexer.prototype.enqueueFetchImages = function () {
+    this.findFetchableImages().forEach((function (fetchable) {
+        if (fetchable.id !== undefined) {
+            this.enqueueFetchImage(fetchable.id);
+        } else {
+            log.warn("Cannot fetch movie with no id: " + JSON.stringify(fetchable));
+        }
+    }).bind(this));
+    if (this.finish !== undefined) {
+        this.throttle.add(this.finish);
+    }
+};
 Indexer.prototype.enqueueFetchImage = function (movieId) {
     movie = this.movieMap.getMovieById(movieId);
     this.throttle.add((function (movie) {
-        this.moviedb.fetchMovieImage(movie);
+        log.debug("Enqueueing fetch image for " + JSON.stringify(movie));
+        this.db.fetchMovieImage(movie);
     }).bind(this, movie));
 };
 
 module.exports = Indexer;
 
+// TODO: refactor to call .bind(this,movieId) for each of the this.db.* enqueue calls

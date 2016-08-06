@@ -1,11 +1,23 @@
 Indexer = require('./indexer.js');
 MovieMap = require('./movie-map.js');
 
+// modules
+MovieSource = require('./moviedb-moviedb.js');
+
 function Main() {
     this.directories = [];
     this.files = [];
     this.movieMap = new MovieMap();
     this.indexer = new Indexer(this.movieMap);
+};
+Main.prototype.initMoviedb = function () {
+    if (this.themoviedbKey == undefined) {
+        this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
+    }
+    this.moviedb = new MovieSource({'themoviedbKey': this.themoviedbKey});
+    if (this.moviedb === undefined) {
+        throw new Error("Unable to initialize moviedb searching");
+    }
 };
 
 Main.prototype.initProcessArgs = function (args) {
@@ -44,13 +56,15 @@ Main.prototype.initProcessArgs = function (args) {
         try {
             this.movieMap.initialize(directory);
         } catch (e) {
-            log.error("Skipping directory '" + directory + "'");
+            log.error("Skipping directory '" + directory + "': " + e);
             log.error(e);
         }
     }).bind(this));
 };
 
 Main.prototype.process = function () {
+    this.initMoviedb();
+    this.indexer.db = this.moviedb;
     this.indexer.initialize(this, this.finish.bind(this));
 };
 Main.prototype.finish = function () {

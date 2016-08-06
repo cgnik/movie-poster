@@ -5,9 +5,10 @@
 
 LogLevels = {
     'error': 1,
-    'info': 2,
-    'debug': 3,
-    'always': 4
+    'warn': 2,
+    'info': 3,
+    'debug': 4,
+    'always': 5
 };
 
 /**
@@ -16,7 +17,7 @@ LogLevels = {
  */
 function Log() {
     this.levels = LogLevels;
-    this.level = LogLevels.error;
+    this.level = this.levels.warn;
     this.target = console.log;
 };
 
@@ -40,6 +41,10 @@ Log.prototype.debug = function (message) {
 
 Log.prototype.info = function (message) {
     this.log(message, this.levels.info);
+};
+
+Log.prototype.warn = function (message) {
+    this.log(message, this.levels.warn);
 };
 
 Log.prototype.error = function (message) {
