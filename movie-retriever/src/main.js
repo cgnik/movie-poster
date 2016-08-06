@@ -45,6 +45,7 @@ Main.prototype.initProcessArgs = function (args) {
             this.movieMap.initialize(directory);
         } catch (e) {
             log.error("Skipping directory '" + directory + "'");
+            log.error(e);
         }
     }).bind(this));
 };

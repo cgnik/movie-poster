@@ -8,7 +8,8 @@
     "sleep": "latest",
     "fuzzy": "latest",
     "underscore": "latest",
-    "merge": "latest"
+    "merge": "latest",
+    "underscore":"latest"
   },
   "devDependencies": {
     "mocha": "latest",

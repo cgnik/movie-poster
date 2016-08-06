@@ -4,6 +4,8 @@ function MovieMap() {
     this.IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
 };
 
+var MAPFILE = 'movie-map.json';
+
 MovieMap.prototype.initialize = function (directory) {
     this.directory = directory;
     this.load();
@@ -11,10 +13,12 @@ MovieMap.prototype.initialize = function (directory) {
 };
 
 MovieMap.prototype.load = function () {
-    fstat = fs.statSync('movie-map.json');
-    if (fstat && fstat.isFile()) {
+    if (fs.existsSync(MAPFILE)) {
         try {
-            this.movies = JSON.parse(fs.readFileSync('movie-map.json'));
+            var fstat = fs.statSync(MAPFILE);
+            if (fstat && fstat.isFile()) {
+                this.movies = JSON.parse(fs.readFileSync(MAPFILE));
+            }
         } catch (e) {
             log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
         }

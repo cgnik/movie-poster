@@ -134,7 +134,7 @@ describe('MovieMap', function () {
     })
     describe('#getMovieById', function () {
         it('should retrieve a movie object when given the id', function () {
-            mm.movies['aaa'] = {id: 012, "name": "AAA"};
+            mm.movies['aaa'] = {id: 12, "name": "AAA"};
             mm.movies['alien'] = {id: 123, "name": "Alien"};
             mm.movies['bobo'] = {id: 234, "name": "BoBo"};
             mm.getMovieById(123).should.deep.equal({id: 123, "name": "Alien"});
@@ -145,6 +145,8 @@ describe('MovieMap', function () {
             fs = sinon.stub();
             fs.readFileSync = sinon.stub();
             fs.readFileSync.withArgs('movie-map.json').returns(JSON.stringify(fileListMapResult));
+            fs.existsSync = sinon.stub();
+            fs.existsSync.withArgs('movie-map.json').returns(true);
             fs.statSync = sinon.stub();
             fs.statSync.withArgs('movie-map.json').returns({
                 isFile: function () {
@@ -153,6 +155,16 @@ describe('MovieMap', function () {
             });
             mm.load();
             mm.movies.should.deep.equal(fileListMapResult);
+        })
+        it('should not try to open the file if it doesnt exist', function () {
+            fs.existsSync = sinon.stub();
+            fs.existsSync.withArgs('movie-map.json').returns(false);
+            fs.readFileSync = sinon.stub();
+            fs.statSync = sinon.stub();
+            mm.load();
+            fs.existsSync.should.have.been.calledOnce;
+            fs.statSync.should.not.have.been.called;
+            fs.readFileSync.should.not.have.been.called;
         })
     })
     describe('#persist', function () {
