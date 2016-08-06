@@ -118,19 +118,6 @@ describe('Indexer', function () {
             index.throttle.add = sinon.stub();
             index.enqueueFetchImage = sinon.stub();
         })
-        //afterEach(function () {
-        //    index.enqueueFetchImage.restore();
-        //    moviemap.toList.restore();
-        //    index.throttle.add.restore();
-        //})
-        it('should call enqueueFetchImage for every imageUrl+no_imagefile in the map', function () {
-            index.enqueueFetchImages();
-            index.enqueueFetchImage.should.have.been.calledOnce;
-        })
-        it('should not enqueue movies missing an id', function () {
-            index.enqueueFetchImages();
-            index.enqueueFetchImage.should.have.been.calledOnce;
-        })
     })
     describe('#enqueueSearchImages', function () {
         beforeEach(function () {

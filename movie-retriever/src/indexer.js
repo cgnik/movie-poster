@@ -129,18 +129,6 @@ class Indexer {
         }).bind(this));
     }
 
-    // retrieves all after queue is empty of search Image items
-    enqueueFetchImages() {
-        this.findFetchableImages().forEach((function (fetchable) {
-            if (fetchable.id !== undefined) {
-                this.enqueueFetchImage(fetchable.id);
-            } else {
-                log.warn("Cannot fetch movie with no id: " + JSON.stringify(fetchable));
-            }
-        }).bind(this));
-        this.throttle.add(this.movieMap.persist);
-    }
-
     enqueueFetchImage(movieId) {
         movie = this.movieMap.getMovieById(movieId);
         this.throttle.add((function (movie) {

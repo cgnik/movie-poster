@@ -64,7 +64,6 @@ describe('Main', function () {
 
             main.process();
             main.indexers['./'].should.exist;
-            console.log(main.indexers['./']);
             fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
             fs.readFileSync.restore();
         })
