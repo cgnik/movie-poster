@@ -1,25 +1,28 @@
 /**
  * Created by christo on 8/15/15.
  */
-rateLimit = require("rate-limit");
+let RateLimit = require("rate-limit");
 
-function Throttle() {
-    this.interval = 500;
-};
-Throttle.prototype.initialize = function (params) {
-    if (params) {
-        merge(this, params);
+class Throttle {
+    constructor() {
+        this.interval = 500;
+        this.initialize();
     }
-    this.queue = rateLimit.createQueue({
-        interval: this.interval
-    });
-    return this;
-};
-Throttle.prototype.add = function (callable) {
-    if( typeof callable === 'undefined') {
-        throw new Error("Cannot specify a null callable to add to the queue");
-    }
-    this.queue.add(callable);
-};
 
-module.exports = new Throttle().initialize();
+    initialize(params) {
+        this.interval = (params && params.interval) || this.interval;
+        console.log("BLAH");
+        this.queue = RateLimit.createQueue({
+            interval: this.interval
+        });
+        return this;
+    }
+
+    add(callable) {
+        if (typeof callable === 'undefined') {
+            throw new Error("Cannot specify a null callable to add to the queue");
+        }
+        this.queue.add(callable);
+    }
+}
+module.exports = Throttle;

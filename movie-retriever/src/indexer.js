@@ -88,7 +88,7 @@ class Indexer {
     }
 
     movieSearchError(error) {
-        log.error("Unable to find movie match ");
+        log.error("Unable to find movie match " + error);
     }
 
     movieSearchResults(movieName, results) {
