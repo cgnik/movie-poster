@@ -138,8 +138,8 @@ describe('indexer', function () {
     })
     describe('#enqueueSearchImages', function () {
         beforeEach(function () {
-            testObject = {'id': 789, 'name': 'bloob', "imageLoc": "/some/location/"};
-            testList = [{"name": "blaa", "imageLoc": "/some/path/"}, {
+            var testObject = {'id': 789, 'name': 'bloob', "imageLoc": "/some/location/"};
+            var testList = [{"name": "blaa", "imageLoc": "/some/path/"}, {
                 'id': 123,
                 'name': 'blah',
                 'image': '/path/blah.jpg'
@@ -152,9 +152,12 @@ describe('indexer', function () {
             index.throttle.add = sinon.stub();
             index.enqueueSearchImage = sinon.stub();
         })
-        it('should call enqueueSearchImage for every imageless movie in the map', function () {
+        it('should call enqueueSearchImage for every imageless movie in the map which has a movieId', function () {
             index.enqueueSearchImages();
-            index.enqueueSearchImage.should.have.been.calledThrice;
+            moviemap.toList.should.have.been.calledOnce;
+            index.enqueueSearchImage.should.have.been.calledTwice;
+            index.enqueueSearchImage.should.have.been.calledWith(789);
+            index.enqueueSearchImage.should.have.been.calledWith(345);
         })
     })
     describe('#enqueueMissingIds', function () {

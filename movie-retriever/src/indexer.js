@@ -43,14 +43,15 @@ Indexer.prototype.applyMovieIdsToMap = function () {
 };
 // Finds missing ids in moviemap and enqueues fetches
 Indexer.prototype.findMissingMovieIds = function () {
-    return this.movieMap.toList().filter(function (movie) {
-        return movie.id == undefined;
+    var filtered = this.movieMap.toList().filter(function (movie) {
+        return !movie.id;
     });
+    return filtered;
 };
 // Finds missing posters in moviemap and enqueues fetches
 Indexer.prototype.findMissingMovieImages = function () {
     return this.movieMap.toList().filter(function (movie) {
-        return movie.image == undefined;
+        return !movie.image;
     });
 };
 // Finds movies that have an imageLoc and no image property
@@ -80,7 +81,7 @@ Indexer.prototype.movieSearchResults = function (movieName, results) {
     movie = this.movieMap.getMovie(movieName);
     if (movie !== undefined) {
         bestMatchId = this.db.findBestTitleMatch(movieName, results);
-        if (bestMatchId !== undefined) {
+        if (bestMatchId) {
             movie.id = bestMatchId;
         } else {
             this.movieMap.getMovie(movieName).error = "Not Found";
@@ -92,7 +93,11 @@ Indexer.prototype.movieSearchResults = function (movieName, results) {
 };
 Indexer.prototype.enqueueSearchImages = function () {
     this.findMissingMovieImages().forEach((function (movie) {
-        this.enqueueSearchImage(movie.id);
+        if (movie.id) {
+            this.enqueueSearchImage(movie.id);
+        } else {
+            log.warn("Skipping image search for no-id movie: " + movie.name);
+        }
     }).bind(this));
 };
 

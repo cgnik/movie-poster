@@ -20,6 +20,7 @@
   "engine": "node >= 0.4.1",
   "scripts": {
     "test": "./node_modules/.bin/mocha",
-    "test-run":"node src/run.js ./test-dir/"
+    "test-run":"rm ./test-dir/*.jpg && node src/run.js ./test-dir/",
+    "test-run-clean":"rm ./test-dir/*.jpg"
   }
 }
