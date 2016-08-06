@@ -23,11 +23,6 @@ class Main {
         }).bind(this));
     }
 
-    finish() {
-        log.info("Persisting movie map");
-        this.movieMap.persist();
-    }
-
     initProcessArgs(args) {
         var params = (args || []).slice(2);
         params.forEach((function (val, index, array) {

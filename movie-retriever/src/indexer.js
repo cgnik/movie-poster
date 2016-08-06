@@ -138,9 +138,7 @@ class Indexer {
                 log.warn("Cannot fetch movie with no id: " + JSON.stringify(fetchable));
             }
         }).bind(this));
-        if (this.finish !== undefined) {
-            this.throttle.add(this.finish);
-        }
+        this.throttle.add(this.movieMap.persist);
     }
 
     enqueueFetchImage(movieId) {
