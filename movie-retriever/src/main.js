@@ -14,10 +14,9 @@ class Main {
         var self = this;
         this.initMoviedb();
         this.directories.forEach((function (directory) {
-            self.indexers[directory] = new Indexer(this.moviedb);
+            self.indexers[directory] = new Indexer(this.moviedb, directory);
             try {
-                self.maps[directory].initialize(directory);
-                self.indexers[directory].initialize(this);
+                self.indexers[directory].initialize();
             } catch (e) {
                 log.error("Skipping directory '" + directory + "': " + e);
             }

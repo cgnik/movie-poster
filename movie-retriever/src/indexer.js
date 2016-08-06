@@ -2,8 +2,8 @@ let MovieMap = require("./movie-map.js");
 
 // configuration
 class Indexer {
-    constructor(moviedb) {
-        this._ = module.require('underscore');
+    constructor(moviedb, dir) {
+        this.dir = dir;
         this.movieIds = {};
         this.movieMap = new MovieMap();
         this.db = moviedb;
@@ -13,8 +13,11 @@ class Indexer {
     // note -- if the movie name is already in here, we don't re-search it
     initialize(params) {
         params = params || {};
-        this.dir = params.dir;
+        this.dir = params.dir || this.dir;
         this.movieMap.initialize(this.dir);
+    }
+
+    process() {
         this.initMovieIds();
         this.db.configure(this.enqueueMissingIds.bind(this));
     }
@@ -38,7 +41,7 @@ class Indexer {
         if (!this.movieIds)
             return;
 
-        this._.keys(this.movieIds).forEach((function (movieKey) {
+        Object.keys(this.movieIds).forEach((function (movieKey) {
             var movie = this.movieMap.getMovie(movieKey);
             if (movie !== undefined) {
                 movie.id = this.movieIds[movieKey];
@@ -148,6 +151,5 @@ class Indexer {
         }).bind(this, movie));
     }
 }
-module.exports = Indexer;
 
-// TODO: refactor to call .bind(this,movieId) for each of the this.db.* enqueue calls
+module.exports = Indexer;

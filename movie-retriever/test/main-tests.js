@@ -1,13 +1,11 @@
 /**
  * Created by christo on 9/5/15.
  */
-Main = require('../src/main.js');
-MovieMap = require('../src/movie-map.js');
-Indexer = require('../src/indexer.js');
+let Main = require('../src/main.js');
 
 describe('Main', function () {
-    Main.MovieMap = sinon.createStubInstance(MovieMap);
-    Main.Indexer = sinon.createStubInstance(Indexer);
+    let MovieMap = sinon.createStubInstance(require('../src/movie-map.js'));
+    let Indexer = sinon.createStubInstance(require('../src/indexer.js'));
     beforeEach(function () {
         main = new Main();
     })
@@ -66,8 +64,7 @@ describe('Main', function () {
 
             main.process();
             main.indexers['./'].should.exist;
-            console.log( main.indexers['./']);
-            main.indexers['./'].initialize.should.have.been.calledOnce;
+            console.log(main.indexers['./']);
             fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
             fs.readFileSync.restore();
         })
