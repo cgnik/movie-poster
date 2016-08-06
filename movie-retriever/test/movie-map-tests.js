@@ -186,11 +186,11 @@ describe('MovieMap', function () {
             };
             mockStream.write.returns(mockStream);
             fs.createWriteStream = sinon.stub();
-            fs.createWriteStream.withArgs('./movie-map.json').returns(mockStream);
+            fs.createWriteStream.withArgs(mm._persistentMapFileName).returns(mockStream);
             mm.directory = "./";
             mm.movies = fileListMapResult;
             mm.persist();
-            fs.createWriteStream.should.have.been.calledWith('./movie-map.json');
+            fs.createWriteStream.should.have.been.calledWith(mm._persistentMapFileName);
             mockStream.write.should.have.been.calledWith(JSON.stringify(fileListMapResult));
             mockStream.close.should.have.been.calledOnce;
         })

@@ -19,12 +19,12 @@ MovieMap.prototype.load = function () {
             var fstat = fs.statSync(this._persistentMapFileName);
             if (fstat && fstat.isFile()) {
                 this.movies = JSON.parse(fs.readFileSync(this._persistentMapFileName));
-        } else {
-            log.warning(this.persistentMapFileName + " Exists but is not a file. Unable to load initial map. Continuing.");
+            } else {
+                log.warning(this.persistentMapFileName + " Exists but is not a file. Unable to load initial map. Continuing.");
+            }
+        } catch (e) {
+            log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
         }
-            } catch (e) {
-                log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
-}
     } else {
         log.info("Pre-existing map file " + this.persistentMapFileName + " not found.");
     }
@@ -33,7 +33,7 @@ MovieMap.prototype.load = function () {
 
 MovieMap.prototype.persist = function () {
     if (this.movies !== undefined && Object.keys(this.movies).length > 0) {
-        fs.createWriteStream(this.directory + 'movie-map.json').write(JSON.stringify(this.movies)).close();
+        fs.createWriteStream(this._persistentMapFileName).write(JSON.stringify(this.movies)).close();
     } else {
         log.info("Skipping map persist -- nothing to write.");
     }
