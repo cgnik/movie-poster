@@ -141,7 +141,7 @@ describe('MovieMap', function () {
         })
     })
     describe('#load', function () {
-        it('should look for the file', function () {
+        it('should look for and load the file', function () {
             fs = sinon.stub();
             fs.readFileSync = sinon.stub();
             fs.readFileSync.withArgs(mm._persistentMapFileName).returns(JSON.stringify(fileListMapResult));
@@ -159,6 +159,7 @@ describe('MovieMap', function () {
             fs.statSync.should.have.been.called;
             fs.readFileSync.should.have.been.called;
         })
+        it('should not try to load when there is no map file', function() {
             fs = sinon.stub();
             fs.readFileSync = sinon.stub();
             fs.readFileSync.withArgs(mm._persistentMapFileName).throws;
