@@ -1,7 +1,18 @@
+let EventEmitter = require('events');
+
 let Fetcher = require('./image-fetch.js');
 
-class MovieDbMovieDb {
+const MoviedbEvents = {
+    CONFIGURED: 'moviedb:configured',
+    MOVIE_SEARCH_COMPLETE: 'moviedb:movie:completes',
+    POSTER_SEARCH_COMPLETE: 'moviedb:poster:complete',
+    POSTER_RETRIEVE_COMPLETE: 'moviedb:poster:retrieved',
+};
+
+class MovieDbMovieDb extends EventEmitter {
     constructor(params) {
+        super();
+        this.Events = MoviedbEvents;
         // we require the key for api access to be in this file
         if (params.themoviedbKey == undefined && params.moviedb == undefined) {
             throw new Error("Unable to proceed.  The MovieDB API cannot be used without a valid key.")
@@ -18,29 +29,29 @@ class MovieDbMovieDb {
         this.configuration = {};
     }
 
-    configure(callback) {
+    configure() {
         this.moviedb.configuration('', (function (err, config) {
             if (err) {
                 log.error(err);
             } else {
                 log.always("Configured; Requesting images");
-                this.configuration = config;
-                callback();
+                this._configure(config);
             }
         }).bind(this));
     }
 
-    searchMovies(movieName, callback, failback) {
-        if (movieName == undefined || movieName == null || callback == undefined || callback == null) {
-            throw new Error("Cannot search movies with null name or null callback");
+    searchMovies(movieName) {
+        var self = this;
+        if (movieName == undefined || movieName == null) {
+            throw new Error("Cannot search movies with null name");
         }
         this.moviedb.searchMovie({
             query: '"' + movieName + '"'
         }, function (error, searchResults) {
-            if (error && failback) {
-                failback(movieName, error);
+            if (error) {
+                self.emit(self.Events.MOVIE_SEARCH_COMPLETE, movieName, null, error);
             } else {
-                callback(movieName, searchResults.results);
+                self.emit(self.Events.MOVIE_SEARCH_COMPLETE, movieName, searchResults.results);
             }
         });
     }
@@ -55,7 +66,7 @@ class MovieDbMovieDb {
                 log.error("Could not fetch image for movie Id '" + movieId + "'");
                 log.error(error);
             }
-        });
+        });r
     }
 
     fetchMovieImage(movie) {
@@ -125,6 +136,11 @@ class MovieDbMovieDb {
             return;
         }
         return image.file_path;
+    }
+
+    _configure(configuration) {
+        this.configuration = configuration;
+        this.emit(this.Events.CONFIGURED);
     }
 }
 

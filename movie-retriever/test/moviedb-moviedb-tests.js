@@ -16,47 +16,40 @@ describe('MovieDbMovieDb', function () {
             mockMoviedb.configuration.restore();
         })
         it('calls moviedb get configuration', function (done) {
-            setTimeout(function () {
-                movieDbMovieDb.configure(function (config) {
-                    expect(movieDbMovieDb.configuration).to.deep.equal(testConfig);
-                    done();
-                })
-            }, TIMEOUT);
+            movieDbMovieDb.on(movieDbMovieDb.Events.CONFIGURED, function (config) {
+                expect(movieDbMovieDb.configuration).to.deep.equal(testConfig);
+                done();
+            })
+            movieDbMovieDb.configure();
         })
     })
     describe('#searchMovies', function () {
         var testResults = {results: [{id: 123, title: "Movie 123"}, {id: 345, title: "Movie 345"}]};
         beforeEach(function () {
-            sinon.stub(mockMoviedb, 'searchMovie').callsArgWith(1, "Movie 123", testResults);
+            sinon.stub(mockMoviedb, 'searchMovie').callsArgWith(1, null, testResults);
         })
         afterEach(function () {
             mockMoviedb.searchMovie.restore();
         })
         it('calls moviedb to find movie, calls callback with results', function (done) {
-            setTimeout(function () {
-                movieDbMovieDb.searchMovies("Test Movie", function (movieName, searchResults) {
-                    movieName.should.equal("Test Movie");
-                    searchResults.should.deep.equal(testResults.results);
-                    done();
-                })
-            }, TIMEOUT);
+            movieDbMovieDb.on(movieDbMovieDb.Events.MOVIE_SEARCH_COMPLETE, function (movieName, searchResults, error) {
+                expect(error).to.be.undefined;
+                movieName.should.equal("Test Movie");
+                searchResults.should.deep.equal(testResults.results);
+                done();
+            });
+            movieDbMovieDb.searchMovies("Test Movie");
         })
         it('errors when called with a null movie name', function () {
             expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null, null, null)).to.throw();
             expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, "Blah", null, shouldntFunc)).to.throw();
             expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null, shouldntFunc, shouldntFunc)).to.throw();
         });
-        it('calls the failback when given a null movie id', function (done) {
-            setTimeout(function () {
-                movieDbMovieDb.searchMovies("Test Movie", function () {
-                        assert(false);
-                        return;
-                    },
-                    function (movieName, searchResults) {
-                        done();
-                    }
-                )
-            }, TIMEOUT);
+        it('throws when given a null movie id', function () {
+            movieDbMovieDb.on(movieDbMovieDb.Events.MOVIE_SEARCH_COMPLETE, function () {
+                assert(false);
+            });
+            expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null)).to.throw;
         })
     })
     describe('#findBestTitleMatch', function () {
