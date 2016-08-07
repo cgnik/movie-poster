@@ -18,6 +18,7 @@ class Main {
             try {
                 log.info("Indexing directory " + directory);
                 self.indexers[directory].initialize();
+                self.indexers[directory].process();
             } catch (e) {
                 log.error("Skipping directory '" + directory + "': " + e);
             }

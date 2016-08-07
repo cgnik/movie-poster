@@ -1,4 +1,5 @@
 let MovieMap = require("./movie-map.js");
+let Throttle = require('./throttle.js');
 
 const MOVIE_IDS_FILE = 'movie-ids.json';
 
@@ -9,7 +10,7 @@ class Indexer {
         this.movieIds = {};
         this.movieMap = new MovieMap();
         this.db = moviedb;
-        this.throttle = require('./throttle.js');
+        this.throttle = new Throttle();
     }
 
     // note -- if the movie name is already in here, we don't re-search it
@@ -19,7 +20,7 @@ class Indexer {
         this.movieMap.initialize(this.dir);
     }
 
-    processMovies() {
+    process() {
         this.initMovieIds();
         this.db.configure(this.enqueueMissingIds.bind(this));
     }
@@ -84,6 +85,7 @@ class Indexer {
     }
 
     enqueueMissingId(movieName) {
+        console.log(this.throttle);
         this.throttle.add((function () {
             this.db.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
         }).bind(this));
@@ -94,9 +96,9 @@ class Indexer {
     }
 
     movieSearchResults(movieName, results) {
-        movie = this.movieMap.getMovie(movieName);
+        let movie = this.movieMap.getMovie(movieName);
         if (movie !== undefined) {
-            bestMatchId = this.db.findBestTitleMatch(movieName, results);
+            let bestMatchId = this.db.findBestTitleMatch(movieName, results);
             if (bestMatchId) {
                 movie.id = bestMatchId;
             } else {
@@ -122,9 +124,9 @@ class Indexer {
         this.throttle.add((function () {
             log.info("Enqueueing image fetch for movieId " + movieId);
             this.db.fetchMovieImages(movieId, (function (movieId, images) {
-                poster = this.db.findBestPoster(movieId, images);
+                let poster = this.db.findBestPoster(movieId, images);
                 log.debugObject(poster);
-                movie = this.movieMap.getMovieById(movieId);
+                let movie = this.movieMap.getMovieById(movieId);
                 movie['imageUrl'] = poster;
                 this.enqueueFetchImage(movieId);
             }).bind(this));
@@ -132,7 +134,7 @@ class Indexer {
     }
 
     enqueueFetchImage(movieId) {
-        movie = this.movieMap.getMovieById(movieId);
+        let movie = this.movieMap.getMovieById(movieId);
         this.throttle.add((function (movie) {
             log.debug("Enqueueing fetch image for " + JSON.stringify(movie));
             this.db.fetchMovieImage(movie);

@@ -1,5 +1,4 @@
-moviedb = module.require("moviedb");
-Fetcher = require('./image-fetch.js');
+let Fetcher = require('./image-fetch.js');
 
 class MovieDbMovieDb {
     constructor(params) {
@@ -7,7 +6,8 @@ class MovieDbMovieDb {
         if (params.themoviedbKey == undefined && params.moviedb == undefined) {
             throw new Error("Unable to proceed.  The MovieDB API cannot be used without a valid key.")
         }
-        merge(this, params);
+        this.moviedb = params.moviedb;
+        this.themoviedbKey = params.themoviedbKey;
         if (this.moviedb == undefined) {
             log.info("Initializing moviedb");
             this.moviedb = require('moviedb')(this.themoviedbKey);
@@ -59,13 +59,13 @@ class MovieDbMovieDb {
     }
 
     fetchMovieImage(movie) {
-        props = {
+        let props = {
             fileName: movie.name,
             imagePath: movie.directory,
             imageLoc: movie.imageUrl,
             baseUrl: this.configuration.images.base_url
         };
-        fetch = new Fetcher(props);
+        let fetch = new Fetcher(props);
         fetch.fetch();
     }
 
