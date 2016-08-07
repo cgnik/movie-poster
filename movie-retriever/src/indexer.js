@@ -19,7 +19,7 @@ class Indexer {
         this.movieMap.initialize(this.dir);
     }
 
-    process() {
+    processMovies() {
         this.initMovieIds();
         this.db.configure(this.enqueueMissingIds.bind(this));
     }

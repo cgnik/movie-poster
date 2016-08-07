@@ -14,7 +14,7 @@ class Main {
         var self = this;
         this.initMoviedb();
         this.directories.forEach((function (directory) {
-            self.indexers[directory] = new Indexer(this.moviedb, directory);
+            self.indexers[directory] = new Indexer(self.moviedb, directory);
             try {
                 log.info("Indexing directory " + directory);
                 self.indexers[directory].initialize();
