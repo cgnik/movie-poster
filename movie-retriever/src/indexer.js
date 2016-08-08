@@ -11,6 +11,11 @@ class Indexer {
         this.movieMap = new MovieMap();
         this.db = moviedb;
         this.throttle = new Throttle();
+
+        this.db.on('moviedb:configured', this.enqueueMissingIds);
+        this.db.on('moviedb:movie:complete', this.enqueueSearchImage);
+        this.db.on('moviedb:poster:complete', this.enqueueFetchImage);
+        this.db.on('moviedb:poster:retrieved', this.updateMoviePoster);
     }
 
     // note -- if the movie name is already in here, we don't re-search it
@@ -139,6 +144,10 @@ class Indexer {
             log.debug("Enqueueing fetch image for " + JSON.stringify(movie));
             this.db.fetchMovieImage(movie);
         }).bind(this, movie));
+    }
+
+    updateMoviePoster(movieId, posterImagePath) {
+        let movie = this.movieMap.getMovieById(movieId);
     }
 }
 

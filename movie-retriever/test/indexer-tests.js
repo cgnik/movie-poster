@@ -2,15 +2,18 @@
  * Created by christo on 8/15/15.
  */
 
-let MovieMap = sinon.createStubInstance(require("../src/movie-map.js"));
+let MovieDb = require('../src/moviedb-moviedb.js');
 
 describe('Indexer', function () {
-    Indexer = require('../src/indexer.js');
+    let Indexer = require('../src/indexer.js');
     index = null;
     moviemap = null;
 
     beforeEach(function () {
-        index = new Indexer();
+        let movieDb = sinon.mock(MovieDb);
+        movieDb.Events = MovieDb.Events;
+        movieDb.on = sinon.stub();
+        index = new Indexer(movieDb);
         moviemap = index.movieMap;
         index.throttle = sinon.mock();
     })

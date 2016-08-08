@@ -16,7 +16,7 @@ describe('MovieDbMovieDb', function () {
             mockMoviedb.configuration.restore();
         })
         it('calls moviedb get configuration', function (done) {
-            movieDbMovieDb.on(movieDbMovieDb.Events.CONFIGURED, function (config) {
+            movieDbMovieDb.on('moviedb:configured', function (config) {
                 expect(movieDbMovieDb.configuration).to.deep.equal(testConfig);
                 done();
             })
@@ -32,7 +32,7 @@ describe('MovieDbMovieDb', function () {
             mockMoviedb.searchMovie.restore();
         })
         it('calls moviedb to find movie, calls callback with results', function (done) {
-            movieDbMovieDb.on(movieDbMovieDb.Events.MOVIE_SEARCH_COMPLETE, function (movieName, searchResults, error) {
+            movieDbMovieDb.on('moviedb:movie:complete', function (movieName, searchResults, error) {
                 expect(error).to.be.undefined;
                 movieName.should.equal("Test Movie");
                 searchResults.should.deep.equal(testResults.results);
@@ -46,7 +46,7 @@ describe('MovieDbMovieDb', function () {
             expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null, shouldntFunc, shouldntFunc)).to.throw();
         });
         it('throws when given a null movie id', function () {
-            movieDbMovieDb.on(movieDbMovieDb.Events.MOVIE_SEARCH_COMPLETE, function () {
+            movieDbMovieDb.on('moviedb:movie:complete', function () {
                 assert(false);
             });
             expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null)).to.throw;
@@ -128,13 +128,13 @@ describe('MovieDbMovieDb', function () {
         })
         // like, tests, 'n' stuff.
         it('should call the moviedb api to fetch the image list', function (done) {
-            setTimeout(function () {
-                movieDbMovieDb.fetchMovieImages(123, function (movieId, imagelist) {
-                    movieId.should.equal(123);
-                    imagelist.should.deep.equal(testImages.posters);
-                    done();
-                })
-            }, TIMEOUT);
+            movieDbMovieDb.on('moviedb:poster:complete', function (movieId, imagelist, error) {
+                expect(error).to.be.empty;
+                movieId.should.equal(123);
+                imagelist.should.deep.equal(testImages.posters);
+                done();
+            })
+            movieDbMovieDb.fetchMovieImages(123);
         })
     });
 })

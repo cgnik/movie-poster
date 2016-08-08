@@ -1,7 +1,8 @@
 /**
  * Created by christo on 9/5/15.
  */
-let MovieMap = sinon.mock(require('../src/movie-map.js'));
+let Indexer = sinon.mock(require('../src/indexer.js'));
+let MovieSource = sinon.mock(require('../src/moviedb-moviedb.js'));
 let Main = require('../src/main.js');
 
 describe('Main', function () {
@@ -59,7 +60,6 @@ describe('Main', function () {
     describe('#process', function () {
         it('should initialize the indexer and moviedb', function () {
             sinon.stub(fs, 'readFileSync').returns('blahblah');
-            sinon.createStubInstance(Indexer);
 
             main.directories = ['./'];
             main.process();
