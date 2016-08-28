@@ -1,5 +1,5 @@
 /build/
-movie-retriever.iml
+*.iml
 themoviedb-key.txt
 /node_modules/
 /.DS_Store
