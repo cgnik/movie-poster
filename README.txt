@@ -15,4 +15,3 @@ licensing can be worked out.
 
 Thanks
 
-cking@enmobile.biz
