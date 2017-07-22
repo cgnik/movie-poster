@@ -122,7 +122,7 @@ describe('MovieMap', function () {
             mm.addMovieFile("/path/some.mpg");
             mm.movies['some'].id = 123;
             mm.movies['some'].id.should.equal(123);
-            expect(mm.movies['some'].prop).to.be.empty;
+            expect(mm.movies['some'].prop).to.be.undefined;
             mm.setMovieProperties(123, {'prop': 'propValue'});
             mm.movies['some'].prop.should.equal('propValue');
         })

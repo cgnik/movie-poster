@@ -100,7 +100,7 @@ describe('MovieDbMovieDb', function () {
             expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, '', null)).to.throw();
         })
         it('should return null if the list is empty', function () {
-            expect(movieDbMovieDb.findBestPoster(123, [])).to.be.empty;
+            expect(movieDbMovieDb.findBestPoster(123, [])).to.be.undefined;
         })
         it('should return a file path for a straight match', function () {
             expect(movieDbMovieDb.findBestPoster(123, testMovieList)).to.equal("/success/result");
@@ -129,7 +129,7 @@ describe('MovieDbMovieDb', function () {
         // like, tests, 'n' stuff.
         it('should call the moviedb api to fetch the image list', function (done) {
             movieDbMovieDb.on('moviedb:poster:complete', function (movieId, imagelist, error) {
-                expect(error).to.be.empty;
+                expect(error).to.be.undefined;
                 movieId.should.equal(123);
                 imagelist.should.deep.equal(testImages.posters);
                 done();
