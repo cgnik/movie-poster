@@ -3,25 +3,25 @@
   "description": "Packaging for media art retriever",
   "author": "Christopher King <cking@enmobile.biz>",
   "dependencies": {
-    "moviedb": "latest",
-    "rate-limit": "latest",
-    "sleep": "latest",
+    "ffmetadata": "^1.4.0",
     "fuzzy": "latest",
-    "underscore": "latest",
     "merge": "latest",
+    "moviedb": "^0.2.8",
+    "rate-limit": "latest",
+    "sleep": "^5.1.1",
     "underscore": "latest"
   },
   "devDependencies": {
-    "mocha": "latest",
     "chai": "latest",
+    "mocha": "^3.5.0",
+    "rewire": "latest",
     "sinon": "latest",
-    "sinon-chai": "latest",
-    "rewire":"latest"
+    "sinon-chai": "latest"
   },
   "engine": "node >= 0.4.1",
   "scripts": {
-    "test": "./node_modules/.bin/mocha",
-    "test-run":"rm ./test-dir/*.jpg && node src/run.js ./test-dir/",
-    "test-run-clean":"rm ./test-dir/*.jpg"
+    "test": "./node_modules/.bin/mocha --recursive",
+    "test-run": "rm ./test-dir/*.jpg && node src/run.js ./test-dir/",
+    "test-run-clean": "rm ./test-dir/*.jpg"
   }
 }
