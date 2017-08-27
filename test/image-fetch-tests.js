@@ -32,7 +32,7 @@ describe('ImageFetch', function () {
    });
    describe('#getExtension', function () {
       it('should return ".ext" for file.ext', function () {
-         fetcher = ImageFetch(params);
+         fetcher = new ImageFetch(params);
          fetcher.imageLoc = 'file.ext';
          fetcher.getExtension().should.equal('.ext');
       });
@@ -60,8 +60,7 @@ describe('ImageFetch', function () {
    describe('#fetch', function () {
       it('should make a request to BASEURLw300IMAGE/LOC', function () {
          var ff = new ImageFetch(params);
-         ff.fetch();
-         assert(fs.writeFileSync.called);
+         ff.fetch().then(data => assert(fs.writeFileSync.called));
       })
    })
 });
