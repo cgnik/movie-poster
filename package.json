@@ -8,10 +8,11 @@
     "fuzzy": "latest",
     "isomorphic-fetch": "^2.2.1",
     "merge": "latest",
-    "moviedb": "^0.2.10",
     "rate-limit": "latest",
     "sleep": "^5.1.1",
-    "underscore": "latest"
+    "themoviedb-javascript-library": "^1.0.0",
+    "underscore": "^1.8.3",
+    "util": "^0.10.3"
   },
   "devDependencies": {
     "chai": "^4.1.1",

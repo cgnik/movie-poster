@@ -1,23 +1,10 @@
 describe('MovieDbMovieDb', function () {
    const MovieDbMovieDb = MoviePoster.MovieDbMovieDb;
    var mockMoviedb = sinon.mock();
-   var movieDbMovieDb = new MovieDbMovieDb({moviedb: mockMoviedb});
+   mockMoviedb.configuration = sinon.stub();
+   var mdb = new MovieDbMovieDb({moviedb: mockMoviedb});
    var testConfig = {testConfig: '1'};
-   describe('#configure', function () {
-      beforeEach(function () {
-         sinon.stub(mockMoviedb, 'configuration').callsArgWith(1, null, testConfig);
-      });
-      afterEach(function () {
-         mockMoviedb.configuration.restore();
-      });
-      it('calls moviedb get configuration', function (done) {
-         movieDbMovieDb.on('moviedb:configured', function (config) {
-            expect(movieDbMovieDb.configuration).to.deep.equal(testConfig);
-            done();
-         });
-         movieDbMovieDb.configure();
-      })
-   });
+
    describe('#searchMovies', function () {
       var testResults = {results: [{id: 123, title: "Movie 123"}, {id: 345, title: "Movie 345"}]};
       beforeEach(function () {
@@ -27,24 +14,18 @@ describe('MovieDbMovieDb', function () {
          mockMoviedb.searchMovie.restore();
       });
       it('calls moviedb to find movie, calls callback with results', function (done) {
-         movieDbMovieDb.on('moviedb:movie:complete', function (movieName, searchResults, error) {
-            expect(error).to.be.undefined;
-            movieName.should.equal("Test Movie");
-            searchResults.should.deep.equal(testResults.results);
-            done();
+         mdb.searchMovies("Test Movie").should.eventually.equal({
+            movieName: "Test Movie",
+            searchResults: testResults
          });
-         movieDbMovieDb.searchMovies("Test Movie");
       });
       it('errors when called with a null movie name', function () {
-         expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null, null, null)).to.throw();
-         expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, "Blah", null, shouldntFunc)).to.throw();
-         expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null, shouldntFunc, shouldntFunc)).to.throw();
+         expect(mdb.searchMovies.bind(mdb, null, null, null)).to.throw();
+         expect(mdb.searchMovies.bind(mdb, "Blah", null, shouldntFunc)).to.throw();
+         expect(mdb.searchMovies.bind(mdb, null, shouldntFunc, shouldntFunc)).to.throw();
       });
       it('throws when given a null movie id', function () {
-         movieDbMovieDb.on('moviedb:movie:complete', function () {
-            assert(false);
-         });
-         expect(movieDbMovieDb.searchMovies.bind(movieDbMovieDb, null)).to.throw;
+         expect(mdb)
       })
    });
    describe('#findBestTitleMatch', function () {
@@ -54,20 +35,20 @@ describe('MovieDbMovieDb', function () {
          {id: 789, title: "Movie Name More"}
       ];
       it('returns an exact match', function () {
-         expect(movieDbMovieDb.findBestTitleMatch("Movie Name", testList)).to.equal(456);
+         expect(mdb.findBestTitleMatch("Movie Name", testList)).to.equal(456);
       });
       it('returns null for no match', function () {
-         expect(movieDbMovieDb.findBestTitleMatch("blargh", testList))
+         expect(mdb.findBestTitleMatch("blargh", testList))
       });
       it('throws for a null name', function () {
-         expect(movieDbMovieDb.findBestTitleMatch.bind(movieDbMovieDb, null, testList)).to.throw();
+         expect(mdb.findBestTitleMatch.bind(mdb, null, testList)).to.throw();
       });
       it('throws for a null list', function () {
-         expect(movieDbMovieDb.findBestTitleMatch.bind(movieDbMovieDb, "booboo", null)).to.throw();
+         expect(mdb.findBestTitleMatch.bind(mdb, "booboo", null)).to.throw();
       });
       it('matches near titles', function () {
-         expect(movieDbMovieDb.findBestTitleMatch("ovie N", testList)).to.equal(456);
-         expect(movieDbMovieDb.findBestTitleMatch("Mov", testList)).to.equal(123);
+         expect(mdb.findBestTitleMatch("ovie N", testList)).to.equal(456);
+         expect(mdb.findBestTitleMatch("Mov", testList)).to.equal(123);
       })
    });
    describe('#findBestPoster', function () {
@@ -89,22 +70,22 @@ describe('MovieDbMovieDb', function () {
             file_path: "/success/italian"
          }];
       it('should throw if no id was provided', function () {
-         expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, null, {})).to.throw();
+         expect(mdb.findBestPoster.bind(mdb, null, {})).to.throw();
       });
       it('should throw if no list was provided', function () {
-         expect(movieDbMovieDb.findBestPoster.bind(movieDbMovieDb, '', null)).to.throw();
+         expect(mdb.findBestPoster.bind(mdb, '', null)).to.throw();
       });
       it('should return null if the list is empty', function () {
-         expect(movieDbMovieDb.findBestPoster(123, [])).to.be.undefined;
+         expect(mdb.findBestPoster(123, [])).to.be.undefined;
       });
       it('should return a file path for a straight match', function () {
-         expect(movieDbMovieDb.findBestPoster(123, testMovieList)).to.equal("/success/result");
+         expect(mdb.findBestPoster(123, testMovieList)).to.equal("/success/result");
       });
       it('should return a file path for an english over a non-english match', function () {
-         expect(movieDbMovieDb.findBestPoster(123, testMovieListForeign)).to.equal("/success/english");
+         expect(mdb.findBestPoster(123, testMovieListForeign)).to.equal("/success/english");
       });
       it('should return the first image even if nothing matches expected state', function () {
-         expect(movieDbMovieDb.findBestPoster(123, testMovieListForeignNoEnglish)).to.equal("/success/french");
+         expect(mdb.findBestPoster(123, testMovieListForeignNoEnglish)).to.equal("/success/french");
       })
    });
    describe('#fetchMovieImages', function () {
@@ -123,13 +104,13 @@ describe('MovieDbMovieDb', function () {
       });
       // like, tests, 'n' stuff.
       it('should call the moviedb api to fetch the image list', function (done) {
-         movieDbMovieDb.on('moviedb:poster:complete', function (movieId, imagelist, error) {
+         mdb.on('moviedb:poster:complete', function (movieId, imagelist, error) {
             expect(error).to.be.undefined;
             movieId.should.equal(123);
             imagelist.should.deep.equal(testImages.posters);
             done();
          });
-         movieDbMovieDb.fetchMovieImages(123);
+         mdb.fetchMovieImages(123);
       })
    });
 });
