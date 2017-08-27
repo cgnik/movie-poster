@@ -4,7 +4,8 @@ let Indexer = require('./indexer.js');
 let MovieSource = require('./moviedb-moviedb.js');
 
 class Main {
-    constructor() {
+    constructor(p) {
+        let params = p || {};
         this.directories = [];
         this.indexers = {};
         this.moviedb = null;
@@ -20,7 +21,7 @@ class Main {
                 self.indexers[directory].initialize();
                 self.indexers[directory].process();
             } catch (e) {
-                log.error("Skipping directory '" + directory + "': " + e);
+                console.error("Skipping directory '" + directory + "': " + e);
             }
         }).bind(this));
     }

@@ -28,7 +28,7 @@ class MovieMap {
                 log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
             }
         } else {
-            log.info("Pre-existing map file " + this._persistentMapFileName + " not found.");
+            console.info("Pre-existing map file " + this._persistentMapFileName + " not found.");
         }
     }
 
@@ -51,9 +51,9 @@ class MovieMap {
     }
 
     addMovieFiles(files) {
-        log.debug("Mapping " + files.length + " files");
+        console.debug("Mapping " + files.length + " files");
         files.forEach((function (fileFullName) {
-            log.debug("Mapping file " + fileFullName);
+            console.debug("Mapping file " + fileFullName);
             this.addMovieFile(fileFullName);
         }).bind(this));
     }

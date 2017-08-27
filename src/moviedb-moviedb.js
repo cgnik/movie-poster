@@ -1,10 +1,8 @@
-let EventEmitter = require('events');
+const Fetcher = require('./image-fetch.js');
+const TheMovieDb = require('moviedb');
 
-let Fetcher = require('./image-fetch.js');
-
-class MovieDbMovieDb extends EventEmitter {
+class MovieDbMovieDb {
     constructor(params) {
-        super();
         // we require the key for api access to be in this file
         if (params.themoviedbKey == undefined && params.moviedb == undefined) {
             throw new Error("Unable to proceed.  The MovieDB API cannot be used without a valid key.")
@@ -12,8 +10,8 @@ class MovieDbMovieDb extends EventEmitter {
         this.moviedb = params.moviedb;
         this.themoviedbKey = params.themoviedbKey;
         if (this.moviedb == undefined) {
-            log.info("Initializing moviedb");
-            this.moviedb = require('moviedb')(this.themoviedbKey);
+            console.info("Initializing moviedb");
+            this.moviedb = TheMovieDb(this.themoviedbKey);
         }
         if (this.moviedb === undefined) {
             throw new Error("Unable to load moviedb");
@@ -130,11 +128,6 @@ class MovieDbMovieDb extends EventEmitter {
             return;
         }
         return image.file_path;
-    }
-
-    _configure(configuration) {
-        this.configuration = configuration;
-        this.emit('moviedb:configured');
     }
 }
 
