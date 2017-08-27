@@ -1,6 +1,6 @@
-const util = require('util');
+const urlencode = require('urlencode');
 const Fetcher = require('./image-fetch.js');
-const TheMovieDb = require('themoviedb-javascript-library');
+const mdb = require('themoviedb-javascript-library');
 
 class MovieDbMovieDb {
    constructor(p) {
@@ -13,7 +13,8 @@ class MovieDbMovieDb {
       this.themoviedbKey = params.themoviedbKey;
       if (this.moviedb == undefined) {
          console.info("Initializing moviedb");
-         this.moviedb = TheMovieDb(this.themoviedbKey);
+         this.moviedb = mdb;
+         this.moviedb.common.api_key = this.themoviedbKey;
       }
       if (this.moviedb === undefined) {
          throw new Error("Unable to load moviedb");
@@ -24,8 +25,10 @@ class MovieDbMovieDb {
       if (movieName == undefined || movieName == null) {
          throw new Error("Cannot search movies with null name");
       }
-      return util.promisify(this.moviedb.searchMovie)({
-         query: '"' + movieName + '"'
+      return new Promise((fulfill, reject) => {
+         this.moviedb.search.getMovie({
+            query: '"' + urlencode(movieName) + '"'
+         }, fulfill, reject);
       });
    }
 
