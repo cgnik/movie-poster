@@ -39,8 +39,8 @@ class Indexer {
         if (fs.existsSync(MOVIE_IDS_FILE)) {
             this.movieIds = JSON.parse(fs.readFileSync(
                 MOVIE_IDS_FILE, 'utf8'));
-            log.always("Using static movie IDs ");
-            log.debug(this.movieIds);
+            console.log("Using static movie IDs ");
+            console.debug(this.movieIds);
         }
     }
 
@@ -76,7 +76,7 @@ class Indexer {
     findFetchableImages() {
         return this.movieMap.toList().filter(function (movie) {
             let fetchable = movie.imageLoc !== undefined && movie.image === undefined;
-            log.debug("Fetchable? " + JSON.stringify(movie));
+            console.debug("Fetchable? " + JSON.stringify(movie));
             return fetchable;
         });
     }
@@ -120,7 +120,7 @@ class Indexer {
             if (movie.id) {
                 this.enqueueSearchImage(movie.id);
             } else {
-                log.warn("Skipping image search for no-id movie: " + movie.name);
+                console.warn("Skipping image search for no-id movie: " + movie.name);
             }
         }).bind(this));
     }
