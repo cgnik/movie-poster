@@ -26,7 +26,7 @@ describe('MovieMap', function () {
             mm.clear();
             expect(mm.movies).to.be.empty;
         })
-    })
+    });
     describe('#addMovieFiles', function () {
         it('should add movie files to the map, respecting existing entries', function () {
             mm.addMovieFiles(["/path/something.mpg", "/path/SomeThing.jpg"]);
@@ -39,7 +39,7 @@ describe('MovieMap', function () {
                 }
             });
         })
-    })
+    });
     describe('#toList', function () {
         mm.addMovieFile("/path/Something.mpg");
         mm.addMovieFile("/path/else.mpg");
@@ -53,7 +53,7 @@ describe('MovieMap', function () {
                 "file": "/path/else.mpg",
                 "directory": "/path/"
             }]);
-    })
+    });
     describe("#addMovieFile", function () {
         it('should add a movie file to the map, adding to existing entries', function () {
             mm.addMovieFile("/path/something.mpg");
@@ -71,7 +71,7 @@ describe('MovieMap', function () {
                     "directory": "/path/"
                 }
             });
-        })
+        });
         it('should preserve the case of the movie title in the name element but not in the key', function () {
             mm.addMovieFile("/path/Something.mpg");
             mm.movies.should.deep.equal({
@@ -80,7 +80,7 @@ describe('MovieMap', function () {
                 }
             });
         })
-    })
+    });
     describe('#getMovie', function () {
         it('should return a movie from the map if it has one for that id', function () {
             mm.addMovieFile("/path/something.mpg");
@@ -88,7 +88,7 @@ describe('MovieMap', function () {
                 'name': 'something', 'file': '/path/something.mpg', "directory": "/path/"
             });
         })
-    })
+    });
     describe('#isMovieExtension', function () {
         it('should identify a movie file regardless of case', function () {
             expect(mm.isMovieExtension('.M4V')).to.be.true;
@@ -102,7 +102,7 @@ describe('MovieMap', function () {
             expect(mm.isMovieExtension('.GIF')).to.be.false;
             expect(mm.isMovieExtension('.Jpg')).to.be.false;
         })
-    })
+    });
     describe('#isImageFile', function () {
         it('should identify a image file regardless of case', function () {
             expect(mm.isImageFile('.M4V')).to.be.false;
@@ -116,7 +116,7 @@ describe('MovieMap', function () {
             expect(mm.isImageFile('.GIF')).to.be.true;
             expect(mm.isImageFile('.Jpg')).to.be.true;
         })
-    })
+    });
     describe('#setMovieProperties', function () {
         it('should set the named property for the specified movie id to the specified value', function () {
             mm.addMovieFile("/path/some.mpg");
@@ -126,12 +126,12 @@ describe('MovieMap', function () {
             mm.setMovieProperties(123, {'prop': 'propValue'});
             mm.movies['some'].prop.should.equal('propValue');
         })
-    })
+    });
     describe('#keyify', function () {
         it('should make the provided string lower-case for use as a map key for the movie', function () {
             mm.keyify('BlAh').should.equal('blah');
         })
-    })
+    });
     describe('#getMovieById', function () {
         it('should retrieve a movie object when given the id', function () {
             mm.movies['aaa'] = {id: 12, "name": "AAA"};
@@ -139,7 +139,7 @@ describe('MovieMap', function () {
             mm.movies['bobo'] = {id: 234, "name": "BoBo"};
             mm.getMovieById(123).should.deep.equal({id: 123, "name": "Alien"});
         })
-    })
+    });
     describe('#load', function () {
         it('should look for and load the file', function () {
             fs = sinon.stub();
@@ -158,7 +158,7 @@ describe('MovieMap', function () {
             fs.existsSync.should.have.been.calledOnce;
             fs.statSync.should.have.been.called;
             fs.readFileSync.should.have.been.called;
-        })
+        });
         it('should not try to load when there is no map file', function() {
             fs = sinon.stub();
             fs.readFileSync = sinon.stub();
@@ -176,7 +176,7 @@ describe('MovieMap', function () {
             fs.statSync.should.not.have.been.called;
             fs.readFileSync.should.not.have.been.called;
         })
-    })
+    });
     describe('#persist', function () {
         it('should try to save the current movie map to a file', function () {
             fs = sinon.stub();

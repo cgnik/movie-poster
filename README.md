@@ -1,5 +1,8 @@
 # movie-poster-retriever
+
 Node.js project to retrieve cover art from themoviedb.org 
+
+NOTE: this project is no longer being maintained.
 
 Roadmap
 -------

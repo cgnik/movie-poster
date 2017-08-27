@@ -25,36 +25,6 @@ class Main {
         }).bind(this));
     }
 
-    initProcessArgs(args) {
-        var params = (args || []).slice(2);
-        params.forEach((function (val, index, array) {
-            if (val.indexOf("--") == 0) {
-                var whole = val.substr(2);
-                var name = whole.substr(0, whole.indexOf('='));
-                var value = whole.substr(whole.indexOf('=') + 1);
-                if (name && value) {
-                    this[name] = value;
-                }
-            } else if (!(val.indexOf('--') >= 0)) {
-                var stats = fs.statSync(val);
-                if (stats && stats.isDirectory()) {
-                    log.always("Adding movie dir " + val);
-                    this.directories.push(val);
-                } else if (stats.isFile()) {
-                    log.always("Adding movie file " + val);
-                    this.files.push(val);
-                } else {
-                    msg = "Cannot scan nonexistent dir " + val;
-                    log.error(msg)
-                    throw new Error(msg);
-                }
-            }
-        }).bind(this));
-        if (this.directories.length < 1) {
-            log.always("No diretory specified.  Defaulting to ./");
-            this.directories.push('./');
-        }
-    }
 
     initMoviedb() {
         if (this.themoviedbKey == undefined) {

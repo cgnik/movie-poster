@@ -3,20 +3,23 @@
   "description": "Packaging for media art retriever",
   "author": "Christopher King <cking@enmobile.biz>",
   "dependencies": {
+    "command-line-args": "^4.0.7",
     "ffmetadata": "^1.4.0",
     "fuzzy": "latest",
+    "isomorphic-fetch": "^2.2.1",
     "merge": "latest",
-    "moviedb": "^0.2.8",
+    "moviedb": "^0.2.10",
     "rate-limit": "latest",
     "sleep": "^5.1.1",
     "underscore": "latest"
   },
   "devDependencies": {
-    "chai": "latest",
+    "chai": "^4.1.1",
+    "fetch-mock": "^5.12.2",
     "mocha": "^3.5.0",
-    "rewire": "latest",
-    "sinon": "latest",
-    "sinon-chai": "latest"
+    "sinon": "^3.2.1",
+    "sinon-chai": "^2.13.0",
+    "chai-as-promised": "^7.1.1"
   },
   "engine": "node >= 0.4.1",
   "scripts": {

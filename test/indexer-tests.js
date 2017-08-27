@@ -16,7 +16,7 @@ describe('Indexer', function () {
         index = new Indexer(movieDb);
         moviemap = index.movieMap;
         index.throttle = sinon.mock();
-    })
+    });
     describe('#clear', function () {
         it('should empty the movieIds and the movieMap', function () {
             index.movieIds['alien'] = {'alien': '123'};
@@ -24,7 +24,7 @@ describe('Indexer', function () {
             index.clear();
             index.movieIds.should.be.empty;
         })
-    })
+    });
 
     describe('#initMovieIds', function () {
         it('should load existing movie ids from a file', function () {
@@ -36,7 +36,7 @@ describe('Indexer', function () {
             fs.readFileSync.restore();
             fs.existsSync.restore();
         })
-    })
+    });
     describe('#applyMovieIdsToMap', function () {
         it('should apply the movieIds to the movieMap by lower-case title', function () {
             test = {};
@@ -46,7 +46,7 @@ describe('Indexer', function () {
             index.applyMovieIdsToMap();
             expect(moviemap.getMovie.calledOnce).to.be.true;
             expect(test.id).to.equal("123");
-        })
+        });
         it('should tolerate ids for movies not in the map', function () {
             moviemap.getMovie = sinon.stub();
             moviemap.getMovie.withArgs('alien').returns(undefined);
@@ -54,7 +54,7 @@ describe('Indexer', function () {
             index.applyMovieIdsToMap();
             expect(moviemap.getMovie.calledOnce).to.be.true;
         })
-    })
+    });
     describe('#findMissingMovieIds', function () {
         it('should figure out which mapped movies don"t have IDs', function () {
             index.clear();
@@ -69,7 +69,7 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.findMissingMovieIds().should.deep.equal(testObject);
         })
-    })
+    });
     describe('#findMissingMovieImages', function () {
         it('should figure out which mapped movies don"t have imagess', function () {
             testObject = [{"name": "Aliens", "file": "/path/Aliens.mpg"}];
@@ -79,7 +79,7 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.findMissingMovieImages().should.deep.equal(testObject);
         })
-    })
+    });
     describe('#findFetchableImages', function () {
         it('should reply with a list of movies with an imageLoc property and no image file', function () {
             testObject = [{"name": "Aliens", "file": "/path/Aliens.mpg", "imageLoc": "url/url/url"}];
@@ -94,7 +94,7 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.findFetchableImages().should.deep.equal(testObject);
         })
-    })
+    });
     describe('#enqueueMissingMovieImages', function () {
         it('should filter the movie map and add fetches for missing images', function () {
             testList = [{'id': 123, 'name': 'blah', 'image': '/path/blah.jpg'}, {'id': 345, 'name': 'bloo'}];
@@ -104,7 +104,7 @@ describe('Indexer', function () {
             index.enqueueSearchImages();
             index.throttle.add.should.have.been.calledOnce;
         })
-    })
+    });
     describe('#enqueueFetchImages', function () {
         beforeEach(function () {
             testObject = {'id': 789, 'name': 'bloob', "imageLoc": "/some/location/"};
@@ -121,7 +121,7 @@ describe('Indexer', function () {
             index.throttle.add = sinon.stub();
             index.enqueueFetchImage = sinon.stub();
         })
-    })
+    });
     describe('#enqueueSearchImages', function () {
         beforeEach(function () {
             var testObject = {'id': 789, 'name': 'bloob', "imageLoc": "/some/location/"};
@@ -137,7 +137,7 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.throttle.add = sinon.stub();
             index.enqueueSearchImage = sinon.stub();
-        })
+        });
         it('should call enqueueSearchImage for every imageless movie in the map which has a movieId', function () {
             index.enqueueSearchImages();
             moviemap.toList.should.have.been.calledOnce;
@@ -145,7 +145,7 @@ describe('Indexer', function () {
             index.enqueueSearchImage.should.have.been.calledWith(789);
             index.enqueueSearchImage.should.have.been.calledWith(345);
         })
-    })
+    });
     describe('#enqueueMissingIds', function () {
         beforeEach(function () {
             testObject = {'name': 'bloob', "file": "/some/file.mpg"};
@@ -161,10 +161,10 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.throttle.add = sinon.stub();
             index.enqueueMissingId = sinon.stub();
-        })
+        });
         it('should call enqueueMissingId for every id-less movie in the map', function () {
             index.enqueueMissingIds();
             index.enqueueMissingId.should.have.been.calledTwice;
         })
     })
-})
+});
