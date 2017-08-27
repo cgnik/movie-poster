@@ -27,11 +27,8 @@ describe('MovieDbMovieDb', function () {
       });
       it('calls moviedb to find movie, calls callback with results', function () {
          let testResults = {testResult: 1};
-         mockMdb.search.getMovie.callsArgWith(2, testResults);
-         mdb.searchMovies("Test Movie").catch(err => {
-            console.error(err);
-            assert(false);
-         }).should.eventually.equal({
+         mockMdb.search.getMovie.callsArgWith(1, Promise.resolve(testResults));
+         mdb.searchMovies("Test Movie").should.eventually.deep.equal({
             movieName: "Test Movie",
             searchResults: testResults
          });
@@ -41,10 +38,7 @@ describe('MovieDbMovieDb', function () {
          expect(mdb.searchMovies.bind(null)).should.throw;
       });
       it('throws when given a null movie id', function () {
-         mdb.searchMovies("Test Movie").catch(err => {
-            console.error(err);
-            assert(false);
-         }).should.throw;
+         mdb.searchMovies("Test Movie").should.throw;
       })
    });
    describe('#findBestTitleMatch', function () {
@@ -54,7 +48,7 @@ describe('MovieDbMovieDb', function () {
          {id: 789, title: "Movie Name More"}
       ];
       it('returns an exact match', function () {
-        mdb.findBestTitleMatch("Movie Name", testList).should.equal(456);
+         mdb.findBestTitleMatch("Movie Name", testList).should.equal(456);
       });
       it('returns null for no match', function () {
          mdb.findBestTitleMatch("blargh", testList)
@@ -127,10 +121,7 @@ describe('MovieDbMovieDb', function () {
             images: testImages.posters
          };
          mockMdb.movies.getImages.callsArgWith(1, testImages);
-         mdb.fetchMovieImages(123).catch(err => {
-            console.error(err);
-            assert(false);
-         }).should.eventually.deep.equal(testResult)
+         mdb.fetchMovieImages(123).catch(console.error).should.eventually.deep.equal(testResult)
       });
    });
 });
