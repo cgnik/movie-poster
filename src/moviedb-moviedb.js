@@ -14,8 +14,8 @@ class MovieDbMovieDb {
       if (this.moviedb == undefined) {
          console.info("Initializing moviedb");
          this.moviedb = mdb;
-         this.moviedb.common.api_key = this.themoviedbKey;
       }
+      this.moviedb.common.api_key = this.themoviedbKey;
       if (this.moviedb === undefined) {
          throw new Error("Unable to load moviedb");
       }
@@ -28,21 +28,19 @@ class MovieDbMovieDb {
       return new Promise((fulfill, reject) => {
          this.moviedb.search.getMovie({
             query: '"' + urlencode(movieName) + '"'
-         }, fulfill, reject);
+         }, (result) => {
+            fulfill({movieName: movieName, searchResult: result})
+         }, reject);
       });
    }
 
    fetchMovieImages(movieId) {
-      let self = this;
-      this.moviedb.movieImages({
-         id: movieId
-      }, function (error, results) {
-         if (error == null || (error.status >= 200 && error.status < 300)) {
-            self.emit('moviedb:poster:complete', movieId, results.posters);
-         } else {
-            log.error("Could not fetch image for movie Id '" + movieId + "'");
-            self.emit('moviedb:poster:complete', movieId, null, error);
-         }
+      return new Promise((fulfill, reject) => {
+         this.moviedb.movies.getImages({
+            id: movieId
+         }, result => {
+            fulfill({movieId: movieId, images: result})
+         }, reject);
       });
    }
 
@@ -54,8 +52,7 @@ class MovieDbMovieDb {
          baseUrl: this.configuration.images.base_url
       };
       let fetch = new Fetcher(props);
-      fetch.fetch();
-      // TODO: callback with 'moviedb:poster:retrieved' event emit
+      return fetch.fetch();
    }
 
    findBestTitleMatch(title, titleList) {
@@ -66,7 +63,7 @@ class MovieDbMovieDb {
          .map(function (n) {
             return n.title || '';
          });
-      log.debug("fuzzy-searching title: " + title + "; reduced: " + reduced);
+      console.debug("fuzzy-searching title: " + title + "; reduced: " + reduced);
       let fuzzymatches = fuzzy.filter(title, reduced);
       let bestmatch = _.max(fuzzymatches, function (fuzzymatch) {
          return fuzzymatch.score;
@@ -81,9 +78,9 @@ class MovieDbMovieDb {
       var id = null;
       if (!_.isEmpty(bestmatch)) {
          id = titleList[bestmatch.index].id;
-         log.info("Chose id " + titleList[bestmatch.index].id + " for " + title);
+         console.info("Chose id " + titleList[bestmatch.index].id + " for " + title);
       } else {
-         log.error("NO MATCH for title " + title);
+         console.error("NO MATCH for title " + title);
       }
       return id;
    }

@@ -1,31 +1,50 @@
+const mockFetch = require('fetch-mock');
+
 describe('MovieDbMovieDb', function () {
    const MovieDbMovieDb = MoviePoster.MovieDbMovieDb;
-   var mockMoviedb = sinon.mock();
-   mockMoviedb.configuration = sinon.stub();
-   var mdb = new MovieDbMovieDb({moviedb: mockMoviedb});
-   var testConfig = {testConfig: '1'};
+   let mockMdb = null;
+   let mdb = null;
+
+   describe('#constructor', () => {
+      it('throws when no moviedb key is provided', () => {
+         expect(MovieDbMovieDb.bind({moviedb: mockMdb})).to.throw;
+      });
+      it('throws when nothing is provided', () => {
+         expect(MovieDbMovieDb.bind()).to.throw;
+      });
+   });
 
    describe('#searchMovies', function () {
       var testResults = {results: [{id: 123, title: "Movie 123"}, {id: 345, title: "Movie 345"}]};
       beforeEach(function () {
-         sinon.stub(mockMoviedb, 'searchMovie').callsArgWith(1, null, testResults);
+         mockMdb = {
+            common: {api_key: ''},
+            search: {getMovie: sinon.stub()}
+         };
+         mdb = new MovieDbMovieDb({themoviedbKey: 'testKey', moviedb: mockMdb});
       });
       afterEach(function () {
-         mockMoviedb.searchMovie.restore();
       });
-      it('calls moviedb to find movie, calls callback with results', function (done) {
-         mdb.searchMovies("Test Movie").should.eventually.equal({
+      it('calls moviedb to find movie, calls callback with results', function () {
+         let testResults = {testResult: 1};
+         mockMdb.search.getMovie.callsArgWith(2, testResults);
+         mdb.searchMovies("Test Movie").catch(err => {
+            console.error(err);
+            assert(false);
+         }).should.eventually.equal({
             movieName: "Test Movie",
             searchResults: testResults
          });
+         mockMdb.search.getMovie.should.have.been.calledOnce;
       });
       it('errors when called with a null movie name', function () {
-         expect(mdb.searchMovies.bind(mdb, null, null, null)).to.throw();
-         expect(mdb.searchMovies.bind(mdb, "Blah", null, shouldntFunc)).to.throw();
-         expect(mdb.searchMovies.bind(mdb, null, shouldntFunc, shouldntFunc)).to.throw();
+         expect(mdb.searchMovies.bind(null)).should.throw;
       });
       it('throws when given a null movie id', function () {
-         expect(mdb)
+         mdb.searchMovies("Test Movie").catch(err => {
+            console.error(err);
+            assert(false);
+         }).should.throw;
       })
    });
    describe('#findBestTitleMatch', function () {
@@ -35,20 +54,20 @@ describe('MovieDbMovieDb', function () {
          {id: 789, title: "Movie Name More"}
       ];
       it('returns an exact match', function () {
-         expect(mdb.findBestTitleMatch("Movie Name", testList)).to.equal(456);
+        mdb.findBestTitleMatch("Movie Name", testList).should.equal(456);
       });
       it('returns null for no match', function () {
-         expect(mdb.findBestTitleMatch("blargh", testList))
+         mdb.findBestTitleMatch("blargh", testList)
       });
       it('throws for a null name', function () {
-         expect(mdb.findBestTitleMatch.bind(mdb, null, testList)).to.throw();
+         mdb.findBestTitleMatch.bind(mdb, null, testList).should.throw();
       });
       it('throws for a null list', function () {
-         expect(mdb.findBestTitleMatch.bind(mdb, "booboo", null)).to.throw();
+         mdb.findBestTitleMatch.bind(mdb, "booboo", null).should.throw();
       });
       it('matches near titles', function () {
-         expect(mdb.findBestTitleMatch("ovie N", testList)).to.equal(456);
-         expect(mdb.findBestTitleMatch("Mov", testList)).to.equal(123);
+         mdb.findBestTitleMatch("ovie N", testList).should.equal(456);
+         mdb.findBestTitleMatch("Mov", testList).should.equal(123);
       })
    });
    describe('#findBestPoster', function () {
@@ -93,24 +112,25 @@ describe('MovieDbMovieDb', function () {
          posters: [{"iso_639_1": "en", "file_path": "/some/path.png"}, {
             "iso_639_1": "fr",
             "file_path": "/other/else.png"
-         }
-         ]
+         }]
       };
       beforeEach(function () {
-         sinon.stub(mockMoviedb, 'movieImages').callsArgWith(1, null, testImages);
+         mockMdb = {
+            common: {api_key: ''},
+            movies: {getImages: sinon.stub()}
+         };
+         mdb = new MovieDbMovieDb({themoviedbKey: 'testKey', moviedb: mockMdb});
       });
-      afterEach(function () {
-         mockMoviedb.movieImages.restore();
+      it('should call the moviedb api to fetch the image list', function () {
+         const testResult = {
+            movieId: 123,
+            images: testImages.posters
+         };
+         mockMdb.movies.getImages.callsArgWith(1, testImages);
+         mdb.fetchMovieImages(123).catch(err => {
+            console.error(err);
+            assert(false);
+         }).should.eventually.deep.equal(testResult)
       });
-      // like, tests, 'n' stuff.
-      it('should call the moviedb api to fetch the image list', function (done) {
-         mdb.on('moviedb:poster:complete', function (movieId, imagelist, error) {
-            expect(error).to.be.undefined;
-            movieId.should.equal(123);
-            imagelist.should.deep.equal(testImages.posters);
-            done();
-         });
-         mdb.fetchMovieImages(123);
-      })
    });
 });

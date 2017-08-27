@@ -22,10 +22,10 @@ class MovieMap {
                 if (fstat && fstat.isFile()) {
                     this.movies = JSON.parse(fs.readFileSync(this._persistentMapFileName));
                 } else {
-                    log.warning(this.persistentMapFileName + " Exists but is not a file. Unable to load initial map. Continuing.");
+                    console.warning(this.persistentMapFileName + " Exists but is not a file. Unable to load initial map. Continuing.");
                 }
             } catch (e) {
-                log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
+                console.error("Unable to initialize existing movie-map.json: could not parse - " + e);
             }
         } else {
             console.info("Pre-existing map file " + this._persistentMapFileName + " not found.");
@@ -36,7 +36,7 @@ class MovieMap {
         if (this.movies !== undefined && Object.keys(this.movies).length > 0) {
             fs.createWriteStream(this._persistentMapFileName).write(JSON.stringify(this.movies)).close();
         } else {
-            log.info("Skipping map persist -- nothing to write.");
+            console.info("Skipping map persist -- nothing to write.");
         }
     }
 
@@ -79,7 +79,7 @@ class MovieMap {
             existing.image = fileFullName;
             this.movies[name] = existing;
         } else {
-            log.info("Skipping non-image-non-movie file: " + fileFullName);
+            console.info("Skipping non-image-non-movie file: " + fileFullName);
         }
     }
 
