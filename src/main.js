@@ -1,41 +1,39 @@
 // modules
-
-let Indexer = require('./indexer.js');
-let MovieSource = require('./moviedb-moviedb.js');
+const fs = require('fs');
+const Indexer = require('./indexer.js');
+const MovieSource = require('./moviedb-moviedb.js');
 
 class Main {
-    constructor(p) {
-        let params = p || {};
-        this.directories = [];
-        this.indexers = {};
-        this.moviedb = null;
-    }
+   constructor(p) {
+      let params = p || {};
+      this.directories = params['directory'] || [];
+      this.indexers = {};
+      this.moviedb = null;
+   }
 
-    process() {
-        var self = this;
-        this.initMoviedb();
-        this.directories.forEach((function (directory) {
-            self.indexers[directory] = new Indexer(self.moviedb, directory);
-            try {
-                log.info("Indexing directory " + directory);
-                self.indexers[directory].initialize();
-                self.indexers[directory].process();
-            } catch (e) {
-                console.error("Skipping directory '" + directory + "': " + e);
-            }
-        }).bind(this));
-    }
+   process() {
+      this.initMoviedb();
+      this.directories.forEach(directory => {
+         this.indexers[directory] = new Indexer(this.moviedb, directory);
+         try {
+            console.info("Indexing directory " + directory);
+            this.indexers[directory].initialize();
+            this.indexers[directory].process();
+         } catch (e) {
+            console.error("Skipping directory '" + directory + "': " + e);
+         }
+      });
+   }
 
-
-    initMoviedb() {
-        if (this.themoviedbKey == undefined) {
-            this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
-        }
-        this.moviedb = new MovieSource({'themoviedbKey': this.themoviedbKey});
-        if (this.moviedb === undefined) {
-            throw new Error("Unable to initialize moviedb searching");
-        }
-    }
+   initMoviedb() {
+      if (this.themoviedbKey == undefined) {
+         this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
+      }
+      this.moviedb = new MovieSource({'themoviedbKey': this.themoviedbKey});
+      if (this.moviedb === undefined) {
+         throw new Error("Unable to initialize moviedb searching");
+      }
+   }
 }
 
 module.exports = Main;

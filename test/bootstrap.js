@@ -5,6 +5,7 @@ global.assertEqual = global.chai.assertEqual;
 global.should = chai.should();
 global.eventually = chai.eventually;
 global.TIMEOUT = 100;
+global.rewire = require('rewire');
 global.sinon = require('sinon');
 
 var sinonChai = require("sinon-chai");

@@ -11,7 +11,6 @@ class Throttle {
 
     initialize(params) {
         this.interval = (params && params.interval) || this.interval;
-        console.log("BLAH");
         this.queue = RateLimit.createQueue({
             interval: this.interval
         });

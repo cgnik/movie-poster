@@ -25,18 +25,6 @@ describe('Indexer', function () {
             index.movieIds.should.be.empty;
         })
     });
-
-    describe('#initMovieIds', function () {
-        it('should load existing movie ids from a file', function () {
-            sinon.stub(fs, 'readFileSync').withArgs('movie-ids.json').returns('{"aliens" : 679}');
-            sinon.stub(fs, 'existsSync').withArgs('movie-ids.json').returns(true);
-            index.initMovieIds();
-            expect(index.movieIds['aliens']).to.equal(679);
-            fs.readFileSync.should.have.been.calledWith('movie-ids.json');
-            fs.readFileSync.restore();
-            fs.existsSync.restore();
-        })
-    });
     describe('#applyMovieIdsToMap', function () {
         it('should apply the movieIds to the movieMap by lower-case title', function () {
             test = {};
