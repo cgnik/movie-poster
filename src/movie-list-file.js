@@ -18,7 +18,6 @@ class MovieListFile {
    }
 
    load() {
-      console.log(fs);
       if (fs.existsSync(this._persistentMapFileName)) {
          let fstat = fs.statSync(this._persistentMapFileName);
          if (fstat && fstat.isFile()) {

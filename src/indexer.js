@@ -18,7 +18,7 @@ class Indexer {
    clear() {
       this.movieIds = {};
    }
-   
+
    // note -- if the movie name is already in here, we don't re-search it
    initialize(params) {
       params = params || {};
@@ -76,7 +76,6 @@ class Indexer {
    }
 
    enqueueMissingId(movieName) {
-      console.log(this.throttle);
       this.throttle.add((function () {
          this.db.searchMovies(movieName, this.movieSearchResults.bind(this), this.movieSearchError.bind(this));
       }).bind(this));

@@ -2,7 +2,7 @@ fs = require('fs');
 
 const fetchMock = require('fetch-mock');
 const ImageFetch = MoviePoster.ImageFetch;
-describe('ImageFetch', function () {
+describe('ImageFetch', () => {
    let teststream = null;
    let testfile = null;
    const params = {
@@ -25,28 +25,28 @@ describe('ImageFetch', function () {
       fs.writeFileSync.restore();
    });
 
-   describe('#getUrl', function () {
-      it('should assemble the url BASEURLw300IMAGE/LOC', function () {
+   describe('#getUrl', () => {
+      it('should assemble the url BASEURLw300IMAGE/LOC', () => {
          new ImageFetch(params).getUrl().should.equal('BASEURLw300IMAGE/LOC');
       })
    });
-   describe('#getExtension', function () {
-      it('should return ".ext" for file.ext', function () {
+   describe('#getExtension', () => {
+      it('should return ".ext" for file.ext', () => {
          fetcher = new ImageFetch(params);
          fetcher.imageLoc = 'file.ext';
          fetcher.getExtension().should.equal('.ext');
       });
-      it('should return "" for file', function () {
+      it('should return "" for file', () => {
          fetcher = new ImageFetch(params);
          expect(fetcher.getExtension()).to.equal('');
       });
-      it('should tolerate a null imageLoc', function () {
+      it('should tolerate a null imageLoc', () => {
          fetcher = new ImageFetch(params);
          fetcher.imageLoc = undefined;
          fetcher.getExtension.bind(fetcher, null).should.not.throw;
       })
    });
-   describe('#getTargetFile', function () {
+   describe('#getTargetFile', () => {
       it('should return "IMAGE/PATH/target.ext" for IMAGE/LOC, file',
          function () {
             fetcher = new ImageFetch(params);
@@ -57,8 +57,8 @@ describe('ImageFetch', function () {
                .equal('IMAGE/PATH/target.ext');
          })
    });
-   describe('#fetch', function () {
-      it('should make a request to BASEURLw300IMAGE/LOC', function () {
+   describe('#fetch', () => {
+      it('should make a request to BASEURLw300IMAGE/LOC', () => {
          var ff = new ImageFetch(params);
          ff.fetch().then(data => assert(fs.writeFileSync.called));
       })

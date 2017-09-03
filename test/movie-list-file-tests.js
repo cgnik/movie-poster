@@ -14,9 +14,9 @@ const fileListMapResult = {
 };
 
 
-describe('MovieListFile', function () {
+describe('MovieListFile', () => {
    let MovieListFile = rewire('../src/movie-list-file.js');
-   describe('#load', function () {
+   describe('#load', () => {
       let fs = null;
       let mm = null;
       beforeEach(() => {
@@ -28,7 +28,7 @@ describe('MovieListFile', function () {
          MovieListFile.__set__('fs', fs);
          mm = new MovieListFile('/some/dir/');
       });
-      it('should look for and load the file', function () {
+      it('should look for and load the file', () => {
          fs.readFileSync.withArgs(mm._persistentMapFileName).returns(JSON.stringify(fileListMapResult));
          fs.existsSync.withArgs(mm._persistentMapFileName).returns(true);
          fs.statSync.withArgs(mm._persistentMapFileName).returns({
@@ -39,7 +39,7 @@ describe('MovieListFile', function () {
          mm.load();
          mm.movies.should.deep.equal(fileListMapResult);
       });
-      it('should not try to load when there is no map file', function () {
+      it('should not try to load when there is no map file', () => {
          fs.existsSync.withArgs(mm._persistentMapFileName).returns(false);
          fs.readFileSync.withArgs(mm._persistentMapFileName).throws;
          fs.statSync.withArgs(mm._persistentMapFileName).returns({
@@ -51,7 +51,7 @@ describe('MovieListFile', function () {
          mm.movies.should.deep.equal({});
       })
    });
-   describe('#persist', function () {
+   describe('#persist', () => {
       beforeEach(() => {
          fs = {
             existsSync: sinon.stub(),
@@ -61,7 +61,7 @@ describe('MovieListFile', function () {
          MovieListFile.__set__('fs', fs);
          mm = new MovieListFile('/some/dir/');
       });
-      it('should try to save the current movie map to a file', function () {
+      it('should try to save the current movie map to a file', () => {
          mockStream = {
             close: sinon.stub(),
             write: sinon.stub()
