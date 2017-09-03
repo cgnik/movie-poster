@@ -1,8 +1,8 @@
-fs = require('fs');
-
-const fetchMock = require('fetch-mock');
-const ImageFetch = MoviePoster.ImageFetch;
 describe('ImageFetch', () => {
+   let fs = null;
+   let fetchMock = require('fetch-mock');
+   let ImageFetch = rewire('../src/image-fetch');
+   let fetcher = null;
    let teststream = null;
    let testfile = null;
    const params = {
@@ -16,51 +16,45 @@ describe('ImageFetch', () => {
 
    beforeEach(function () {
       teststream = {pipe: sinon.stub()};
-      sinon.stub(http, 'get').returns(teststream);
       testfile = {write: sinon.stub()};
-      sinon.stub(fs, 'writeFileSync').returns(testfile);
-   });
-   afterEach(function () {
-      http.get.restore();
-      fs.writeFileSync.restore();
+      fs = {writeFileSync: sinon.stub().returns(testfile)};
+      ImageFetch.__set__('fetch', fetchMock);
+      fetcher = new ImageFetch(params);
    });
 
    describe('#getUrl', () => {
       it('should assemble the url BASEURLw300IMAGE/LOC', () => {
-         new ImageFetch(params).getUrl().should.equal('BASEURLw300IMAGE/LOC');
+         fetcher.getUrl().should.equal('BASEURLw300IMAGE/LOC');
       })
    });
    describe('#getExtension', () => {
       it('should return ".ext" for file.ext', () => {
-         fetcher = new ImageFetch(params);
          fetcher.imageLoc = 'file.ext';
          fetcher.getExtension().should.equal('.ext');
       });
       it('should return "" for file', () => {
-         fetcher = new ImageFetch(params);
          expect(fetcher.getExtension()).to.equal('');
       });
       it('should tolerate a null imageLoc', () => {
-         fetcher = new ImageFetch(params);
          fetcher.imageLoc = undefined;
          fetcher.getExtension.bind(fetcher, null).should.not.throw;
       })
    });
    describe('#getTargetFile', () => {
-      it('should return "IMAGE/PATH/target.ext" for IMAGE/LOC, file',
-         function () {
-            fetcher = new ImageFetch(params);
-            fetcher.imageLoc = 'file.ext';
-            fetcher.imagePath = 'IMAGE/PATH';
-            fetcher.fileName = 'target';
-            expect(fetcher.getTargetFile()).to
-               .equal('IMAGE/PATH/target.ext');
-         })
+      it('should return "IMAGE/PATH/target.ext" for IMAGE/LOC, file', () => {
+         fetcher.imageLoc = 'file.ext';
+         fetcher.imagePath = 'IMAGE/PATH';
+         fetcher.fileName = 'target';
+         expect(fetcher.getTargetFile()).to
+            .equal('IMAGE/PATH/target.ext');
+      })
    });
    describe('#fetch', () => {
       it('should make a request to BASEURLw300IMAGE/LOC', () => {
-         var ff = new ImageFetch(params);
-         ff.fetch().then(data => assert(fs.writeFileSync.called));
-      })
+         fetcher.fetch().then(data => assert(fs.writeFileSync.called)).catch((e) => {
+            console.error(e);
+            assert.fail(0, 1, "Error which should have failed the promise")
+         });
+      });
    })
 });
