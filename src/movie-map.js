@@ -1,45 +1,21 @@
 const fs = require('fs');
 const path = require('path');
 
-const MAPFILE = 'movie-map.json';
-
 const IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
 const MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg", ".avi"];
 
 class MovieMap {
    constructor() {
-      this._persistentMapFileName = MAPFILE;
       this.movies = {};
    }
 
-   initialize(directory) {
+   initialize(directory, initialMap) {
+      this.movies = initialMap || {};
       if (directory) {
          this._persistentMapFileName = path.join(directory, MAPFILE);
       }
       this.directory = directory;
-      this.load();
       this.addMovieFiles(fs.readdirSync(this.directory));
-   }
-
-   load() {
-      if (fs.existsSync(this._persistentMapFileName)) {
-         let fstat = fs.statSync(this._persistentMapFileName);
-         if (fstat && fstat.isFile()) {
-            this.movies = JSON.parse(fs.readFileSync(this._persistentMapFileName));
-         } else {
-            console.warning(this.persistentMapFileName + " Exists but is not a file. Unable to load initial map. Continuing.");
-         }
-      } else {
-         console.info("Pre-existing map file " + this._persistentMapFileName + " not found.");
-      }
-   }
-
-   persist() {
-      if (this.movies !== undefined && Object.keys(this.movies).length > 0) {
-         fs.createWriteStream(this._persistentMapFileName).write(JSON.stringify(this.movies)).close();
-      } else {
-         console.info("Skipping map persist -- nothing to write.");
-      }
    }
 
    clear() {
@@ -73,6 +49,18 @@ class MovieMap {
       } else {
          console.info("Skipping non-image-non-movie file: " + fileFullName);
       }
+   }
+
+   getMovieByName(name) {
+      return {[name]: this.movies[this.keyify(name)]};
+   }
+
+   updateMovie(name, props) {
+      let movie = this.getMovieByName(name);
+      if (movie && props) {
+         _.extend(movie[name], props);
+      }
+      return movie;
    }
 
    isMovieExtension(fileName) {
