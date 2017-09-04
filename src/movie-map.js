@@ -1,4 +1,4 @@
-const fs = require('fs');
+let fs = require('fs');
 const path = require('path');
 
 const IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
@@ -11,22 +11,12 @@ class MovieMap {
 
    initialize(directory, initialMap) {
       this.movies = initialMap || {};
-      if (directory) {
-         this._persistentMapFileName = path.join(directory, MAPFILE);
-      }
       this.directory = directory;
-      this.addMovieFiles(fs.readdirSync(this.directory));
+      fs.readdirSync(this.directory).forEach(this.addMovieFile.bind(this));
    }
 
    clear() {
       this.movies = {};
-   }
-
-   addMovieFiles(files) {
-      console.info("Mapping files");
-      files.forEach((function (fileFullName) {
-         this.addMovieFile(fileFullName);
-      }).bind(this));
    }
 
    addMovieFile(fileFullName) {
@@ -36,16 +26,21 @@ class MovieMap {
       let fileName = path.basename(fileFullName, fileExtension);
       let key = this.keyify(fileName);
       // get or create mapped name
-      let existing = this.movies[key] || {};
-      existing['name'] = fileName;
-      existing['directory'] = path.isAbsolute(fileFullName) ? path.dirname(fileFullName) + "/" : this.directory;
+      let movie = this.movies[key] || {};
+      movie['key'] = key;
+      movie['name'] = fileName;
+      let dir = path.dirname(fileFullName);
+      if (dir[dir.length - 1] != path.sep) {
+         dir += path.sep;
+      }
+      movie['directory'] = dir;
       // shuffle in the right props
       if (this.isMovieExtension(fileExtension)) {
-         existing.file = fileFullName;
-         this.movies[key] = existing;
+         movie.file = fileFullName;
+         this.movies[key] = movie;
       } else if (this.isImageExtension(fileExtension)) {
-         existing.image = fileFullName;
-         this.movies[key] = existing;
+         movie.image = fileFullName;
+         this.movies[key] = movie;
       } else {
          console.info("Skipping non-image-non-movie file: " + fileFullName);
       }

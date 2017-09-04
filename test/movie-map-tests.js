@@ -26,9 +26,10 @@ describe('MovieMap', () => {
    describe('#addMovieFiles', () => {
       beforeEach(b);
       it('should add movie files to the map, respecting existing entries', () => {
-         mm.addMovieFiles(["/path/something.mpg", "/path/SomeThing.jpg"]);
+         ["/path/something.mpg", "/path/SomeThing.jpg"].forEach(mm.addMovieFile.bind(mm));
          mm.movies.should.deep.equal({
             "something": {
+               'key': 'something',
                "name": "SomeThing",
                "file": "/path/something.mpg",
                "image": "/path/SomeThing.jpg",
@@ -44,6 +45,7 @@ describe('MovieMap', () => {
          mm.addMovieFile("/path/something.mpg");
          mm.movies.should.deep.equal({
             "something": {
+               'key': 'something',
                "name": "something",
                "file": "/path/something.mpg",
                "directory": "/path/"
@@ -55,6 +57,7 @@ describe('MovieMap', () => {
          mm.addMovieFile("/path/SomeThing.jpg");
          mm.movies.should.deep.equal({
             "something": {
+               'key': 'something',
                "directory": "/path/",
                "image": "/path/SomeThing.jpg",
                "name": "SomeThing"
@@ -70,6 +73,7 @@ describe('MovieMap', () => {
          mm.addMovieFile("/path/Something.mpg");
          mm.movies.should.deep.equal({
             'something': {
+               'key': 'something',
                'name': 'Something',
                'file': '/path/Something.mpg',
                "directory": "/path/"
@@ -80,11 +84,13 @@ describe('MovieMap', () => {
    describe('#getMovieByName', () => {
       const testmovieLower = {
          'something': {
+            'key': 'something',
             'name': 'something', 'file': '/path/something.mpg', "directory": "/path/"
          }
       };
       const testmovieMixed = {
          'something': {
+            "key": 'something',
             'name': 'SomEtHinG', 'file': '/path/SomEtHinG.mPG', "directory": "/path/"
          }
       };
@@ -135,6 +141,7 @@ describe('MovieMap', () => {
          expect(mm.movies['some'].prop).to.be.undefined;
          mm.updateMovie("some", {'prop': 'propValue'}).should.deep.equal({
             'some': {
+               "key": "some",
                "prop": 'propValue',
                "directory": "/path/",
                "file": "/path/some.mpg",
@@ -147,6 +154,12 @@ describe('MovieMap', () => {
       beforeEach(b);
       it('should make the provided string lower-case for use as a map key for the movie', () => {
          mm.keyify('BlAh').should.equal('blah');
+      })
+   });
+   describe('#toList', () => {
+      beforeEach(b);
+      it('should return a list of all movies in the map', () => {
+
       })
    });
 });

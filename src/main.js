@@ -1,33 +1,38 @@
 // modules
-const fs = require('fs');
-const Indexer = require('./indexer.js');
-const MovieSource = require('./moviedb-moviedb.js');
+let fs = require('fs');
+let Indexer = require('./indexer')
+let MovieSource = require('./moviedb-moviedb');
+
+const KEYFILE = 'themoviedb-key.txt';
 
 class Main {
    constructor(p) {
       let params = p || {};
       this.directories = params['directory'] || [];
       this.indexers = {};
+      this.themoviedbKey = params['themoviedbKey'];
       this.moviedb = null;
+      this.KEYFILE = params['keyfile'] || KEYFILE;
    }
 
    process() {
       this.initMoviedb();
       this.directories.forEach(directory => {
          this.indexers[directory] = new Indexer(this.moviedb, directory);
-         try {
-            console.info("Indexing directory " + directory);
-            this.indexers[directory].initialize();
-            this.indexers[directory].process();
-         } catch (e) {
-            console.error("Skipping directory '" + directory + "': " + e);
-         }
+         // try {
+         console.info("Indexing directory " + directory);
+         this.indexers[directory].initialize();
+         this.indexers[directory].process();
+         // } catch (e) {
+         //    console.error("Skipping directory '" + directory + "': " + e);
+         // }
       });
    }
 
+
    initMoviedb() {
       if (this.themoviedbKey == undefined) {
-         this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
+         this.themoviedbKey = fs.readFileSync(this.KEYFILE);
       }
       this.moviedb = new MovieSource({'themoviedbKey': this.themoviedbKey});
       if (this.moviedb === undefined) {

@@ -12,7 +12,6 @@ class Indexer {
       this.movieMap = new MovieMap();
       this.db = moviedb;
       this.throttle = new Throttle();
-
    }
 
    clear() {
