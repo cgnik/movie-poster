@@ -1,5 +1,5 @@
 const urlencode = require('urlencode');
-const Fetcher = require('./image-fetch.js');
+const Fetcher = require('./file-retriever.js');
 const mdb = require('themoviedb-javascript-library');
 
 class MovieDbMovieDb {
@@ -52,7 +52,7 @@ class MovieDbMovieDb {
          baseUrl: this.configuration.images.base_url
       };
       let fetch = new Fetcher(props);
-      return fetch.fetch();
+      return fetch.retrieve();
    }
 
    findBestTitleMatch(title, titleList) {

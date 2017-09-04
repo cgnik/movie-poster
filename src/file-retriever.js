@@ -1,6 +1,7 @@
-const fetch = require('isomorphic-fetch');
+let fetch = require('isomorphic-fetch');
+let fs = require('fs');
 
-class ImageFetch {
+class FileRetriever {
    constructor(p) {
       let params = p || {};
       this.fileName = '';
@@ -10,13 +11,14 @@ class ImageFetch {
       merge(this, params);
    }
 
-   fetch() {
+   retrieve() {
       return fetch(this.getUrl()).then(result => {
          if (result.status > 299) {
             console.error(result.status);
-         } else {
-            fs.writeFileSync(this.getTargetFile(), result)
+            return Promise.reject(result.status);
          }
+         fs.writeFileSync(this.getTargetFile(), result)
+         return result.blob();
       })
    }
 
@@ -43,4 +45,4 @@ class ImageFetch {
    }
 }
 
-module.exports = ImageFetch;
+module.exports = FileRetriever;

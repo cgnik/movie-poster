@@ -1,4 +1,3 @@
-const mockFetch = require('fetch-mock');
 
 describe('MovieDbMovieDb', () => {
    const MovieDbMovieDb = MoviePoster.MovieDbMovieDb;
@@ -115,7 +114,7 @@ describe('MovieDbMovieDb', () => {
          };
          mdb = new MovieDbMovieDb({themoviedbKey: 'testKey', moviedb: mockMdb});
       });
-      it('should call the moviedb api to fetch the image list', () => {
+      it('should call the moviedb api to retrieve the image list', () => {
          const testResult = {
             movieId: 123,
             images: testImages.posters

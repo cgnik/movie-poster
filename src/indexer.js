@@ -112,7 +112,7 @@ class Indexer {
 
    enqueueSearchImage(movieId) {
       this.throttle.add((function () {
-         log.info("Enqueueing image fetch for movieId " + movieId);
+         log.info("Enqueueing image retrieve for movieId " + movieId);
          this.db.fetchMovieImages(movieId, (function (movieId, images) {
             let poster = this.db.findBestPoster(movieId, images);
             log.debugObject(poster);
@@ -126,7 +126,7 @@ class Indexer {
    enqueueFetchImage(movieId) {
       let movie = this.movieMap.getMovieById(movieId);
       this.throttle.add((function (movie) {
-         log.debug("Enqueueing fetch image for " + JSON.stringify(movie));
+         log.debug("Enqueueing retrieve image for " + JSON.stringify(movie));
          this.db.fetchMovieImage(movie);
       }).bind(this, movie));
    }
