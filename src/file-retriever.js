@@ -1,5 +1,6 @@
 let fetch = require('isomorphic-fetch');
 let fs = require('fs');
+let _ = require('underscore');
 
 class FileRetriever {
    constructor(p) {

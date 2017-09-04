@@ -1,4 +1,6 @@
 let fs = require('fs');
+const _ = require('underscore');
+
 const path = require('path');
 
 const IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];

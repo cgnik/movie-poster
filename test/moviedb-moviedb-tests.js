@@ -25,7 +25,7 @@ describe('MovieDbMovieDb', () => {
       });
       it('calls moviedb to find movie, calls callback with results', (done) => {
          let testResults = {testResult: 1};
-         mockMdb.search.movies.callsArgWith(1, testResults);
+         mockMdb.search.movies.returns(Promise.resolve(testResults));
          mdb.searchMovies("Test Movie").then(result => {
             result.should.deep.equal({
                movieName: "Test Movie",
@@ -118,7 +118,7 @@ describe('MovieDbMovieDb', () => {
       });
       it('should call the moviedb api to retrieve the image list', (done) => {
          const testResult = {
-            movieId: 123,
+            id: 123,
             images: testImages.posters
          };
          mockMdb.movies.images.callsArgWith(1, testImages);

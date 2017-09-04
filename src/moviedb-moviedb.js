@@ -38,9 +38,9 @@ class MovieDbMovieDb {
    fetchMovieImages(movieId) {
       return new Promise((fulfill, reject) => {
          this.moviedb.movies.images({
-            id: movieId
+            movie_id: movieId
          }, result => {
-            fulfill({movieId: movieId, images: result.posters || []})
+            fulfill({id: movieId, images: result.posters || []})
          }, reject);
       });
    }

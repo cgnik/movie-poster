@@ -21,8 +21,14 @@ class Indexer {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
-         this.movieSearchResults(result.movieName, (result['searchResult']['results'] || []));
-      })));
+         return this.movieSearchResults(result.movieName, (result['searchResult']['results'] || []));
+      }))).then(movies => { // just need to chain-sequence, don't actually care about which got new IDs
+         return Promise.all(this.findMissingMovieImages().filter(movie => movie.id).map(missing => {
+            return this.db.fetchMovieImages(missing.id);
+         }))
+      }).then(images => {
+         console.log(images);
+      })
    }
 
    // Finds missing ids in moviemap and enqueues fetches
