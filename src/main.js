@@ -1,6 +1,6 @@
 // modules
 let fs = require('fs');
-let Indexer = require('./indexer')
+let Indexer = require('./indexer');
 let MovieSource = require('./moviedb-moviedb');
 
 const KEYFILE = 'themoviedb-key.txt';
@@ -17,12 +17,13 @@ class Main {
 
    process() {
       this.initMoviedb();
-      this.directories.forEach(directory => {
+      return Promise.all(this.directories.forEach(directory => {
          this.indexers[directory] = new Indexer(this.moviedb, directory);
          console.info("Indexing directory " + directory);
          this.indexers[directory].initialize();
+         console.info("Processing directory " + directory);
          this.indexers[directory].process();
-      });
+      })).catch(console.error);
    }
 
 

@@ -4,6 +4,5 @@ module.exports = {
    Indexer: require('./indexer'),
    Main: require('./main'),
    MovieMap: require('./movie-map'),
-   MovieDbMovieDb: require('./moviedb-moviedb'),
-   Throttle: require('./throttle')
+   MovieDbMovieDb: require('./moviedb-moviedb')
 };

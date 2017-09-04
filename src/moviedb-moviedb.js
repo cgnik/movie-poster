@@ -1,6 +1,6 @@
 const urlencode = require('urlencode');
 const Fetcher = require('./file-retriever.js');
-const mdb = require('themoviedb-javascript-library');
+const mdb = require('themoviedatabase');
 
 class MovieDbMovieDb {
    constructor(p) {

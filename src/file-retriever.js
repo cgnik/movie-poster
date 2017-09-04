@@ -4,11 +4,12 @@ let fs = require('fs');
 class FileRetriever {
    constructor(p) {
       let params = p || {};
-      this.fileName = '';
-      this.imagePath = '';
-      this.imageLoc = '';
-      this.baseUrl = '';
-      merge(this, params);
+      this.params = _.extend({
+         fileName: '',
+         imagePath: '',
+         imageLoc: '',
+         baseUrl: ''
+      }, params);
    }
 
    retrieve() {
@@ -23,22 +24,22 @@ class FileRetriever {
    }
 
    getTargetFile() {
-      return path.join(path.normalize(this.imagePath), this.fileName
-         + this.getExtension(this.imageLoc));
+      return path.join(path.normalize(this.params.imagePath), this.params.fileName
+         + this.getExtension(this.params.imageLoc));
    }
 
    getUrl() {
-      return this.baseUrl + "w300" + this.imageLoc;
+      return this.params.baseUrl + "w300" + this.params.imageLoc;
    }
 
    getExtension() {
       var extension = '';
-      if (this.imageLoc == null || this.imageLoc === undefined) {
+      if (!this.params.imageLoc) {
          return;
       }
-      var dotLoc = this.imageLoc.lastIndexOf('.');
+      var dotLoc = this.params.imageLoc.lastIndexOf('.');
       if (dotLoc >= 0) {
-         extension = this.imageLoc.substr(dotLoc, this.imageLoc.length
+         extension = this.params.imageLoc.substr(dotLoc, this.params.imageLoc.length
             - dotLoc);
       }
       return extension;

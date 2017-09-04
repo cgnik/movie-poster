@@ -34,23 +34,23 @@ describe('FileRetriever', () => {
    describe('#getExtension', () => {
       beforeEach(b4e);
       it('should return ".ext" for file.ext', () => {
-         retriever.imageLoc = 'file.ext';
+         retriever.params.imageLoc = 'file.ext';
          retriever.getExtension().should.equal('.ext');
       });
       it('should return "" for file', () => {
          expect(retriever.getExtension()).to.equal('');
       });
       it('should tolerate a null imageLoc', () => {
-         retriever.imageLoc = undefined;
+         retriever.params.imageLoc = undefined;
          retriever.getExtension.bind(retriever, null).should.not.throw;
       })
    });
    describe('#getTargetFile', () => {
       beforeEach(b4e);
       it('should return "IMAGE/PATH/target.ext" for IMAGE/LOC, file', () => {
-         retriever.imageLoc = 'file.ext';
-         retriever.imagePath = 'IMAGE/PATH';
-         retriever.fileName = 'target';
+         retriever.params.imageLoc = 'file.ext';
+         retriever.params.imagePath = 'IMAGE/PATH';
+         retriever.params.fileName = 'target';
          expect(retriever.getTargetFile()).to
             .equal('IMAGE/PATH/target.ext');
       })
