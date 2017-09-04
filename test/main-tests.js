@@ -35,14 +35,16 @@ describe('Main', () => {
    });
 
    describe('#process', () => {
-      it('should initialize the indexer and moviedb', () => {
+      it('should initialize the indexer and moviedb', (done) => {
          main = new Main();
          fs.readFileSync.returns('blahblah')
          main.directories = ['./'];
-         main.process();
-         main.indexers['./'].should.exist;
-         fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
-         mockSource.should.have.been.calledWith({'themoviedbKey': 'blahblah'});
+         main.process().then(results => {
+            main.indexers['./'].should.exist;
+            fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
+            mockSource.should.have.been.calledWith({'themoviedbKey': 'blahblah'});
+            done();
+         }).catch(e => done(e));
       })
    })
 });

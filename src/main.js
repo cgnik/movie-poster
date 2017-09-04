@@ -17,12 +17,12 @@ class Main {
 
    process() {
       this.initMoviedb();
-      return Promise.all(this.directories.forEach(directory => {
+      return Promise.all(this.directories.map(directory => {
          this.indexers[directory] = new Indexer(this.moviedb, directory);
          console.info("Indexing directory " + directory);
          this.indexers[directory].initialize();
          console.info("Processing directory " + directory);
-         this.indexers[directory].process();
+         return this.indexers[directory].process();
       })).catch(console.error);
    }
 
