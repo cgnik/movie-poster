@@ -17,10 +17,11 @@ class Indexer {
 
    process() {
       return Promise.all(this.findMissingMovieIds().map(movie => {
+         console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(movies => {
          return Promise.all(movies.map(movie => {
-            console.out('Found movie: ' + JSON.stringify(movie));
+            console.info('Found movie: ' + JSON.stringify(movie));
             return this.movieSearchResults(movie);
          }));
       });

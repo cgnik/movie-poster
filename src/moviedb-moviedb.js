@@ -27,7 +27,7 @@ class MovieDbMovieDb {
       return new Promise((fulfill, reject) => {
          this.moviedb.search.movies({
             query: '"' + urlencode(movieName) + '"'
-         }, (result) => {
+         }).then(result => {
             fulfill({movieName: movieName, searchResult: result})
          }, reject);
       });
@@ -55,8 +55,8 @@ class MovieDbMovieDb {
    }
 
    findBestTitleMatch(title, titleList) {
-      if (title === undefined || title == null || titleList == undefined || titleList == null) {
-         throw Error("Cannot match movie name or list which is null.");
+      if (!title || !titleList) {
+         throw Error("Cannot match movie name (" + title + ") or list (" + titleList + ") which is null.");
       }
       var reduced = titleList
          .map(function (n) {
