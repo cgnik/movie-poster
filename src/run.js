@@ -1,6 +1,8 @@
-require('./globals.js');
-Main = require('./main.js');
+const Main = require('./main');
+const cli = require('command-line-args');
 
-main = new Main();
-main.initProcessArgs(process.argv);
+let main = new Main(cli([
+      {name: 'directory', multiple: true,  alias: 'd', type: String, defaultOption: true}
+   ])
+);
 main.process();

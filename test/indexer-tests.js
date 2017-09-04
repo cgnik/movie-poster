@@ -4,7 +4,7 @@
 
 let MovieDb = require('../src/moviedb-moviedb.js');
 
-describe('Indexer', function () {
+describe('Indexer', () => {
     let Indexer = require('../src/indexer.js');
     index = null;
     moviemap = null;
@@ -16,29 +16,17 @@ describe('Indexer', function () {
         index = new Indexer(movieDb);
         moviemap = index.movieMap;
         index.throttle = sinon.mock();
-    })
-    describe('#clear', function () {
-        it('should empty the movieIds and the movieMap', function () {
+    });
+    describe('#clear', () => {
+        it('should empty the movieIds and the movieMap', () => {
             index.movieIds['alien'] = {'alien': '123'};
             index.movieIds.should.not.be.empty;
             index.clear();
             index.movieIds.should.be.empty;
         })
-    })
-
-    describe('#initMovieIds', function () {
-        it('should load existing movie ids from a file', function () {
-            sinon.stub(fs, 'readFileSync').withArgs('movie-ids.json').returns('{"aliens" : 679}');
-            sinon.stub(fs, 'existsSync').withArgs('movie-ids.json').returns(true);
-            index.initMovieIds();
-            expect(index.movieIds['aliens']).to.equal(679);
-            fs.readFileSync.should.have.been.calledWith('movie-ids.json');
-            fs.readFileSync.restore();
-            fs.existsSync.restore();
-        })
-    })
-    describe('#applyMovieIdsToMap', function () {
-        it('should apply the movieIds to the movieMap by lower-case title', function () {
+    });
+    describe('#applyMovieIdsToMap', () => {
+        it('should apply the movieIds to the movieMap by lower-case title', () => {
             test = {};
             moviemap.getMovie = sinon.stub();
             moviemap.getMovie.withArgs('alien').returns(test);
@@ -46,17 +34,17 @@ describe('Indexer', function () {
             index.applyMovieIdsToMap();
             expect(moviemap.getMovie.calledOnce).to.be.true;
             expect(test.id).to.equal("123");
-        })
-        it('should tolerate ids for movies not in the map', function () {
+        });
+        it('should tolerate ids for movies not in the map', () => {
             moviemap.getMovie = sinon.stub();
             moviemap.getMovie.withArgs('alien').returns(undefined);
             index.movieIds = {"alien": "123"};
             index.applyMovieIdsToMap();
             expect(moviemap.getMovie.calledOnce).to.be.true;
         })
-    })
-    describe('#findMissingMovieIds', function () {
-        it('should figure out which mapped movies don"t have IDs', function () {
+    });
+    describe('#findMissingMovieIds', () => {
+        it('should figure out which mapped movies don"t have IDs', () => {
             index.clear();
             testObject = [{
                 name: 'Alien',
@@ -69,9 +57,9 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.findMissingMovieIds().should.deep.equal(testObject);
         })
-    })
-    describe('#findMissingMovieImages', function () {
-        it('should figure out which mapped movies don"t have imagess', function () {
+    });
+    describe('#findMissingMovieImages', () => {
+        it('should figure out which mapped movies don"t have imagess', () => {
             testObject = [{"name": "Aliens", "file": "/path/Aliens.mpg"}];
             testList = [{'id': 123, 'name': 'blah', 'image': '/path/image.jpg'}];
             testList = testList.concat(testObject);
@@ -79,9 +67,9 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.findMissingMovieImages().should.deep.equal(testObject);
         })
-    })
-    describe('#findFetchableImages', function () {
-        it('should reply with a list of movies with an imageLoc property and no image file', function () {
+    });
+    describe('#findFetchableImages', () => {
+        it('should reply with a list of movies with an imageLoc property and no image file', () => {
             testObject = [{"name": "Aliens", "file": "/path/Aliens.mpg", "imageLoc": "url/url/url"}];
             testList = [{'id': 123, 'name': 'blah', 'image': '/path/image.jpg'}, {
                 'id': 456,
@@ -94,9 +82,9 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.findFetchableImages().should.deep.equal(testObject);
         })
-    })
-    describe('#enqueueMissingMovieImages', function () {
-        it('should filter the movie map and add fetches for missing images', function () {
+    });
+    describe('#enqueueMissingMovieImages', () => {
+        it('should filter the movie map and add fetches for missing images', () => {
             testList = [{'id': 123, 'name': 'blah', 'image': '/path/blah.jpg'}, {'id': 345, 'name': 'bloo'}];
             moviemap.toList = sinon.stub();
             moviemap.toList.returns(testList);
@@ -104,8 +92,8 @@ describe('Indexer', function () {
             index.enqueueSearchImages();
             index.throttle.add.should.have.been.calledOnce;
         })
-    })
-    describe('#enqueueFetchImages', function () {
+    });
+    describe('#enqueueFetchImages', () => {
         beforeEach(function () {
             testObject = {'id': 789, 'name': 'bloob', "imageLoc": "/some/location/"};
             testList = [{"name": "blaa", "imageLoc": "/some/path/"}, {
@@ -121,8 +109,8 @@ describe('Indexer', function () {
             index.throttle.add = sinon.stub();
             index.enqueueFetchImage = sinon.stub();
         })
-    })
-    describe('#enqueueSearchImages', function () {
+    });
+    describe('#enqueueSearchImages', () => {
         beforeEach(function () {
             var testObject = {'id': 789, 'name': 'bloob', "imageLoc": "/some/location/"};
             var testList = [{"name": "blaa", "imageLoc": "/some/path/"}, {
@@ -137,16 +125,16 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.throttle.add = sinon.stub();
             index.enqueueSearchImage = sinon.stub();
-        })
-        it('should call enqueueSearchImage for every imageless movie in the map which has a movieId', function () {
+        });
+        it('should call enqueueSearchImage for every imageless movie in the map which has a movieId', () => {
             index.enqueueSearchImages();
             moviemap.toList.should.have.been.calledOnce;
             index.enqueueSearchImage.should.have.been.calledTwice;
             index.enqueueSearchImage.should.have.been.calledWith(789);
             index.enqueueSearchImage.should.have.been.calledWith(345);
         })
-    })
-    describe('#enqueueMissingIds', function () {
+    });
+    describe('#enqueueMissingIds', () => {
         beforeEach(function () {
             testObject = {'name': 'bloob', "file": "/some/file.mpg"};
             testList = [{"name": "blaa", "imageLoc": "/some/path/"}, {
@@ -161,10 +149,10 @@ describe('Indexer', function () {
             moviemap.toList.returns(testList);
             index.throttle.add = sinon.stub();
             index.enqueueMissingId = sinon.stub();
-        })
-        it('should call enqueueMissingId for every id-less movie in the map', function () {
+        });
+        it('should call enqueueMissingId for every id-less movie in the map', () => {
             index.enqueueMissingIds();
             index.enqueueMissingId.should.have.been.calledTwice;
         })
     })
-})
+});

@@ -1,125 +1,81 @@
-const MAPFILE = 'movie-map.json';
+let fs = require('fs');
+const path = require('path');
 
-const MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg", ".avi"];
 const IMAGE_EXTENSIONS = [".jpg", ".gif", ".png"];
+const MOVIE_EXTENSIONS = [".m4v", ".mkv", ".mp4", ".vob", ".mpg", ".mpeg", ".avi"];
 
 class MovieMap {
-    constructor() {
-        this.movies = {};
-    }
+   constructor() {
+      this.movies = {};
+   }
 
-    initialize(directory) {
-        this._persistentMapFileName = directory + MAPFILE;
-        this.directory = directory;
-        this.load();
-        this.addMovieFiles(fs.readdirSync(this.directory));
-    }
+   initialize(directory, initialMap) {
+      this.movies = initialMap || {};
+      this.directory = directory;
+      fs.readdirSync(this.directory).forEach(this.addMovieFile.bind(this));
+   }
 
-    load() {
-        if (fs.existsSync(this._persistentMapFileName)) {
-            try {
-                let fstat = fs.statSync(this._persistentMapFileName);
-                if (fstat && fstat.isFile()) {
-                    this.movies = JSON.parse(fs.readFileSync(this._persistentMapFileName));
-                } else {
-                    log.warning(this.persistentMapFileName + " Exists but is not a file. Unable to load initial map. Continuing.");
-                }
-            } catch (e) {
-                log.error("Unable to initialize existing movie-map.json: could not parse - " + e);
-            }
-        } else {
-            log.info("Pre-existing map file " + this._persistentMapFileName + " not found.");
-        }
-    }
+   clear() {
+      this.movies = {};
+   }
 
-    persist() {
-        if (this.movies !== undefined && Object.keys(this.movies).length > 0) {
-            fs.createWriteStream(this._persistentMapFileName).write(JSON.stringify(this.movies)).close();
-        } else {
-            log.info("Skipping map persist -- nothing to write.");
-        }
-    }
+   addMovieFile(fileFullName) {
+      console.info("Mapping movie file " + fileFullName);
+      // figure out pieces parts of file name
+      let fileExtension = path.extname(fileFullName);
+      let fileName = path.basename(fileFullName, fileExtension);
+      let key = this.keyify(fileName);
+      // get or create mapped name
+      let movie = this.movies[key] || {};
+      movie['key'] = key;
+      movie['name'] = fileName;
+      let dir = path.dirname(fileFullName);
+      if (dir[dir.length - 1] != path.sep) {
+         dir += path.sep;
+      }
+      movie['directory'] = dir;
+      // shuffle in the right props
+      if (this.isMovieExtension(fileExtension)) {
+         movie.file = fileFullName;
+         this.movies[key] = movie;
+      } else if (this.isImageExtension(fileExtension)) {
+         movie.image = fileFullName;
+         this.movies[key] = movie;
+      } else {
+         console.info("Skipping non-image-non-movie file: " + fileFullName);
+      }
+   }
 
-    toList() {
-        return _.map(this.movies, function (k, v) {
-            return k;
-        });
-    }
+   getMovieByName(name) {
+      return {[name]: this.movies[this.keyify(name)]};
+   }
 
-    clear() {
-        this.movies = {};
-    }
+   updateMovie(name, props) {
+      let movie = this.getMovieByName(name);
+      if (movie && props) {
+         _.extend(movie[name], props);
+      }
+      return movie;
+   }
 
-    addMovieFiles(files) {
-        log.debug("Mapping " + files.length + " files");
-        files.forEach((function (fileFullName) {
-            log.debug("Mapping file " + fileFullName);
-            this.addMovieFile(fileFullName);
-        }).bind(this));
-    }
+   toList() {
+      return Object.keys(this.movies).map(k => this.movies[k]);
+   }
 
-    addMovieFile(fileFullName) {
-        // figure out pieces parts of file name
-        let extname = path.extname(fileFullName);
-        let mcname = path.basename(fileFullName, extname);
-        let name = this.keyify(mcname);
-        // get or create mapped name
-        let existing = this.movies[name] || {};
-        if (existing.name == undefined) {
-            existing.name = mcname;
-        }
-        if (existing.directory == undefined) {
-            existing.directory = path.isAbsolute(fileFullName) ? path.dirname(fileFullName) + "/" : this.directory;
-        }
-        // shuffle in the right props
-        if (this.isMovieExtension(extname)) {
-            existing.file = fileFullName;
-            this.movies[name] = existing;
-        } else if (this.isImageFile(extname)) {
-            existing.image = fileFullName;
-            this.movies[name] = existing;
-        } else {
-            log.info("Skipping non-image-non-movie file: " + fileFullName);
-        }
-    }
+   isMovieExtension(fileName) {
+      return MOVIE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
+   }
 
-    getMovie(movieName) {
-        return this.movies[this.keyify(movieName)];
-    }
+   isImageExtension(fileName) {
+      return IMAGE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
+   }
 
-    getMovieById(movieId) {
-        let movie = null;
-        _.keys(this.movies).some((function (key) {
-            if (this.movies[key].id === movieId) {
-                movie = this.movies[key];
-                return true;
-            }
-        }).bind(this));
-        return movie;
-    }
-
-    isMovieExtension(fileName) {
-        return MOVIE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
-    }
-
-    isImageFile(fileName) {
-        return IMAGE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
-    }
-
-    setMovieProperties(movieId, properties) {
-        let movie = this.getMovieById(movieId);
-        if (movie !== undefined && movie != null) {
-            merge(movie, properties);
-            return true;
-        }
-        return false;
-    }
-
-    keyify(s) {
-        if (s === undefined) {
-            return undefined;
-        }
-        return s.toString().toLowerCase();
-    }
+   keyify(s) {
+      if (!s) {
+         return;
+      }
+      return s.toString().toLowerCase();
+   }
 }
+
 module.exports = MovieMap;

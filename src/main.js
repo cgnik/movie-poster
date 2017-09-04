@@ -1,70 +1,40 @@
 // modules
+let fs = require('fs');
+let Indexer = require('./indexer')
+let MovieSource = require('./moviedb-moviedb');
 
-let Indexer = require('./indexer.js');
-let MovieSource = require('./moviedb-moviedb.js');
+const KEYFILE = 'themoviedb-key.txt';
 
 class Main {
-    constructor() {
-        this.directories = [];
-        this.indexers = {};
-        this.moviedb = null;
-    }
+   constructor(p) {
+      let params = p || {};
+      this.directories = params['directory'] || [];
+      this.indexers = {};
+      this.themoviedbKey = params['themoviedbKey'];
+      this.moviedb = null;
+      this.KEYFILE = params['keyfile'] || KEYFILE;
+   }
 
-    process() {
-        var self = this;
-        this.initMoviedb();
-        this.directories.forEach((function (directory) {
-            self.indexers[directory] = new Indexer(self.moviedb, directory);
-            try {
-                log.info("Indexing directory " + directory);
-                self.indexers[directory].initialize();
-                self.indexers[directory].process();
-            } catch (e) {
-                log.error("Skipping directory '" + directory + "': " + e);
-            }
-        }).bind(this));
-    }
+   process() {
+      this.initMoviedb();
+      this.directories.forEach(directory => {
+         this.indexers[directory] = new Indexer(this.moviedb, directory);
+         console.info("Indexing directory " + directory);
+         this.indexers[directory].initialize();
+         this.indexers[directory].process();
+      });
+   }
 
-    initProcessArgs(args) {
-        var params = (args || []).slice(2);
-        params.forEach((function (val, index, array) {
-            if (val.indexOf("--") == 0) {
-                var whole = val.substr(2);
-                var name = whole.substr(0, whole.indexOf('='));
-                var value = whole.substr(whole.indexOf('=') + 1);
-                if (name && value) {
-                    this[name] = value;
-                }
-            } else if (!(val.indexOf('--') >= 0)) {
-                var stats = fs.statSync(val);
-                if (stats && stats.isDirectory()) {
-                    log.always("Adding movie dir " + val);
-                    this.directories.push(val);
-                } else if (stats.isFile()) {
-                    log.always("Adding movie file " + val);
-                    this.files.push(val);
-                } else {
-                    msg = "Cannot scan nonexistent dir " + val;
-                    log.error(msg)
-                    throw new Error(msg);
-                }
-            }
-        }).bind(this));
-        if (this.directories.length < 1) {
-            log.always("No diretory specified.  Defaulting to ./");
-            this.directories.push('./');
-        }
-    }
 
-    initMoviedb() {
-        if (this.themoviedbKey == undefined) {
-            this.themoviedbKey = fs.readFileSync('themoviedb-key.txt');
-        }
-        this.moviedb = new MovieSource({'themoviedbKey': this.themoviedbKey});
-        if (this.moviedb === undefined) {
-            throw new Error("Unable to initialize moviedb searching");
-        }
-    }
+   initMoviedb() {
+      if (this.themoviedbKey == undefined) {
+         this.themoviedbKey = fs.readFileSync(this.KEYFILE);
+      }
+      this.moviedb = new MovieSource({'themoviedbKey': this.themoviedbKey});
+      if (this.moviedb === undefined) {
+         throw new Error("Unable to initialize moviedb searching");
+      }
+   }
 }
 
 module.exports = Main;

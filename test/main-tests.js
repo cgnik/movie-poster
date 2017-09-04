@@ -1,75 +1,48 @@
 /**
  * Created by christo on 9/5/15.
  */
-let Indexer = sinon.mock(require('../src/indexer.js'));
-let MovieSource = sinon.mock(require('../src/moviedb-moviedb.js'));
-let Main = require('../src/main.js');
 
-describe('Main', function () {
+let Main = rewire('../src/main');
+describe('Main', () => {
+   let main = null;
+   let fs = null;
+   let mockIndexer = null, mockSource = null;
+   beforeEach(function () {
+      main = null;
+      fs = {
+         readFileSync: sinon.stub()
+      };
+      mockIndexer = function () {
+         return {initialize: sinon.stub(), process: sinon.stub()}
+      };
+      mockSource = sinon.stub().returns({});
+      Main.__set__('fs', fs);
+      Main.__set__('Indexer', mockIndexer);
+      Main.__set__('MovieSource', mockSource);
+   });
+   describe('#initMoviedb', () => {
+      it('should set the moviedb key from a file', () => {
+         main = new Main();
+         main.initMoviedb();
+         fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
 
-    var main = null;
-    beforeEach(function () {
-        main = new Main();
-    })
-    describe('#initMoviedb', function () {
-        it('should set the moviedb key from a file', function () {
-            sinon.stub(fs, 'readFileSync').returns('blahblah');
-            main.initMoviedb();
-            fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
-            fs.readFileSync.restore();
-        })
-        it('should initialize from provided key and not the file', function () {
-            sinon.stub(fs, 'readFileSync').returns('blahblah');
-            main.themoviedbKey = "blahblah";
-            main.initMoviedb();
-            fs.readFileSync.should.have.not.been.calledWith('themoviedb-key.txt');
-            fs.readFileSync.restore();
-        })
-    })
-    describe('#initProcessArgs', function () {
-        it('should make all -- arguments part of "this"', function () {
-            props = ['node.command', 'script.myself', '--one=1', '--two=2'];
-            main.initProcessArgs(props);
-            main.one.should.equal('1');
-            main.two.should.equal('2');
-        })
-        it('should make non-"--" arguments into main.dirs entries', function () {
-            props = ['node.command', 'self.scriptline', '--one=maximum', "/some/dir/"];
-            statSyncStub = sinon.stub(fs, 'statSync');
-            statSyncStub.withArgs('/some/dir/').returns({
-                isDirectory: function () {
-                    return true;
-                }
-            });
-            statSyncStub.withArgs('/some/dir/file.mpg').returns({
-                isDirectory: function () {
-                    return false;
-                },
-                isFile: function () {
-                    return true;
-                }
-            })
-            main.initProcessArgs(props);
-            main.directories.should.deep.equal(['/some/dir/']);
-        })
-        it('should check all file and dir arguments to see if they exist', function () {
-            params = ['/dir/that/definitely/does/not/exist'];
-            expect(main.initProcessArgs.bind(main, params)).to.throw;
-        })
-    })
-    describe('#process', function () {
-        it('should initialize the indexer and moviedb', function () {
-            sinon.stub(fs, 'readFileSync').returns('blahblah');
+      });
+      it('should initialize from provided key and not the file', () => {
+         main = new Main({'themoviedbKey': 'blahblah'});
+         main.initMoviedb();
+         fs.readFileSync.should.have.not.been.calledWith('themoviedb-key.txt');
+      })
+   });
 
-            main.directories = ['./'];
-            main.process();
-            main.indexers['./'].should.exist;
-            console.log(main.indexers['./'].initialize);
-            // FIXME: the following line doesn't work because can't seem to stub the return from the Indexer.constructor so that it
-            // still has stubbed methods from Indexer
-            // main.indexers['./'].initialize.should.have.been.calledOnce;
-            fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
-            fs.readFileSync.restore();
-        })
-    })
-})
+   describe('#process', () => {
+      it('should initialize the indexer and moviedb', () => {
+         main = new Main();
+         fs.readFileSync.returns('blahblah')
+         main.directories = ['./'];
+         main.process();
+         main.indexers['./'].should.exist;
+         fs.readFileSync.should.have.been.calledWith('themoviedb-key.txt');
+         mockSource.should.have.been.calledWith({'themoviedbKey': 'blahblah'});
+      })
+   })
+});
