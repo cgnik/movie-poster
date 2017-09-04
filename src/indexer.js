@@ -16,13 +16,13 @@ class Indexer {
    }
 
    process() {
-      return Promise.all(this.findMissingMovieIds().forEach(movie => {
+      return Promise.all(this.findMissingMovieIds().map(movie => {
          return this.db.searchMovies(movie.name);
       })).then(movies => {
-         movies.forEach(movie => {
+         return Promise.all(movies.map(movie => {
             console.out('Found movie: ' + JSON.stringify(movie));
-            movie => this.movieSearchResults(movie);
-         })
+            return this.movieSearchResults(movie);
+         }));
       });
    }
 

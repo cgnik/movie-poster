@@ -13,9 +13,8 @@ class MovieDbMovieDb {
       this.themoviedbKey = params.themoviedbKey;
       if (this.moviedb == undefined) {
          console.info("Initializing moviedb");
-         this.moviedb = mdb;
+         this.moviedb = new mdb(this.themoviedbKey);
       }
-      this.moviedb.common.api_key = this.themoviedbKey;
       if (this.moviedb === undefined) {
          throw new Error("Unable to load moviedb");
       }
@@ -26,7 +25,7 @@ class MovieDbMovieDb {
          throw new Error("Cannot search movies with null name");
       }
       return new Promise((fulfill, reject) => {
-         this.moviedb.search.getMovie({
+         this.moviedb.search.movies({
             query: '"' + urlencode(movieName) + '"'
          }, (result) => {
             fulfill({movieName: movieName, searchResult: result})
@@ -36,7 +35,7 @@ class MovieDbMovieDb {
 
    fetchMovieImages(movieId) {
       return new Promise((fulfill, reject) => {
-         this.moviedb.movies.getImages({
+         this.moviedb.movies.images({
             id: movieId
          }, result => {
             fulfill({movieId: movieId, images: result.posters || []})
