@@ -159,7 +159,16 @@ describe('MovieMap', () => {
    describe('#toList', () => {
       beforeEach(b);
       it('should return a list of all movies in the map', () => {
-
+         mm.addMovieFile("/path/some.mpg");
+         expect(mm.movies['some'].prop).to.be.undefined;
+         mm.toList().should.deep.equal(
+            [{
+               "key": "some",
+               "directory": "/path/",
+               "file": "/path/some.mpg",
+               "name": "some"
+            }]
+         );
       })
    });
 });

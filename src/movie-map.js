@@ -58,6 +58,10 @@ class MovieMap {
       return movie;
    }
 
+   toList() {
+      return Object.keys(this.movies).map(k => this.movies[k]);
+   }
+
    isMovieExtension(fileName) {
       return MOVIE_EXTENSIONS.indexOf(fileName.toLowerCase()) >= 0;
    }
