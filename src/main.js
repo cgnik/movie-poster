@@ -19,13 +19,9 @@ class Main {
       this.initMoviedb();
       this.directories.forEach(directory => {
          this.indexers[directory] = new Indexer(this.moviedb, directory);
-         // try {
          console.info("Indexing directory " + directory);
          this.indexers[directory].initialize();
          this.indexers[directory].process();
-         // } catch (e) {
-         //    console.error("Skipping directory '" + directory + "': " + e);
-         // }
       });
    }
 
