@@ -17,7 +17,7 @@ describe('MovieDbMovieDb', () => {
       beforeEach(function () {
          mockMdb = {
             common: {api_key: ''},
-            search: {getMovie: sinon.stub()}
+            search: {movies: sinon.stub()}
          };
          mdb = new MovieDbMovieDb({themoviedbKey: 'testKey', moviedb: mockMdb});
       });
@@ -25,7 +25,7 @@ describe('MovieDbMovieDb', () => {
       });
       it('calls moviedb to find movie, calls callback with results', (done) => {
          let testResults = {testResult: 1};
-         mockMdb.search.getMovie.callsArgWith(1, testResults);
+         mockMdb.search.movies.callsArgWith(1, testResults);
          mdb.searchMovies("Test Movie").then(result => {
             result.should.deep.equal({
                movieName: "Test Movie",
@@ -33,7 +33,7 @@ describe('MovieDbMovieDb', () => {
             });
             done();
          }).catch(done);
-         mockMdb.search.getMovie.should.have.been.calledOnce;
+         mockMdb.search.movies.should.have.been.calledOnce;
       });
       it('errors when called with a null movie name', () => {
          expect(mdb.searchMovies.bind(null)).should.throw;
@@ -112,7 +112,7 @@ describe('MovieDbMovieDb', () => {
       beforeEach(function () {
          mockMdb = {
             common: {api_key: ''},
-            movies: {getImages: sinon.stub()}
+            movies: {images: sinon.stub()}
          };
          mdb = new MovieDbMovieDb({themoviedbKey: 'testKey', moviedb: mockMdb});
       });
@@ -121,7 +121,7 @@ describe('MovieDbMovieDb', () => {
             movieId: 123,
             images: testImages.posters
          };
-         mockMdb.movies.getImages.callsArgWith(1, testImages);
+         mockMdb.movies.images.callsArgWith(1, testImages);
          mdb.fetchMovieImages(123).then(result => {
             result.should.deep.equal(testResult);
             done();
