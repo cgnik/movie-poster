@@ -39,7 +39,7 @@ class MovieDbMovieDb {
          this.moviedb.movies.getImages({
             id: movieId
          }, result => {
-            fulfill({movieId: movieId, images: result})
+            fulfill({movieId: movieId, images: result.posters || []})
          }, reject);
       });
    }

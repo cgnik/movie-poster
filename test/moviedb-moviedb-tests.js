@@ -1,4 +1,3 @@
-
 describe('MovieDbMovieDb', () => {
    const MovieDbMovieDb = MoviePoster.MovieDbMovieDb;
    let mockMdb = null;
@@ -24,13 +23,16 @@ describe('MovieDbMovieDb', () => {
       });
       afterEach(function () {
       });
-      it('calls moviedb to find movie, calls callback with results', () => {
+      it('calls moviedb to find movie, calls callback with results', (done) => {
          let testResults = {testResult: 1};
-         mockMdb.search.getMovie.callsArgWith(1, Promise.resolve(testResults));
-         mdb.searchMovies("Test Movie").should.eventually.deep.equal({
-            movieName: "Test Movie",
-            searchResults: testResults
-         });
+         mockMdb.search.getMovie.callsArgWith(1, testResults);
+         mdb.searchMovies("Test Movie").then(result => {
+            result.should.deep.equal({
+               movieName: "Test Movie",
+               searchResult: testResults
+            });
+            done();
+         }).catch(done);
          mockMdb.search.getMovie.should.have.been.calledOnce;
       });
       it('errors when called with a null movie name', () => {
@@ -114,13 +116,16 @@ describe('MovieDbMovieDb', () => {
          };
          mdb = new MovieDbMovieDb({themoviedbKey: 'testKey', moviedb: mockMdb});
       });
-      it('should call the moviedb api to retrieve the image list', () => {
+      it('should call the moviedb api to retrieve the image list', (done) => {
          const testResult = {
             movieId: 123,
             images: testImages.posters
          };
          mockMdb.movies.getImages.callsArgWith(1, testImages);
-         mdb.fetchMovieImages(123).catch(console.error).should.eventually.deep.equal(testResult)
+         mdb.fetchMovieImages(123).then(result => {
+            result.should.deep.equal(testResult);
+            done();
+         }).catch(done);
       });
    });
 });
