@@ -1,6 +1,8 @@
 const urlencode = require('urlencode');
 const Fetcher = require('./file-retriever.js');
+const fuzzy = require('fuzzy');
 const mdb = require('themoviedatabase');
+const _ = require('underscore');
 
 class MovieDbMovieDb {
    constructor(p) {

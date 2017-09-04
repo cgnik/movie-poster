@@ -1,4 +1,5 @@
 const MovieMap = require("./movie-map.js");
+const _ = require('underscore');
 
 // configuration
 class Indexer {
@@ -19,12 +20,9 @@ class Indexer {
       return Promise.all(this.findMissingMovieIds().map(movie => {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
-      })).then(movies => {
-         return Promise.all(movies.map(movie => {
-            console.info('Found movie: ' + JSON.stringify(movie));
-            return this.movieSearchResults(movie);
-         }));
-      });
+      })).then(results => Promise.all(results.map(result => {
+         this.movieSearchResults(result.movieName, (result['searchResult']['results'] || []));
+      })));
    }
 
    // Finds missing ids in moviemap and enqueues fetches
