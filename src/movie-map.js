@@ -49,17 +49,14 @@ class MovieMap {
    }
 
    getMovieByName(name) {
-      let movie = this.movies[this.keyify(name)];
-      if (!movie) {
-         return;
-      }
-      return {[movie.key]: movie};
+      return this.movies[this.keyify(name)];
    }
 
    updateMovie(name, props) {
       let movie = this.getMovieByName(name);
       if (movie && props) {
-         _.extend(movie[name], props);
+         movie = _.extend(movie, props);
+         this.movies[movie.key] = movie;
       }
       return movie;
    }

@@ -83,24 +83,20 @@ describe('MovieMap', () => {
    });
    describe('#getMovieByName', () => {
       const testmovieLower = {
-         'something': {
-            'key': 'something',
-            'name': 'something', 'file': '/path/something.mpg', "directory": "/path/"
-         }
+         'key': 'something',
+         'name': 'something', 'file': '/path/something.mpg', "directory": "/path/"
       };
       const testmovieMixed = {
-         'something': {
-            "key": 'something',
-            'name': 'SomEtHinG', 'file': '/path/SomEtHinG.mPG', "directory": "/path/"
-         }
+         "key": 'something',
+         'name': 'SomEtHinG', 'file': '/path/SomEtHinG.mPG', "directory": "/path/"
       };
       beforeEach(b);
       it('should return a movie from the map if it has one for that name', () => {
-         mm.addMovieFile(testmovieLower.something.file);
+         mm.addMovieFile(testmovieLower.file);
          mm.getMovieByName("something").should.deep.equal(testmovieLower);
       });
       it('should ignore case in the movie name', () => {
-         mm.addMovieFile(testmovieMixed.something.file);
+         mm.addMovieFile(testmovieMixed.file);
          mm.getMovieByName("something").should.deep.equal(testmovieMixed);
       })
    });
@@ -140,22 +136,18 @@ describe('MovieMap', () => {
          mm.addMovieFile("/path/some.mpg");
          expect(mm.movies['some'].prop).to.be.undefined;
          mm.updateMovie("some", {'prop': 'propValue'}).should.deep.equal({
-            'some': {
-               "key": "some",
-               "prop": 'propValue',
-               "directory": "/path/",
-               "file": "/path/some.mpg",
-               "name": "some"
-            }
+            "key": "some",
+            "prop": 'propValue',
+            "directory": "/path/",
+            "file": "/path/some.mpg",
+            "name": "some"
          });
          mm.getMovieByName('Some').should.deep.equal({
-            'some': {
-               "key": "some",
-               "prop": 'propValue',
-               "directory": "/path/",
-               "file": "/path/some.mpg",
-               "name": "some"
-            }
+            "key": "some",
+            "prop": 'propValue',
+            "directory": "/path/",
+            "file": "/path/some.mpg",
+            "name": "some"
          });
       })
    });

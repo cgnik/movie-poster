@@ -21,14 +21,16 @@ class Indexer {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
-         return this.movieSearchResults(result.movieName, (result['searchResult']['results'] || []));
+         let movieResults = result['searchResult']['results'] || [];
+         return this.movieSearchResults(result.movieName, movieResults);
       }))).then(movies => {
-         movies.forEach(movie => Object.keys(movie).forEach(m =>{
-            this.movieMap.updateMovie(movie[m].key, movie[m]);
-         }));
+         movies.forEach(m => {
+            this.movieMap.updateMovie(m.key, m);
+         });
+         // console.log(this.movieMap.movies);
          return Promise.all(this.findMissingMovieImages().filter(movie => {
             return movie['id'] ? true : false;
-         }).map(missing => {c
+         }).map(missing => {
             return this.db.fetchMovieImages(missing.id);
          }))
       }).then(images => {
