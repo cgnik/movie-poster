@@ -148,6 +148,15 @@ describe('MovieMap', () => {
                "name": "some"
             }
          });
+         mm.getMovieByName('Some').should.deep.equal({
+            'some': {
+               "key": "some",
+               "prop": 'propValue',
+               "directory": "/path/",
+               "file": "/path/some.mpg",
+               "name": "some"
+            }
+         });
       })
    });
    describe('#keyify', () => {

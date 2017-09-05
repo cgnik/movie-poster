@@ -31,17 +31,21 @@ class MovieDbMovieDb {
             query: '"' + urlencode(movieName) + '"'
          }).then(result => {
             fulfill({movieName: movieName, searchResult: result})
-         }, reject);
+         }).catch(reject);
       });
    }
 
    fetchMovieImages(movieId) {
-      return new Promise((fulfill, reject) => {
-         this.moviedb.movies.images({
-            movie_id: movieId
-         }, result => {
-            fulfill({id: movieId, images: result.posters || []})
-         }, reject);
+      console.info("Getting images for " + movieId);
+      return this.moviedb.movies.images(movieId).then(results => {
+         let resultImages = results['searchResult'] || [];
+         let images = resultImages.reduce((accum, result) => {
+            if (result['iso_639_1'] === 'en') {
+               accum.push(result['file_path']);
+            }
+            return accum;
+         }, []);
+         return Promise.resolve({id: movieId, images: images});
       });
    }
 

@@ -22,8 +22,15 @@ class Indexer {
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
          return this.movieSearchResults(result.movieName, (result['searchResult']['results'] || []));
-      }))).then(movies => { // just need to chain-sequence, don't actually care about which got new IDs
-         return Promise.all(this.findMissingMovieImages().filter(movie => movie.id).map(missing => {
+      }))).then(movies => {
+         movies.forEach(movie => {
+            this.movieMap.updateMovie(movie.key, movie);
+         })
+         return Promise.all(this.findMissingMovieImages().filter(movie => {
+            console.log(movie)
+            return movie['id'] ? true : false;
+         }).map(missing => {
+            console.log("Retrieving images " + missing);
             return this.db.fetchMovieImages(missing.id);
          }))
       }).then(images => {
@@ -49,19 +56,22 @@ class Indexer {
    movieSearchResults(movieName, results) {
       let bestMatchId = this.db.findBestTitleMatch(movieName, results);
       let movie = this.movieMap.getMovieByName(movieName);
+      if (movie) {
+         if (bestMatchId) {
+            movie['id'] = bestMatchId;
+         } else {
+            movie['error'] = "Not Found";
+            movie['results'] = results;
+         }
+      } else {
+         // couldn't find the movie
+         console.error("BIG PROBLEM")
+      }
       return new Promise((fulfill, reject) => {
-         if (movie) {
-            if (bestMatchId) {
-               movie.id = bestMatchId;
-            } else {
-               movie['error'] = "Not Found";
-               movie['results'] = results;
-            }
+         if (bestMatchId) {
             fulfill(movie);
          } else {
-            // couldn't find the movie
             reject(Error('Movie ' + movieName + ' not found in the map'));
-            console.error("Could not find movie '" + movieName + "' in the map");
          }
       });
    }
