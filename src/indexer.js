@@ -23,14 +23,12 @@ class Indexer {
       })).then(results => Promise.all(results.map(result => {
          return this.movieSearchResults(result.movieName, (result['searchResult']['results'] || []));
       }))).then(movies => {
-         movies.forEach(movie => {
-            this.movieMap.updateMovie(movie.key, movie);
-         })
+         movies.forEach(movie => Object.keys(movie).forEach(m =>{
+            this.movieMap.updateMovie(movie[m].key, movie[m]);
+         }));
          return Promise.all(this.findMissingMovieImages().filter(movie => {
-            console.log(movie)
             return movie['id'] ? true : false;
-         }).map(missing => {
-            console.log("Retrieving images " + missing);
+         }).map(missing => {c
             return this.db.fetchMovieImages(missing.id);
          }))
       }).then(images => {
@@ -63,9 +61,6 @@ class Indexer {
             movie['error'] = "Not Found";
             movie['results'] = results;
          }
-      } else {
-         // couldn't find the movie
-         console.error("BIG PROBLEM")
       }
       return new Promise((fulfill, reject) => {
          if (bestMatchId) {
