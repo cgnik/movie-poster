@@ -35,7 +35,7 @@ class MovieMap {
       if (dir[dir.length - 1] != path.sep) {
          dir += path.sep;
       }
-      movie['directory'] = dir;
+      movie['directory'] = this.directory;
       // shuffle in the right props
       if (this.isMovieExtension(fileExtension)) {
          movie.file = fileFullName;

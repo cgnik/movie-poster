@@ -1,3 +1,4 @@
+let path = require('path');
 let fetch = require('isomorphic-fetch');
 let fs = require('fs');
 let _ = require('underscore');
@@ -19,8 +20,8 @@ class FileRetriever {
             console.error(result.status);
             return Promise.reject(result.status);
          }
-         fs.writeFileSync(this.getTargetFile(), result)
-         return result.blob();
+         result.body.pipe(fs.createWriteStream(this.getTargetFile()));
+         return this.getTargetFile();
       })
    }
 
@@ -30,7 +31,7 @@ class FileRetriever {
    }
 
    getUrl() {
-      return this.params.baseUrl + "w300" + this.params.imageLoc;
+      return this.params.baseUrl + "w640" + this.params.imageLoc;
    }
 
    getExtension() {

@@ -17,7 +17,7 @@ describe('FileRetriever', () => {
    let b4e = function () {
       teststream = {pipe: sinon.stub()};
       testfile = {write: sinon.stub()};
-      fs = {writeFileSync: sinon.stub().returns(testfile)};
+      fs = {createWriteStream: sinon.stub().returns(testfile)};
       fetch = sinon.stub();
       FileRetriever = rewire('../src/file-retriever');
       FileRetriever.__set__('fetch', fetch);
@@ -27,8 +27,8 @@ describe('FileRetriever', () => {
 
    describe('#getUrl', () => {
       beforeEach(b4e);
-      it('should assemble the url BASEURLw300IMAGE/LOC', () => {
-         retriever.getUrl().should.equal('BASEURLw300IMAGE/LOC');
+      it('should assemble the url BASEURLw640IMAGE/LOC', () => {
+         retriever.getUrl().should.equal('BASEURLw640IMAGE/LOC');
       })
    });
    describe('#getExtension', () => {
@@ -59,13 +59,11 @@ describe('FileRetriever', () => {
       beforeEach(b4e);
       it('should make a request to BASEURLw300IMAGE/LOC', (done) => {
          fetch.returns(Promise.resolve({
-            blob() {
-               return Promise.resolve('blah');
-            }, status: 200
+            body: {pipe: sinon.stub()}, status: 200
          }));
          retriever.retrieve().then(data => {
-            fs.writeFileSync.should.have.been.called;
-            data.should.deep.equal('blah')
+            fs.createWriteStream.should.have.been.called;
+            data.should.deep.equal('IMAGE/PATH/FILENAME')
             done();
          }).catch((e) => {
             done(e);

@@ -17,7 +17,7 @@ class Indexer {
    }
 
    process() {
-      return Promise.all(this.findMissingMovieIds().map(movie => {
+      return Promise.all(this.findMissingMovieIds().slice(0, 2).map(movie => {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
@@ -29,13 +29,13 @@ class Indexer {
          });
          // console.log(this.movieMap.movies);
          return Promise.all(this.findMissingMovieImages().filter(movie => {
-            return movie['id'] ? true : false;
+            return movie['id'] && !movie['image'] ? true : false;
          }).map(missing => {
-            return this.db.fetchMovieImages(missing.id);
-         }))
-      }).then(images => {
-         console.log(images);
-      })
+            return this.db.fetchMovieImage(missing);
+         }));
+      }).then(movies =>
+         this.db.fetchMovieImageFiles(movies)
+      ).then(console.log)
    }
 
    // Finds missing ids in moviemap and enqueues fetches

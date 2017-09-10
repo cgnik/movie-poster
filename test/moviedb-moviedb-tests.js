@@ -105,8 +105,9 @@ describe('MovieDbMovieDb', () => {
    describe('#fetchMovieImages', () => {
       testImages = {
          id: 'testKey',
-         searchResult: [{"iso_639_1": "en", "file_path": "/some/path.png"}, {
+         posters: [{"iso_639_1": "en", "vote_average": 1, "file_path": "/some/path.png"}, {
             "iso_639_1": "fr",
+            "vote_average": 0.5,
             "file_path": "/other/else.png"
          }]
       };
@@ -119,12 +120,12 @@ describe('MovieDbMovieDb', () => {
       it('should call the moviedb api to retrieve the image list', (done) => {
          const testResult = {
             id: 123,
-            images: ['/some/path.png']
+            imageUrl: '/some/path.png'
          };
          mockMdb.movies.images.returns(Promise.resolve(testImages));
-         mdb.fetchMovieImages(123).then(result => {
+         mdb.fetchMovieImage({id: 123}).then(result => {
+            result.should.deep.equal(testResult);
             done();
-            // result.should.deep.equal(testResult);
          }).catch(done);
          mockMdb.movies.images.should.have.been.calledOnce;
       });

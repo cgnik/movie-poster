@@ -22,6 +22,10 @@ class MovieDbMovieDb {
       }
    }
 
+   configure() {
+      return this.moviedb.configuration();
+   }
+
    searchMovies(movieName) {
       if (movieName == undefined || movieName == null) {
          throw new Error("Cannot search movies with null name");
@@ -35,21 +39,29 @@ class MovieDbMovieDb {
       });
    }
 
-   fetchMovieImages(movieId) {
-      console.info("Getting images for " + movieId);
-      return this.moviedb.movies.images(movieId).then(results => {
-         let resultImages = results['searchResult'] || [];
-         let images = resultImages.reduce((accum, result) => {
-            if (result['iso_639_1'] === 'en') {
-               accum.push(result['file_path']);
+   fetchMovieImage(movie) {
+      console.info("Getting images for " + movie['id']);
+      return this.moviedb.movies.images(null, {movie_id: movie['id']}).then(results => {
+         let image = (results['posters'] || []).reduce((result, accum) => {
+            let best = accum;
+            if (result['iso_639_1'] === 'en' && result['vote_average'] > accum['vote_average']) {
+               best = result;
             }
-            return accum;
-         }, []);
-         return Promise.resolve({id: movieId, images: images});
+            return best;
+         }, {});
+         movie['imageUrl'] = image['file_path'];
+         return Promise.resolve(movie);
       });
    }
 
-   fetchMovieImage(movie) {
+   fetchMovieImageFiles(movies) {
+      return this.configure().then(config => {
+         this.configuration = config;
+         return Promise.all(movies.map(movie => this.fetchMovieImageFile(movie)));
+      });
+   }
+
+   fetchMovieImageFile(movie) {
       let props = {
          fileName: movie.name,
          imagePath: movie.directory,
