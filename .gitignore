@@ -7,3 +7,5 @@ npm-debug.log
 /movie-ids.json
 .nide
 .idea/
+movie-map.json
+
