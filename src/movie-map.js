@@ -22,6 +22,9 @@ class MovieMap {
    }
 
    addMovieFile(fileFullName) {
+      if (fileFullName.startsWith('.')) {
+         return;
+      }
       console.info("Mapping movie file " + fileFullName);
       // figure out pieces parts of file name
       let fileExtension = path.extname(fileFullName);

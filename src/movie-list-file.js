@@ -30,6 +30,7 @@ class MovieListFile {
       } else {
          console.info("Pre-existing map file " + this._persistentMapFileName + " not found.");
       }
+      return Promise.resolve(this.movies);
    }
 
    persist() {

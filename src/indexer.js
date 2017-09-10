@@ -14,11 +14,13 @@ class Indexer {
    initialize(params) {
       params = params || {};
       this.dir = params.dir || this.dir;
-      this.movieMap.initialize(this.dir);
+      this.movieListFile = new MovileListFile({directory: this.movieMap.directory});
+      this.movieListFile.load();
+      this.movieMap.initialize(this.dir, this.movieListFile.movies);
    }
 
    process() {
-      return Promise.all(this.findMissingMovieIds().map(movie => {
+      return Promise.all(this.findMissingMovieIds().slice(0, 5).map(movie => {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
@@ -37,7 +39,7 @@ class Indexer {
       }).then(movies =>
          this.db.fetchMovieImageFiles(movies)
       ).then(images => {
-         (new MovileListFile({directory: this.movieMap.directory, movies: this.movieMap.getMap()})).persist();
+         this.movieListFile.persist();
       })
    }
 

@@ -3,7 +3,7 @@ const Fetcher = require('./file-retriever.js');
 const fuzzy = require('fuzzy');
 const mdb = require('themoviedatabase');
 const _ = require('underscore');
-const sleep = require('sleep');
+const sleep = require('sleep-ms');
 
 class MovieDbMovieDb {
    constructor(p) {
@@ -32,7 +32,7 @@ class MovieDbMovieDb {
          throw new Error("Cannot search movies with null name");
       }
       return new Promise((fulfill, reject) => {
-         sleep.sleep(1);
+         sleep(270);
          this.moviedb.search.movies({
             query: '"' + urlencode(movieName) + '"'
          }).then(result => {
@@ -43,7 +43,7 @@ class MovieDbMovieDb {
 
    fetchMovieImage(movie) {
       console.info("Getting images for " + movie['id']);
-      sleep.sleep(1);
+      sleep(270);
       return this.moviedb.movies.images(null, {movie_id: movie['id']}).then(results => {
          let image = (results['posters'] || []).reduce((result, accum) => {
             let best = accum;
