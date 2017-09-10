@@ -17,7 +17,7 @@ class Indexer {
    }
 
    process() {
-      return Promise.all(this.findMissingMovieIds().slice(0, 2).map(movie => {
+      return Promise.all(this.findMissingMovieIds().map(movie => {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
