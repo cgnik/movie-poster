@@ -4,5 +4,6 @@ module.exports = {
    Indexer: require('./indexer'),
    Main: require('./main'),
    MovieMap: require('./movie-map'),
-   MovieDbMovieDb: require('./moviedb-moviedb')
+   MovieDbMovieDb: require('./moviedb-moviedb'),
+   MovieListFile: require('./movie-list-file')
 };

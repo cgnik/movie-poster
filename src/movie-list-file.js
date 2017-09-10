@@ -4,9 +4,11 @@ let path = require('path');
 const MAPFILE = 'movie-map.json';
 
 class MovieListFile {
-   constructor() {
-      this._persistentMapFileName = MAPFILE;
-      this.movies = {};
+   constructor(opts) {
+      let options = opts || {};
+      this.directory = options['directory'] || './';
+      this._persistentMapFileName = options['file'] || MAPFILE;
+      this.movies = options['movies'] || {};
    }
 
    initialize(directory) {
@@ -32,7 +34,7 @@ class MovieListFile {
 
    persist() {
       if (this.movies !== undefined && Object.keys(this.movies).length > 0) {
-         fs.createWriteStream(this._persistentMapFileName).write(JSON.stringify(this.movies)).close();
+         fs.writeFileSync(path.join(this.directory, this._persistentMapFileName), JSON.stringify(this.movies));
       } else {
          console.info("Skipping map persist -- nothing to write.");
       }

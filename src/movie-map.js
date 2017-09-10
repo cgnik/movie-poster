@@ -61,6 +61,10 @@ class MovieMap {
       return movie;
    }
 
+   getMap() {
+      return this.movies;
+   }
+
    toList() {
       return Object.keys(this.movies).map(k => this.movies[k]);
    }

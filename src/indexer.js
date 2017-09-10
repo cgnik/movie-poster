@@ -1,5 +1,6 @@
 const MovieMap = require("./movie-map.js");
 const _ = require('underscore');
+const MovileListFile = require('./movie-list-file');
 
 // configuration
 class Indexer {
@@ -17,7 +18,7 @@ class Indexer {
    }
 
    process() {
-      return Promise.all(this.findMissingMovieIds().map(movie => {
+      return Promise.all(this.findMissingMovieIds().slice(0, 8).map(movie => {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
@@ -35,7 +36,9 @@ class Indexer {
          }));
       }).then(movies =>
          this.db.fetchMovieImageFiles(movies)
-      ).then(console.log)
+      ).then(images => {
+         (new MovileListFile({directory: this.movieMap.directory, movies: this.movieMap.getMap()})).persist();
+      })
    }
 
    // Finds missing ids in moviemap and enqueues fetches
@@ -71,20 +74,6 @@ class Indexer {
             reject(Error('Movie ' + movieName + ' not found in the map'));
          }
       });
-   }
-
-   enqueueSearchImages() {
-      // this.enqueueSearchImage(movie.id);
-   }
-
-   enqueueSearchImage(movieId) {
-      // let poster = this.db.findBestPoster(movieId, images);
-      // let movie = this.movieMap.getMovieById(movieId);
-      // movie['imageUrl'] = poster;
-   }
-
-   enqueueFetchImage(movieId) {
-      // this.db.fetchMovieImage(movie);
    }
 }
 
