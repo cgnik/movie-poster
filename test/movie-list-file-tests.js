@@ -56,25 +56,18 @@ describe('MovieListFile', () => {
          fs = {
             existsSync: sinon.stub(),
             readFileSync: sinon.stub(),
-            statSync: sinon.stub()
+            statSync: sinon.stub(),
+            writeFileSync: sinon.stub()
          };
          MovieListFile.__set__('fs', fs);
          mm = new MovieListFile('/some/dir/');
       });
       it('should try to save the current movie map to a file', () => {
-         mockStream = {
-            close: sinon.stub(),
-            write: sinon.stub()
-         };
-         mockStream.write.returns(mockStream);
-         fs.createWriteStream = sinon.stub();
-         fs.createWriteStream.withArgs(mm._persistentMapFileName).returns(mockStream);
+         fs.writeFileSync = sinon.stub();
          mm.directory = "./";
          mm.movies = fileListMapResult;
          mm.persist();
-         fs.createWriteStream.should.have.been.calledWith(mm._persistentMapFileName);
-         mockStream.write.should.have.been.calledWith(JSON.stringify(fileListMapResult));
-         mockStream.close.should.have.been.calledOnce;
+         fs.writeFileSync.should.have.been.calledWith(mm._persistentMapFileName, JSON.stringify(fileListMapResult));
       })
    })
 });

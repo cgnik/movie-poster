@@ -20,7 +20,7 @@ class Indexer {
    }
 
    process() {
-      return Promise.all(this.findMissingMovieIds().slice(0, 5).map(movie => {
+      return Promise.all(this.findMissingMovieIds().map(movie => {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
@@ -45,7 +45,7 @@ class Indexer {
 
    // Finds missing ids in moviemap and enqueues fetches
    findMissingMovieIds() {
-      return this.movieMap.toList().filter(movie => !movie.id);
+      return this.movieMap.toList();//.filter(movie => !movie.id);
    }
 
    // Finds missing posters in moviemap and enqueues fetches
@@ -59,20 +59,26 @@ class Indexer {
    }
 
    movieSearchResults(movieName, results) {
-      let bestMatchId = this.db.findBestTitleMatch(movieName, results);
+      let bestMatchId = this.db.findBestTitleMatch(movieName, results) || {};
+      let bestMatch = _.find(results, {id: bestMatchId});
       let movie = this.movieMap.getMovieByName(movieName);
       if (movie) {
-         if (bestMatchId) {
-            movie['id'] = bestMatchId;
+         if (bestMatch['id']) {
+            this.movieMap.updateMovie(movieName, {
+               id: bestMatchId,
+               Description: bestMatch['overview'],
+               ReleaseDate: bestMatch['release_date']
+            });
          } else {
             movie['error'] = "Not Found";
-            movie['results'] = results;
          }
       }
       return new Promise((fulfill, reject) => {
-         if (bestMatchId) {
+         if (movie['id']) {
             fulfill(movie);
          } else {
+            console.log(movie);
+            console.log(bestMatch);
             reject(Error('Movie ' + movieName + ' not found in the map'));
          }
       });
