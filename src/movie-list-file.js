@@ -35,7 +35,8 @@ class MovieListFile {
 
    persist() {
       if (this.movies !== undefined && Object.keys(this.movies).length > 0) {
-         fs.writeFileSync(path.join(this.directory, this._persistentMapFileName), JSON.stringify(this.movies));
+         const outfile = path.join(this.directory, this._persistentMapFileName);
+         fs.writeFileSync(outfile, JSON.stringify(this.movies));
       } else {
          console.info("Skipping map persist -- nothing to write.");
       }

@@ -14,7 +14,7 @@ class Indexer {
    initialize(params) {
       params = params || {};
       this.dir = params.dir || this.dir;
-      this.movieListFile = new MovileListFile({directory: this.movieMap.directory});
+      this.movieListFile = new MovileListFile({directory: this.dir});
       this.movieListFile.load();
       this.movieMap.initialize(this.dir, this.movieListFile.movies);
    }
