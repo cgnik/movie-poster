@@ -13,17 +13,39 @@ describe('MetaUpdate', () => {
    describe('#updateMovie', () => {
       beforeEach(b4e);
       it('only update the movie if there is something to update', () => {
-         let testMovie = {
+         beforeEach(b4e);
+         const testMovie = {
             file: '/some/file.mpg',
             title: 'Test TITLE'
          };
-         let testMetaData = {
+         const testMetaData = {
             title: testMovie.title
          };
          meta.updateMovie(testMovie);
-         ff.read.callsArgWith(1, testMetaData);
+         ff.read.callsArgWith(2, null, testMetaData);
          ff.read.should.have.been.calledOnce;
          ff.write.should.not.have.been.called;
       });
+      it('updates the movie title and description', (done) => {
+         beforeEach(b4e);
+         const testMovie = {
+            file: '/some/file.mpg',
+            title: 'Test TITLE'
+         };
+         const testMetaData = {
+            title: 'BooBoo',
+            Description: 'TEST Description'
+         };
+         const testResult = {
+            title: testMovie.title,
+            Description: testMetaData.Description
+         };
+         ff.read.callsArgWith(1, null, testMetaData);
+         meta.updateMovie(testMovie).then(result => {
+            ff.read.should.have.been.calledOnce;
+            ff.write.should.have.been.calledOnce;
+            done();
+         }).catch(done);
+      })
    });
 });

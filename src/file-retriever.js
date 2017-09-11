@@ -17,11 +17,11 @@ class FileRetriever {
    retrieve() {
       return fetch(this.getUrl()).then(result => {
          if (result.status > 299) {
-            console.error(result.status);
             return Promise.reject(result.status);
+         } else {
+            result.body.pipe(fs.createWriteStream(this.getTargetFile()));
+            return Promise.resolve(this.getTargetFile());
          }
-         result.body.pipe(fs.createWriteStream(this.getTargetFile()));
-         return this.getTargetFile();
       })
    }
 
