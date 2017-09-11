@@ -35,13 +35,16 @@ class MovieMap {
       movie['key'] = key;
       movie['name'] = fileName;
       let dir = path.dirname(fileFullName);
-      if (dir[dir.length - 1] != path.sep) {
+      if(dir[dir.length-1] != path.sep){
          dir += path.sep;
       }
-      movie['directory'] = this.directory;
+      if (this.directory && !path.isAbsolute(fileFullName)) {
+         fileFullName = path.join(this.directory, fileFullName);
+      }
+      movie['directory'] = this.directory ? path.join(this.directory, dir) : dir;
       // shuffle in the right props
       if (this.isMovieExtension(fileExtension)) {
-         movie.file = fileFullName;
+         movie['file'] = fileFullName;
          this.movies[key] = movie;
       } else if (this.isImageExtension(fileExtension)) {
          movie.image = fileFullName;

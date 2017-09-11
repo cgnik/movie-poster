@@ -45,7 +45,7 @@ class Indexer {
 
    // Finds missing ids in moviemap and enqueues fetches
    findMissingMovieIds() {
-      return this.movieMap.toList();//.filter(movie => !movie.id);
+      return this.movieMap.toList().filter(movie => !movie.id);
    }
 
    // Finds missing posters in moviemap and enqueues fetches
