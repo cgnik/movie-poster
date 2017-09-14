@@ -10,7 +10,11 @@ class MetaUpdate {
                reject(err);
                return;
             } else if (data['title'] !== movie['title']) {
-               result = _.extend(data, {title: movie['title']});
+               result = _.extend(data, {
+                  title: movie['title'],
+                  Description: movie['Description'],
+                  ReleaseDate: movie['ReleaseDate']
+               });
                meta.write(movie['file'], result)
             }
             fulfill(result);

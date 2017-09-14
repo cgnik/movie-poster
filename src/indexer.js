@@ -1,6 +1,7 @@
 const MovieMap = require("./movie-map.js");
 const _ = require('underscore');
 const MovileListFile = require('./movie-list-file');
+const MetaUpdate = require('./meta-update');
 
 // configuration
 class Indexer {
@@ -39,8 +40,16 @@ class Indexer {
       }).then(movies =>
          this.db.fetchMovieImageFiles(movies)
       ).then(images => {
-         this.movieListFile.persist();
-      })
+         console.log("Retrieved images: " + JSON.stringify(images));
+         let update = new MetaUpdate();
+         this.movieMap.toList().filter(m => {
+            console.log(m);
+            return !m['id'] || !m['title'];
+         }).forEach(movie => {
+            console.log(movie)
+            update.updateMovie(movie);
+         });
+      }).then(this.movieListFile.persist());
    }
 
    // Finds missing ids in moviemap and enqueues fetches
@@ -60,25 +69,24 @@ class Indexer {
 
    movieSearchResults(movieName, results) {
       let bestMatchId = this.db.findBestTitleMatch(movieName, results) || {};
-      let bestMatch = _.find(results, {id: bestMatchId});
       let movie = this.movieMap.getMovieByName(movieName);
-      if (movie) {
-         if (bestMatch['id']) {
+      if (bestMatchId) {
+         let bestMatch = _.find(results, {id: bestMatchId});
+         if (bestMatch) {
             this.movieMap.updateMovie(movieName, {
                id: bestMatchId,
+               title: bestMatch['title'],
                Description: bestMatch['overview'],
                ReleaseDate: bestMatch['release_date']
             });
-         } else {
-            movie['error'] = "Not Found";
          }
+      } else {
+         movie['error'] = "Not Found";
       }
       return new Promise((fulfill, reject) => {
-         if (movie['id']) {
+         if (movie) {
             fulfill(movie);
          } else {
-            console.log(movie);
-            console.log(bestMatch);
             reject(Error('Movie ' + movieName + ' not found in the map'));
          }
       });

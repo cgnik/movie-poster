@@ -16,7 +16,7 @@ describe('MetaUpdate', () => {
          beforeEach(b4e);
          const testMovie = {
             file: '/some/file.mpg',
-            title: 'Test TITLE'
+            name: 'Test TITLE'
          };
          const testMetaData = {
             title: testMovie.title
@@ -30,10 +30,10 @@ describe('MetaUpdate', () => {
          beforeEach(b4e);
          const testMovie = {
             file: '/some/file.mpg',
-            title: 'Test TITLE'
+            name: 'Test TITLE'
          };
          const testMetaData = {
-            title: 'BooBoo',
+            name: 'BooBoo',
             Description: 'TEST Description'
          };
          const testResult = {
@@ -46,6 +46,6 @@ describe('MetaUpdate', () => {
             ff.write.should.have.been.calledOnce;
             done();
          }).catch(done);
-      })
+      });
    });
 });
