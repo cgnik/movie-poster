@@ -45,7 +45,6 @@ class Indexer {
          }).forEach(movie => {
             meta.updateMovie(movie);
          });
-         console.log("MAP MAP: " + JSON.stringify(this.movieMap.movies));
       }).then(x => this.movieListFile.persist());
    }
 

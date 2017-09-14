@@ -10,13 +10,10 @@ class MetaUpdate {
                reject(err);
                return;
             } else if (data && data['title'] !== movie['title']) {
-               console.log(movie);
                meta.write(movie['file'], {
                   title: movie['title'],
-                  description: movie['Description'],
-                  comment: movie['Description'],
-                  date: movie['date'],
-                  ReleaseDate: movie['date']
+                  comment: "Comment: " + movie['description'],
+                  date: movie['date']
                }, {}, (e) => {
                   if (e) {
                      console.error(e);
