@@ -9,16 +9,24 @@ class MetaUpdate {
             if (err) {
                reject(err);
                return;
-            } else if (data['title'] !== movie['title']) {
-               result = _.extend(data, {
+            } else if (data && data['title'] !== movie['title']) {
+               console.log(movie);
+               meta.write(movie['file'], {
                   title: movie['title'],
-                  Description: movie['Description'],
-                  ReleaseDate: movie['ReleaseDate']
+                  description: movie['Description'],
+                  comment: movie['Description'],
+                  date: movie['date'],
+                  ReleaseDate: movie['date']
+               }, {}, (e) => {
+                  if (e) {
+                     console.error(e);
+                  } else {
+                     console.log("Updated metadata: " + movie['title'])
+                  }
                });
-               meta.write(movie['file'], result)
             }
             fulfill(result);
-         })
+         });
       });
    }
 }

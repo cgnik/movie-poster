@@ -21,7 +21,7 @@ class Indexer {
    }
 
    process() {
-      return Promise.all(this.findMissingMovieIds().map(movie => {
+      return Promise.all(this.movieMap.toList().map(movie => { // findMissingMovieIds().map(movie => {
          console.info("Searching for movie " + movie.name);
          return this.db.searchMovies(movie.name);
       })).then(results => Promise.all(results.map(result => {
@@ -31,7 +31,6 @@ class Indexer {
          movies.forEach(m => {
             this.movieMap.updateMovie(m.key, m);
          });
-         // console.log(this.movieMap.movies);
          return Promise.all(this.findMissingMovieImages().filter(movie => {
             return movie['id'] && !movie['image'] ? true : false;
          }).map(missing => {
@@ -40,16 +39,14 @@ class Indexer {
       }).then(movies =>
          this.db.fetchMovieImageFiles(movies)
       ).then(images => {
-         console.log("Retrieved images: " + JSON.stringify(images));
-         let update = new MetaUpdate();
+         let meta = new MetaUpdate();
          this.movieMap.toList().filter(m => {
-            console.log(m);
-            return !m['id'] || !m['title'];
+            return m['id'] && m['title'];
          }).forEach(movie => {
-            console.log(movie)
-            update.updateMovie(movie);
+            meta.updateMovie(movie);
          });
-      }).then(this.movieListFile.persist());
+         console.log("MAP MAP: " + JSON.stringify(this.movieMap.movies));
+      }).then(x => this.movieListFile.persist());
    }
 
    // Finds missing ids in moviemap and enqueues fetches
@@ -73,11 +70,14 @@ class Indexer {
       if (bestMatchId) {
          let bestMatch = _.find(results, {id: bestMatchId});
          if (bestMatch) {
+            let year = (new Date(bestMatch['release_date'])).getFullYear();
             this.movieMap.updateMovie(movieName, {
                id: bestMatchId,
                title: bestMatch['title'],
-               Description: bestMatch['overview'],
-               ReleaseDate: bestMatch['release_date']
+               description: bestMatch['overview'],
+               comment: bestMatch['overview'],
+               date: year,
+               ReleaseDate: year
             });
          }
       } else {
