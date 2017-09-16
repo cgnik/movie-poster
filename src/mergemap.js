@@ -1,0 +1,23 @@
+const _ = require('underscore');
+
+class MergeMap {
+   constructor(constantMap, propertyMap) {
+      this.constantMap = constantMap || {};
+      this.propertyMap = propertyMap || {};
+   }
+
+   meta(data, propertyMap, constantMap) {
+      if (data) {
+         const pm = propertyMap || this.propertyMap;
+         return _.extend(Object.keys(pm).reduce((accum, k) => {
+            if (data[pm[k]]) {
+               accum[k] = data[pm[k]];
+            }
+            return accum;
+         }, {}), constantMap || this.constantMap);
+      }
+      return {};
+   }
+}
+
+module.exports = MergeMap;

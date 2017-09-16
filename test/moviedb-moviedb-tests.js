@@ -11,7 +11,6 @@ describe('MovieDbMovieDb', () => {
          expect(MovieDbMovieDb.bind()).to.throw;
       });
    });
-
    describe('#searchMovies', () => {
       var testResults = {results: [{id: 123, title: "Movie 123"}, {id: 345, title: "Movie 345"}]};
       beforeEach(function () {

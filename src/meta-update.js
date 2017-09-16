@@ -1,8 +1,23 @@
 let meta = require('ffmetadata');
+let MergeMap = require('./mergemap');
 let _ = require('underscore');
 
 class MetaUpdate {
+
+   constructor() {
+      this.metaMap = {
+         Title: 'title',
+         Description: 'description',
+         comment: 'description'
+      };
+      this.metaConst = {
+         ContentType: 1
+      }
+      this.merger = new MergeMap(this.metaConst, this.metaMap);
+   }
+
    updateMovie(movie) {
+      const merger = new MergeMap(null, this.metaMap);
       return new Promise((fulfill, reject) => {
          meta.read(movie['file'], (err, data) => {
             let result = data;
@@ -10,11 +25,8 @@ class MetaUpdate {
                reject(err);
                return;
             } else if (data && data['title'] !== movie['title']) {
-               meta.write(movie['file'], {
-                  title: movie['title'],
-                  comment: "Comment: " + movie['description'],
-                  date: movie['date']
-               }, {}, (e) => {
+               result = this.merger.meta(movie);
+               meta.write(movie['file'], result, {}, (e) => {
                   if (e) {
                      console.error(e);
                   } else {

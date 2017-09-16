@@ -30,18 +30,19 @@ describe('MetaUpdate', () => {
          beforeEach(b4e);
          const testMovie = {
             file: '/some/file.mpg',
-            name: 'Test TITLE'
+            title: 'Test TITLE'
          };
          const testMetaData = {
-            name: 'BooBoo',
+            title: 'BooBoo',
             Description: 'TEST Description'
          };
          const testResult = {
-            title: testMovie.title,
-            Description: testMetaData.Description
+            ContentType: 1,
+            Title: testMovie.title
          };
          ff.read.callsArgWith(1, null, testMetaData);
          meta.updateMovie(testMovie).then(result => {
+            result.should.deep.equal(testResult);
             ff.read.should.have.been.calledOnce;
             ff.write.should.have.been.calledOnce;
             done();
