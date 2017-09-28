@@ -4,6 +4,7 @@ const fuzzy = require('fuzzy');
 const mdb = require('themoviedatabase');
 const _ = require('underscore');
 const sleep = require('sleep-ms');
+const MergeMap = require('./mergemap');
 
 class MovieDbMovieDb {
    constructor(p) {
@@ -21,6 +22,9 @@ class MovieDbMovieDb {
       if (this.moviedb === undefined) {
          throw new Error("Unable to load moviedb");
       }
+      this.merger = new MergeMap({
+         title: 'title'
+      });
    }
 
    configure() {

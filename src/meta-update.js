@@ -13,7 +13,7 @@ class MetaUpdate {
       this.metaConst = {
          ContentType: 1
       }
-      this.merger = new MergeMap(this.metaConst, this.metaMap);
+      this.merger = new MergeMap(this.metaMap, this.metaConst);
    }
 
    updateMovie(movie) {

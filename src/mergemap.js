@@ -1,9 +1,9 @@
 const _ = require('underscore');
 
 class MergeMap {
-   constructor(constantMap, propertyMap) {
-      this.constantMap = constantMap || {};
+   constructor(propertyMap, constantMap) {
       this.propertyMap = propertyMap || {};
+      this.constantMap = constantMap || {};
    }
 
    meta(data, propertyMap, constantMap) {
