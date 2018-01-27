@@ -13,11 +13,10 @@ const highscore = (best, test, idx, arr) => {
    return y ? best : test;
 }
 
-let Simplified = {
+let Files = {
    MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
    IMAGE_EXTENSIONS: IMAGE_EXTENSIONS,
 
-   indexOfMin: (list) => list ? list.indexOf(_.min(list)) : -1,
    files: (dir) => {
       return dir ? fs.readdirSync(dir)
          .filter(f => fs.statSync(f).isFile()) : [];
@@ -28,15 +27,20 @@ let Simplified = {
          ext.length > 0 &&
          (extensions || []).indexOf(ext[0]) >= 0);
    },
-   isMovie: (filename) => (Simplified.isExtension(filename, MOVIE_EXTENSIONS)),
-   isImage: (filename) => (Simplified.isExtension(filename, IMAGE_EXTENSIONS)),
-   movies: (files) => (files || []).filter(Simplified.isMovie),
-   images: (files) => (files || []).filter(Simplified.isImage),
-   searchMovies: (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json()),
-   titleMatch: (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index
+   isMovie: (filename) => (Files.isExtension(filename, MOVIE_EXTENSIONS)),
+   isImage: (filename) => (Files.isExtension(filename, IMAGE_EXTENSIONS)),
+   movies: (files) => (files || []).filter(Files.isMovie),
+   images: (files) => (files || []).filter(Files.isImage),
+};
+let Movies = {
+   titleMatch: (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index,
+   search: (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json())
 };
 
-module.exports = Simplified;
+module.exports = {
+   files: Files,
+   movies: Movies
+};
 
 /* Examples
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg
