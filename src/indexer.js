@@ -1,5 +1,5 @@
 const MovieMap = require("./movie-map.js");
-const _ = require('underscore');
+const _ = require('lodash');
 const MovileListFile = require('./movie-list-file');
 const MetaUpdate = require('./meta-update');
 

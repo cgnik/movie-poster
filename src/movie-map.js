@@ -1,5 +1,5 @@
 let fs = require('fs');
-const _ = require('underscore');
+const _ = require('lodash');
 
 const path = require('path');
 

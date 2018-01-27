@@ -1,6 +1,6 @@
 let meta = require('ffmetadata');
 let MergeMap = require('./mergemap');
-let _ = require('underscore');
+let _ = require('lodash');
 
 class MetaUpdate {
 

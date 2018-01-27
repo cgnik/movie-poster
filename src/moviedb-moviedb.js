@@ -2,7 +2,7 @@ const urlencode = require('urlencode');
 const Fetcher = require('./file-retriever.js');
 const fuzzy = require('fuzzy');
 const mdb = require('themoviedatabase');
-const _ = require('underscore');
+const _ = require('lodash');
 const sleep = require('sleep-ms');
 const MergeMap = require('./mergemap');
 

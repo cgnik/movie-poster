@@ -1,6 +1,20 @@
 let under = rewire('../src/simplified');
 
 describe("simplified", () => {
+   describe('#indexOfMin', () => {
+      it('should give back -1 if no list or empty list', () => {
+         under.indexOfMin().should.equal(-1);
+         under.indexOfMin([]).should.equal(-1);
+      });
+      it('should give the index of the maximum value', () => {
+         under.indexOfMin([1,2,3]).should.equal(0);
+         under.indexOfMin([3,2,1]).should.equal(2);
+         under.indexOfMin([3.3, 3.4, 3.2]).should.equal(2);
+      });
+      it('should yield the lowest index of equals', () => {
+         under.indexOfMin([1,1,1]).should.equal(0);
+      });
+   });
    describe('#images', () => {
       it('should only return filenames with movie extensions', () => {
          under.images().should.deep.equal([])
@@ -77,9 +91,6 @@ describe("simplified", () => {
          under.isImage("file.JpG").should.be.true;
       });
    });
-   describe('#id', () => {
-
-   });
    describe('#titleMatch', () => {
       let testList = [
          "Movie",
@@ -87,20 +98,15 @@ describe("simplified", () => {
          "Movie Name More"
       ];
       it('returns an exact match', () => {
-         under.titleMatch("Movie Name", testList).should.equal(2);
+         under.titleMatch("Movie Name", testList).should.equal(1);
       });
-      it('returns null for no match', () => {
-         under.titleMatch("blargh", testList)
-      });
-      it('throws for a null name', () => {
-         under.titleMatch.bind(mdb, null, testList).should.throw();
-      });
-      it('throws for a null list', () => {
-         under.titleMatch.bind(mdb, "booboo", null).should.throw();
+      it('returns -1 for no match', () => {
+         under.titleMatch("blargh", testList).should.equal(-1)
       });
       it('matches near titles', () => {
-         under.titleMatch("ovie N", testList).should.equal(2);
+         under.titleMatch("ovie N", testList).should.equal(1);
          under.titleMatch("Mov", testList).should.equal(0);
+         under.titleMatch("ame m", testList).should.equal(2);
       });
    });
 });

@@ -1,7 +1,7 @@
 let path = require('path');
 let fetch = require('isomorphic-fetch');
 let fs = require('fs');
-let _ = require('underscore');
+let _ = require('lodash');
 
 class FileRetriever {
    constructor(p) {
