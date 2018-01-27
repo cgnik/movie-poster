@@ -33,7 +33,7 @@ let Simplified = {
    movies: (files) => (files || []).filter(Simplified.isMovie),
    images: (files) => (files || []).filter(Simplified.isImage),
    searchMovies: (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json()),
-   titleMatch: (name, titles) => (fuzzy.filter(name, titles).sort((a,b) => b.score - a.score)[0] || {index:-1}).index
+   titleMatch: (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index
 };
 
 module.exports = Simplified;

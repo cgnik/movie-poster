@@ -7,12 +7,12 @@ describe("simplified", () => {
          under.indexOfMin([]).should.equal(-1);
       });
       it('should give the index of the maximum value', () => {
-         under.indexOfMin([1,2,3]).should.equal(0);
-         under.indexOfMin([3,2,1]).should.equal(2);
+         under.indexOfMin([1, 2, 3]).should.equal(0);
+         under.indexOfMin([3, 2, 1]).should.equal(2);
          under.indexOfMin([3.3, 3.4, 3.2]).should.equal(2);
       });
       it('should yield the lowest index of equals', () => {
-         under.indexOfMin([1,1,1]).should.equal(0);
+         under.indexOfMin([1, 1, 1]).should.equal(0);
       });
    });
    describe('#images', () => {
@@ -107,6 +107,28 @@ describe("simplified", () => {
          under.titleMatch("ovie N", testList).should.equal(1);
          under.titleMatch("Mov", testList).should.equal(0);
          under.titleMatch("ame m", testList).should.equal(2);
+      });
+   });
+   describe('#searchMovies', () => {
+      let testResults = {results: [{id: 123, title: "Movie 123"}, {id: 345, title: "Movie 345"}]};
+      let moviedb = null;
+      beforeEach(() => {
+         moviedb = {
+            common: {api_key: ''},
+            search: {movies: sinon.stub()}
+         };
+         under.__set__('moviedb', moviedb);
+      });
+      it('calls moviedb to find movie, calls callback with results', (done) => {
+         moviedb.search.movies.returns(Promise.resolve({json: () => Promise.resolve(testResults)}));
+         under.searchMovies("Test Movie").then(result => {
+            result.should.deep.equal(testResults);
+            done();
+         });
+         moviedb.search.movies.should.have.been.calledOnce;
+      });
+      it('errors when called with a null movie name', () => {
+         expect(under.searchMovies.bind(null)).should.throw;
       });
    });
 });
