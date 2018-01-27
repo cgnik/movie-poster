@@ -8,6 +8,7 @@ class MetaUpdate {
       this.metaMap = {
          Title: 'title',
          Description: 'description',
+         ReleaseDate: 'date',
          comment: 'description'
       };
       this.metaConst = {
@@ -31,6 +32,7 @@ class MetaUpdate {
                      console.error(e);
                   } else {
                      console.log("Updated metadata: " + movie['title'])
+                     console.log(result)
                   }
                });
             }
