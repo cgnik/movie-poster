@@ -1,0 +1,106 @@
+let under = rewire('../src/simplified');
+
+describe("simplified", () => {
+   describe('#images', () => {
+      it('should only return filenames with movie extensions', () => {
+         under.images().should.deep.equal([])
+         under.images(['1.mkv', '2.jPg', '3.oink']).should.deep.equal(['2.jPg'])
+         under.images(['1.mkV', '2.jPg', '3.m4v']).should.deep.equal(['2.jPg'])
+      });
+   });
+   describe('#movies', () => {
+      it('should only return filenames with movie extensions', () => {
+         under.movies().should.deep.equal([])
+         under.movies(['1.mkv', '2.jpg', '3.oink']).should.deep.equal(['1.mkv'])
+         under.movies(['1.mkV', '2.jPg', '3.m4v']).should.deep.equal(['1.mkV', '3.m4v'])
+      });
+   });
+   describe('#files', () => {
+      let fs = null;
+      beforeEach(() => {
+         fs = {
+            readdirSync: sinon.stub(),
+            statSync: sinon.stub()
+         };
+         under.__set__('fs', fs);
+      });
+      it('should list all files in the specified directory', () => {
+         let expectedDir = '/derpa/derpy/derp/';
+         let expectedFiles = ["fil.e", "nam.e"];
+
+         fs.readdirSync.withArgs(expectedDir).returns(expectedFiles);
+         fs.statSync.withArgs(expectedFiles[0]).returns({isFile: () => true});
+         fs.statSync.withArgs(expectedFiles[1]).returns({isFile: () => false});
+
+         let result = under.files(expectedDir);
+
+         fs.statSync.should.have.been.calledWith(expectedFiles[0]);
+         fs.statSync.should.have.been.calledWith(expectedFiles[1]);
+         fs.readdirSync.should.have.been.calledWith('/derpa/derpy/derp/');
+         result.should.deep.equal([expectedFiles[0]]);
+      });
+      it('should tolerate missing args', () => {
+         result = under.files();
+         result.should.deep.equal([])
+      });
+   });
+   describe('#isExtension', () => {
+      const extensions = under.MOVIE_EXTENSIONS;
+      it('should tolerate empty inputs', () => {
+         under.isExtension().should.be.false;
+      });
+      it('should only return true for filenames with case-insensitive movie extensions', () => {
+         under.isExtension("file.mkv", extensions).should.be.true;
+         under.isExtension("file.m4v", extensions).should.be.true;
+         under.isExtension("file.jpg", extensions).should.be.false;
+         under.isExtension("filemkv", extensions).should.be.false;
+         under.isExtension("fiLe.mKv", extensions).should.be.true;
+         under.isExtension("file.M4V", extensions).should.be.true;
+         under.isExtension("file.JpG", extensions).should.be.false;
+         under.isExtension("filemkv", extensions).should.be.false;
+         under.isExtension("mkv", extensions).should.be.false;
+      });
+   });
+   describe('#isMovie', () => {
+      it('should detect movie files by extension', () => {
+         under.isMovie().should.be.false;
+         under.isMovie("file.mkv").should.be.true;
+         under.isMovie("file.m4v").should.be.true;
+         under.isMovie("file.JpG").should.be.false;
+      });
+   });
+   describe('#isImage', () => {
+      it('should detect movie files by extension', () => {
+         under.isImage().should.be.false;
+         under.isImage("file.mkv").should.be.false;
+         under.isImage("file.m4v").should.be.false;
+         under.isImage("file.JpG").should.be.true;
+      });
+   });
+   describe('#id', () => {
+
+   });
+   describe('#titleMatch', () => {
+      let testList = [
+         "Movie",
+         "Movie Name",
+         "Movie Name More"
+      ];
+      it('returns an exact match', () => {
+         under.titleMatch("Movie Name", testList).should.equal(2);
+      });
+      it('returns null for no match', () => {
+         under.titleMatch("blargh", testList)
+      });
+      it('throws for a null name', () => {
+         under.titleMatch.bind(mdb, null, testList).should.throw();
+      });
+      it('throws for a null list', () => {
+         under.titleMatch.bind(mdb, "booboo", null).should.throw();
+      });
+      it('matches near titles', () => {
+         under.titleMatch("ovie N", testList).should.equal(2);
+         under.titleMatch("Mov", testList).should.equal(0);
+      });
+   });
+});
