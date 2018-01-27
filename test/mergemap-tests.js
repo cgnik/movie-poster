@@ -7,7 +7,7 @@ describe('MergeMap', () => {
          mm = new MergeMap();
          mm.constantMap.should.deep.equal({});
          mm.propertyMap.should.deep.equal({});
-         mm = new MergeMap({blah: 'bloo'}, {blub: 'wubb'});
+         mm = new MergeMap({blub: 'wubb'}, {blah: 'bloo'});
          mm.constantMap.should.deep.equal({blah: 'bloo'});
          mm.propertyMap.should.deep.equal({blub: 'wubb'});
       });
