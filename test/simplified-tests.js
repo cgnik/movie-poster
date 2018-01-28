@@ -3,6 +3,39 @@ let under = simplified;
 
 describe("simplified", () => {
    describe('Files', () => {
+      describe('#isExtension', () => {
+         const extensions = simplified.MOVIE_EXTENSIONS;
+         it('should tolerate empty inputs', () => {
+            under.isExtension().should.be.false;
+         });
+         it('should only return true for filenames with case-insensitive movie extensions', () => {
+            under.isExtension("file.mkv", extensions).should.be.true;
+            under.isExtension("file.m4v", extensions).should.be.true;
+            under.isExtension("file.jpg", extensions).should.be.false;
+            under.isExtension("filemkv", extensions).should.be.false;
+            under.isExtension("fiLe.mKv", extensions).should.be.true;
+            under.isExtension("file.M4V", extensions).should.be.true;
+            under.isExtension("file.JpG", extensions).should.be.false;
+            under.isExtension("filemkv", extensions).should.be.false;
+            under.isExtension("mkv", extensions).should.be.false;
+         });
+      });
+      describe('#isMovie', () => {
+         it('should detect movie files by extension', () => {
+            under.isMovie().should.be.false;
+            under.isMovie("file.mkv").should.be.true;
+            under.isMovie("file.m4v").should.be.true;
+            under.isMovie("file.JpG").should.be.false;
+         });
+      });
+      describe('#isImage', () => {
+         it('should detect movie files by extension', () => {
+            under.isImage().should.be.false;
+            under.isImage("file.mkv").should.be.false;
+            under.isImage("file.m4v").should.be.false;
+            under.isImage("file.JpG").should.be.true;
+         });
+      });
       describe('#images', () => {
          it('should only return filenames with movie extensions', () => {
             under.images().should.deep.equal([])
@@ -44,39 +77,6 @@ describe("simplified", () => {
          it('should tolerate missing args', () => {
             result = under.files();
             result.should.deep.equal([])
-         });
-      });
-      describe('#isExtension', () => {
-         const extensions = simplified.MOVIE_EXTENSIONS;
-         it('should tolerate empty inputs', () => {
-            under.isExtension().should.be.false;
-         });
-         it('should only return true for filenames with case-insensitive movie extensions', () => {
-            under.isExtension("file.mkv", extensions).should.be.true;
-            under.isExtension("file.m4v", extensions).should.be.true;
-            under.isExtension("file.jpg", extensions).should.be.false;
-            under.isExtension("filemkv", extensions).should.be.false;
-            under.isExtension("fiLe.mKv", extensions).should.be.true;
-            under.isExtension("file.M4V", extensions).should.be.true;
-            under.isExtension("file.JpG", extensions).should.be.false;
-            under.isExtension("filemkv", extensions).should.be.false;
-            under.isExtension("mkv", extensions).should.be.false;
-         });
-      });
-      describe('#isMovie', () => {
-         it('should detect movie files by extension', () => {
-            under.isMovie().should.be.false;
-            under.isMovie("file.mkv").should.be.true;
-            under.isMovie("file.m4v").should.be.true;
-            under.isMovie("file.JpG").should.be.false;
-         });
-      });
-      describe('#isImage', () => {
-         it('should detect movie files by extension', () => {
-            under.isImage().should.be.false;
-            under.isImage("file.mkv").should.be.false;
-            under.isImage("file.m4v").should.be.false;
-            under.isImage("file.JpG").should.be.true;
          });
       });
    });

@@ -5,14 +5,15 @@ let urlencode = require('urlencode');
 let moviedb = require('themoviedatabase');
 let _ = require('lodash');
 
-const MOVIE_EXTENSIONS = [".mkv", ".m4v"];
-const IMAGE_EXTENSIONS = [".jpg", ".png"];
+const MOVIE_EXTENSIONS = ["mkv", "m4v"];
+const IMAGE_EXTENSIONS = ["jpg", "png"];
 
 
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
+const fileparts = (file) => (file || "").match(/\/?(\w+)\.(\w+)$/);
 const isExtension = (filename, extensions) => {
-   const ext = (filename || "").toLowerCase().match(/\.(\w+)$/);
-   return (ext != null && ext.length > 0 && (extensions || []).indexOf(ext[0]) >= 0);
+   const ext = fileparts(filename);
+   return (ext != null && ext.length > 2 && (extensions || []).indexOf(ext[2].toLowerCase()) >= 0);
 };
 const isMovie = (filename) => (isExtension(filename, MOVIE_EXTENSIONS));
 const isImage = (filename) => (isExtension(filename, IMAGE_EXTENSIONS));
@@ -26,6 +27,7 @@ module.exports = {
    MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
    IMAGE_EXTENSIONS: IMAGE_EXTENSIONS,
    files: files,
+   fileparts: fileparts,
    isExtension: isExtension,
    isMovie: isMovie,
    isImage: isImage,
