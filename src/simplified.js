@@ -10,10 +10,10 @@ const IMAGE_EXTENSIONS = ["jpg", "png"];
 
 
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
-const fileparts = (file) => (file || "").match(/\/?(\w+)\.(\w+)$/) || [];
+const fileparts = (file) => (file || "").match(/(\w+)/g) || [];
 const isExtension = (filename, extensions) => {
    const ext = fileparts(filename);
-   return (ext.length > 0 && (extensions || []).indexOf(ext[ext.length - 1].toLowerCase()) >= 0);
+   return (ext.length > 1 && (extensions || []).indexOf(ext[ext.length - 1].toLowerCase()) >= 0);
 };
 const isMovie = (filename) => (isExtension(filename, MOVIE_EXTENSIONS));
 const isImage = (filename) => (isExtension(filename, IMAGE_EXTENSIONS));

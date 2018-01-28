@@ -3,6 +3,41 @@ let under = simplified;
 
 describe("simplified", () => {
    describe('Files', () => {
+      describe('#files', () => {
+         let fs = null;
+         beforeEach(() => {
+            fs = {
+               readdirSync: sinon.stub(),
+               statSync: sinon.stub()
+            };
+            simplified.__set__('fs', fs);
+         });
+         it('should list all files in the specified directory', () => {
+            let expectedDir = '/derpa/derpy/derp/';
+            let expectedFiles = ["fil.e", "nam.e"];
+
+            fs.readdirSync.withArgs(expectedDir).returns(expectedFiles);
+            fs.statSync.withArgs(expectedFiles[0]).returns({isFile: () => true});
+            fs.statSync.withArgs(expectedFiles[1]).returns({isFile: () => false});
+
+            let result = under.files(expectedDir);
+
+            fs.statSync.should.have.been.calledWith(expectedFiles[0]);
+            fs.statSync.should.have.been.calledWith(expectedFiles[1]);
+            fs.readdirSync.should.have.been.calledWith('/derpa/derpy/derp/');
+            result.should.deep.equal([expectedFiles[0]]);
+         });
+         it('should tolerate missing args', () => {
+            result = under.files();
+            result.should.deep.equal([])
+         });
+      });
+      describe('#fileparts', () => {
+         it('should split dotted names', () => {
+            under.fileparts('x.y').should.deep.equal(['x', 'y']);
+            under.fileparts('x.y.z').should.deep.equal(['x', 'y', 'z']);
+         });
+      });
       describe('#isExtension', () => {
          const extensions = simplified.MOVIE_EXTENSIONS;
          it('should tolerate empty inputs', () => {
@@ -48,35 +83,6 @@ describe("simplified", () => {
             under.movies().should.deep.equal([])
             under.movies(['1.mkv', '2.jpg', '3.oink']).should.deep.equal(['1.mkv'])
             under.movies(['1.mkV', '2.jPg', '3.m4v']).should.deep.equal(['1.mkV', '3.m4v'])
-         });
-      });
-      describe('#files', () => {
-         let fs = null;
-         beforeEach(() => {
-            fs = {
-               readdirSync: sinon.stub(),
-               statSync: sinon.stub()
-            };
-            simplified.__set__('fs', fs);
-         });
-         it('should list all files in the specified directory', () => {
-            let expectedDir = '/derpa/derpy/derp/';
-            let expectedFiles = ["fil.e", "nam.e"];
-
-            fs.readdirSync.withArgs(expectedDir).returns(expectedFiles);
-            fs.statSync.withArgs(expectedFiles[0]).returns({isFile: () => true});
-            fs.statSync.withArgs(expectedFiles[1]).returns({isFile: () => false});
-
-            let result = under.files(expectedDir);
-
-            fs.statSync.should.have.been.calledWith(expectedFiles[0]);
-            fs.statSync.should.have.been.calledWith(expectedFiles[1]);
-            fs.readdirSync.should.have.been.calledWith('/derpa/derpy/derp/');
-            result.should.deep.equal([expectedFiles[0]]);
-         });
-         it('should tolerate missing args', () => {
-            result = under.files();
-            result.should.deep.equal([])
          });
       });
    });
