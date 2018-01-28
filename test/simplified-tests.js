@@ -1,8 +1,8 @@
 let simplified = rewire('../src/simplified');
+let under = simplified;
 
 describe("simplified", () => {
    describe('Files', () => {
-      let under = simplified.files;
       describe('#images', () => {
          it('should only return filenames with movie extensions', () => {
             under.images().should.deep.equal([])
@@ -18,7 +18,6 @@ describe("simplified", () => {
          });
       });
       describe('#files', () => {
-         let under = simplified.files;
          let fs = null;
          beforeEach(() => {
             fs = {
@@ -48,7 +47,7 @@ describe("simplified", () => {
          });
       });
       describe('#isExtension', () => {
-         const extensions = under.MOVIE_EXTENSIONS;
+         const extensions = simplified.MOVIE_EXTENSIONS;
          it('should tolerate empty inputs', () => {
             under.isExtension().should.be.false;
          });
@@ -82,7 +81,6 @@ describe("simplified", () => {
       });
    });
    describe('Movies', () => {
-      let under = simplified.movies;
       describe('#titleMatch', () => {
          let testList = [
             "Movie",

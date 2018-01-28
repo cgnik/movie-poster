@@ -8,38 +8,31 @@ let _ = require('lodash');
 const MOVIE_EXTENSIONS = [".mkv", ".m4v"];
 const IMAGE_EXTENSIONS = [".jpg", ".png"];
 
-const highscore = (best, test, idx, arr) => {
-   let y = (best.score > test.score);
-   return y ? best : test;
-}
 
-let Files = {
-   MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
-   IMAGE_EXTENSIONS: IMAGE_EXTENSIONS,
+const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
+const isExtension = (filename, extensions) => {
+   const ext = (filename || "").toLowerCase().match(/\.(\w+)$/);
+   return (ext != null && ext.length > 0 && (extensions || []).indexOf(ext[0]) >= 0);
+};
+const isMovie = (filename) => (isExtension(filename, MOVIE_EXTENSIONS));
+const isImage = (filename) => (isExtension(filename, IMAGE_EXTENSIONS));
+const movies = (files) => (files || []).filter(isMovie);
+const images = (files) => (files || []).filter(isImage);
 
-   files: (dir) => {
-      return dir ? fs.readdirSync(dir)
-         .filter(f => fs.statSync(f).isFile()) : [];
-   },
-   isExtension: (filename, extensions) => {
-      const ext = (filename || "").toLowerCase().match(/\.(\w+)$/);
-      return (ext != null &&
-         ext.length > 0 &&
-         (extensions || []).indexOf(ext[0]) >= 0);
-   },
-   isMovie: (filename) => (Files.isExtension(filename, MOVIE_EXTENSIONS)),
-   isImage: (filename) => (Files.isExtension(filename, IMAGE_EXTENSIONS)),
-   movies: (files) => (files || []).filter(Files.isMovie),
-   images: (files) => (files || []).filter(Files.isImage),
-};
-let Movies = {
-   titleMatch: (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index,
-   search: (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json())
-};
+const titleMatch = (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index;
+const search = (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json());
 
 module.exports = {
-   files: Files,
-   movies: Movies
+   MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
+   IMAGE_EXTENSIONS: IMAGE_EXTENSIONS,
+   files: files,
+   isExtension: isExtension,
+   isMovie: isMovie,
+   isImage: isImage,
+   movies: movies,
+   images: images,
+   titleMatch: titleMatch,
+   search: search
 };
 
 /* Examples
