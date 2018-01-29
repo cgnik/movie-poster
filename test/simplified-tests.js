@@ -2,6 +2,23 @@ let simplified = rewire('../src/simplified');
 let under = simplified;
 
 describe("simplified", () => {
+   describe('Util', () => {
+      describe('#arrdefault', () => {
+         it('should tolerate null args', () => {
+            should.not.exist(under.arrdefault());
+            should.not.exist(under.arrdefault([]));
+            should.not.exist(under.arrdefault(null, 0));
+         });
+         it('should default the value when the array is too short', () => {
+            under.arrdefault(null, null, 'x').should.equal('x')
+            under.arrdefault(['blah', 'bloo', 'blee'], 3, 'nurk').should.equal('nurk')
+         });
+         it('should give the index member when present', () => {
+            under.arrdefault(['blah', 'bloo', 'blee'], 2, 'nurk').should.equal('blee');
+            under.arrdefault(['blah', 'bloo', 'blee'], 1, 'nurk').should.equal('bloo');
+         });
+      });
+   });
    describe('Files', () => {
       describe('#files', () => {
          let fs = null;
@@ -105,7 +122,23 @@ describe("simplified", () => {
             under.titleMatch("ame m", testList).should.equal(2);
          });
       });
-      describe('#search', () => {
+      describe('#movieConfig', () => {
+         let moviedb = null;
+         beforeEach(() => {
+            moviedb = {configuration: sinon.stub()};
+            simplified.__set__('moviedb', moviedb);
+         });
+         it('calls moviedb to find movie, calls callback with results', (done) => {
+            let expected = {a: 'b'};
+            moviedb.configuration.returns(Promise.resolve(expected));
+            under.movieConfig().then(result => {
+               result.should.deep.equal(expected);
+               done();
+            });
+            moviedb.configuration.should.have.been.calledOnce;
+         });
+      });
+      describe('#movieSearch', () => {
          let testResults = {results: [{id: 123, title: "Movie 123"}, {id: 345, title: "Movie 345"}]};
          let moviedb = null;
          beforeEach(() => {
@@ -117,14 +150,30 @@ describe("simplified", () => {
          });
          it('calls moviedb to find movie, calls callback with results', (done) => {
             moviedb.search.movies.returns(Promise.resolve({json: () => Promise.resolve(testResults)}));
-            under.search("Test Movie").then(result => {
+            under.movieSearch("Test Movie").then(result => {
                result.should.deep.equal(testResults);
                done();
             });
             moviedb.search.movies.should.have.been.calledOnce;
          });
          it('errors when called with a null movie name', () => {
-            expect(under.search.bind(null)).should.throw;
+            expect(under.movieSearch.bind(null)).should.throw;
+         });
+      });
+      describe('#movieImages', () => {
+         let moviedb = null;
+         beforeEach(() => {
+            moviedb = {configuration: sinon.stub()};
+            simplified.__set__('moviedb', moviedb);
+         });
+         it('calls moviedb to find movie, calls callback with results', (done) => {
+            let expected = {a: 'b'};
+            moviedb.movieImages(12).returns(Promise.resolve(expected));
+            under.movieImages().then(result => {
+               result.should.deep.equal(expected);
+               done();
+            });
+            moviedb.configuration.should.have.been.calledOnce;
          });
       });
    });

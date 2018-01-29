@@ -8,7 +8,7 @@ let _ = require('lodash');
 const MOVIE_EXTENSIONS = ["mkv", "m4v"];
 const IMAGE_EXTENSIONS = ["jpg", "png"];
 
-
+const arrdefault = (arry, index, defaultvalue) => arry && arry.length > index ? arry[index] : defaultvalue;
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
 const fileparts = (file) => (file || "").match(/(\w+)/g) || [];
 const isExtension = (filename, extensions) => {
@@ -21,12 +21,14 @@ const movies = (files) => (files || []).filter(isMovie);
 const images = (files) => (files || []).filter(isImage);
 
 const titleMatch = (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index;
-const search = (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json());
-const images = (id) => moviedb.images(id).map();
+const movieConfig = () => moviedb.configuration();
+const movieSearch = (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json());
+const movieImages = (movieId) => moviedb.images(id).map(x => x);
 
 module.exports = {
    MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
    IMAGE_EXTENSIONS: IMAGE_EXTENSIONS,
+   arrdefault: arrdefault,
    files: files,
    fileparts: fileparts,
    isExtension: isExtension,
@@ -35,7 +37,9 @@ module.exports = {
    movies: movies,
    images: images,
    titleMatch: titleMatch,
-   search: search
+   movieConfig: movieConfig,
+   movieSearch: movieSearch,
+   movieImages: movieImages
 };
 
 /* Examples
