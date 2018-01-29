@@ -22,6 +22,7 @@ const images = (files) => (files || []).filter(isImage);
 
 const titleMatch = (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index;
 const search = (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json());
+const images = (id) => moviedb.images(id).map();
 
 module.exports = {
    MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
