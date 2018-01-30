@@ -163,17 +163,17 @@ describe("simplified", () => {
       describe('#movieImages', () => {
          let moviedb = null;
          beforeEach(() => {
-            moviedb = {configuration: sinon.stub()};
+            moviedb = {images: sinon.stub()};
             simplified.__set__('moviedb', moviedb);
          });
          it('calls moviedb to find movie, calls callback with results', (done) => {
             let expected = {a: 'b'};
-            moviedb.movieImages(12).returns(Promise.resolve(expected));
+            moviedb.images.returns(Promise.resolve(expected));
             under.movieImages().then(result => {
                result.should.deep.equal(expected);
                done();
             });
-            moviedb.configuration.should.have.been.calledOnce;
+            moviedb.images.should.have.been.calledOnce;
          });
       });
    });
