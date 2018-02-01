@@ -1,5 +1,5 @@
 let fs = require('fs');
-let uri = require('uri');
+let url = require('url');
 const moviedbKey = fs.readFileSync('themoviedb-key.txt', {encoding: 'utf-8'});
 let fuzzy = require('fuzzy');
 let urlencode = require('urlencode');
@@ -13,7 +13,7 @@ const IMAGE_EXTENSIONS = ["jpg", "png"];
 const arrlast = (arr) => arr && arr.length > 0 ? arr[arr.length - 1] : '';
 const write = (stream, name) => stream.pipe(fs.createWriteStream(name));
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
-const fileparts = (file) => (file || "").match(/(\w+)/g) || [];
+const fileparts = (file) => (file || "").match(/([\s\w]+)/g) || [];
 const isExtension = (filename, extensions) => ((extensions || []).indexOf(arrlast(fileparts(filename)).toLowerCase()) >= 0);
 const isMovie = (filename) => (isExtension(filename, MOVIE_EXTENSIONS));
 const isImage = (filename) => (isExtension(filename, IMAGE_EXTENSIONS));
@@ -27,7 +27,7 @@ const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`
 const movieImage = (name) => movieSearch(name)
    .then(m => m[titleMatch(name, m.map(m => m.title))])
    .then(t => movieConfig()
-      .then(c => console.log(uri.join(c.images.base_url, 'w396', t.poster_path)))
+      .then(c => fetch(c.images.base_url + 'w396' + t.poster_path))
       .then(f => f.status < 299 ? write(f.body, `${name}.jpg`) : -1))
    .catch(console.error);
 

@@ -1,3 +1,6 @@
 movies = require('./simplified');
 
-movies.movieImage("Aliens");
+console.log(movies.files(process.cwd())
+   .filter(movies.isMovie)
+   .forEach(f => movies.movieImage(movies.fileparts(f)[0])))
+// movies.movieImage("Aliens");

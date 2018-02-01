@@ -44,6 +44,9 @@ describe("simplified", () => {
             under.fileparts('x.y').should.deep.equal(['x', 'y']);
             under.fileparts('x.y.z').should.deep.equal(['x', 'y', 'z']);
          });
+         it('should tolerate spaces', () => {
+            under.fileparts('x y.z').should.deep.equal(['x y', 'z']);
+         });
       });
       describe('#isExtension', () => {
          const extensions = simplified.MOVIE_EXTENSIONS;
