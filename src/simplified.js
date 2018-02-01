@@ -26,7 +26,7 @@ const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`
 const movieImage = (name) => movieSearch(name)
    .then(m => m[titleMatch(name, m.map(m => m.title))])
    .then(t => movieConfig()
-      .then(c => fetch(c['images']['base_url'] + t['poster_path'].substr(1)))
+      .then(c => fetch(url.resolve(c.images.base_url, t.poster_path)))
       .then(f => f.status < 299 ? writeStream(f.body, `${name}.jpg`) : -1))
    .catch(console.error);
 
