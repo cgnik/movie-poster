@@ -9,13 +9,11 @@ let fetch = require('isomorphic-fetch');
 const MOVIE_EXTENSIONS = ["mkv", "m4v"];
 const IMAGE_EXTENSIONS = ["jpg", "png"];
 
-const arrdefault = (arry, index, defaultvalue) => arry && arry.length > index ? arry[index] : defaultvalue;
+const arrlast = (arr) => arr && arr.length > 0 ? arr[arr.length - 1] : '';
+const write = (stream, name) => stream.pipe(fs.createWriteStream(name));
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
 const fileparts = (file) => (file || "").match(/(\w+)/g) || [];
-const isExtension = (filename, extensions) => {
-   const ext = fileparts(filename);
-   return (ext.length > 1 && (extensions || []).indexOf(ext[ext.length - 1].toLowerCase()) >= 0);
-};
+const isExtension = (filename, extensions) => ((extensions || []).indexOf(arrlast(fileparts(filename)).toLowerCase()) >= 0);
 const isMovie = (filename) => (isExtension(filename, MOVIE_EXTENSIONS));
 const isImage = (filename) => (isExtension(filename, IMAGE_EXTENSIONS));
 const movies = (files) => (files || []).filter(isMovie);
@@ -29,13 +27,14 @@ const movieImage = (name) => movieSearch(name)
    .then(m => m[titleMatch(name, m.map(m => m.title))])
    .then(t => movieConfig()
       .then(c => fetch(c['images']['base_url'] + t['poster_path'].substr(1)))
-      .then(f => f.status < 299 ? f.body.pipe(fs.createWriteStream(`${name}.jpg`)) : -1))
+      .then(f => f.status < 299 ? writeStream(f.body, `${name}.jpg`) : -1))
    .catch(console.error);
 
 module.exports = {
    MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
    IMAGE_EXTENSIONS: IMAGE_EXTENSIONS,
-   arrdefault: arrdefault,
+   arrlast: arrlast,
+   write: write,
    files: files,
    fileparts: fileparts,
    isExtension: isExtension,
@@ -45,12 +44,13 @@ module.exports = {
    images: images,
    titleMatch: titleMatch,
    movieConfig: movieConfig,
-   movieSearch: movieSearch
+   movieSearch: movieSearch,
+   movieImage: movieImage
 };
 
-movieImage("Aliens in the Attic");
 
 /* Examples
+ *
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg
  * https://image.tmdb.org/t/p/w396/uU9R1byS3USozpzWJ5oz7YAkXyk.jpg
  */

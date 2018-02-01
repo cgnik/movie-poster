@@ -2,20 +2,10 @@ let simplified = rewire('../src/simplified');
 let under = simplified;
 
 describe("simplified", () => {
-   describe('Util', () => {
-      describe('#arrdefault', () => {
-         it('should tolerate null args', () => {
-            should.not.exist(under.arrdefault());
-            should.not.exist(under.arrdefault([]));
-            should.not.exist(under.arrdefault(null, 0));
-         });
-         it('should default the value when the array is too short', () => {
-            under.arrdefault(null, null, 'x').should.equal('x')
-            under.arrdefault(['blah', 'bloo', 'blee'], 3, 'nurk').should.equal('nurk')
-         });
-         it('should give the index member when present', () => {
-            under.arrdefault(['blah', 'bloo', 'blee'], 2, 'nurk').should.equal('blee');
-            under.arrdefault(['blah', 'bloo', 'blee'], 1, 'nurk').should.equal('bloo');
+   describe('#Util', () => {
+      describe('Earrlast', () => {
+         it('should tolerate null arg', () => {
+            under.arrlast().should.equal('');
          });
       });
    });
@@ -69,7 +59,6 @@ describe("simplified", () => {
             under.isExtension("file.M4V", extensions).should.be.true;
             under.isExtension("file.JpG", extensions).should.be.false;
             under.isExtension("filemkv", extensions).should.be.false;
-            under.isExtension("mkv", extensions).should.be.false;
          });
       });
       describe('#isMovie', () => {
@@ -100,6 +89,24 @@ describe("simplified", () => {
             under.movies().should.deep.equal([])
             under.movies(['1.mkv', '2.jpg', '3.oink']).should.deep.equal(['1.mkv'])
             under.movies(['1.mkV', '2.jPg', '3.m4v']).should.deep.equal(['1.mkV', '3.m4v'])
+         });
+      });
+      describe('write', () => {
+         let stream = null;
+         let fs = null;
+         beforeEach(() => {
+            stream = {pipe: sinon.stub()};
+            fs = {createWriteStream: sinon.stub()};
+            under.__set__('fs', fs)
+         });
+         it('should tolerate null parameters', () => {
+            under.write.bind().should.not.throw;
+         });
+         it('should write the stream to a file', () => {
+            let expectedName = 'stupid';
+            under.write(stream, expectedName);
+            stream.pipe.should.have.been.calledOnce;
+            fs.createWriteStream.should.have.been.calledWith(expectedName);
          });
       });
    });
@@ -149,12 +156,12 @@ describe("simplified", () => {
             simplified.__set__('moviedb', moviedb);
          });
          it('calls moviedb to find movie, calls callback with results', (done) => {
-            moviedb.search.movies.returns(Promise.resolve({json: () => Promise.resolve(testResults)}));
+            moviedb.search.movies.returns(Promise.resolve(testResults));
             under.movieSearch("Test Movie").then(result => {
-               result.should.deep.equal(testResults);
+               result.should.deep.equal(testResults.results);
+               moviedb.search.movies.should.have.been.calledOnce;
                done();
-            });
-            moviedb.search.movies.should.have.been.calledOnce;
+            }).catch(console.error);
          });
          it('errors when called with a null movie name', () => {
             expect(under.movieSearch.bind(null)).should.throw;
