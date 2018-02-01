@@ -1,9 +1,10 @@
-// modules
 let fs = require('fs');
+const moviedbKey = fs.readFileSync('themoviedb-key.txt', {encoding: 'utf-8'});
 let fuzzy = require('fuzzy');
 let urlencode = require('urlencode');
-let moviedb = require('themoviedatabase');
+let moviedb = new (require('themoviedatabase'))(moviedbKey);
 let _ = require('lodash');
+let fetch = require('isomorphic-fetch');
 
 const MOVIE_EXTENSIONS = ["mkv", "m4v"];
 const IMAGE_EXTENSIONS = ["jpg", "png"];
@@ -21,9 +22,15 @@ const movies = (files) => (files || []).filter(isMovie);
 const images = (files) => (files || []).filter(isImage);
 
 const titleMatch = (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => b.score - a.score)[0] || {index: -1}).index;
+
 const movieConfig = () => moviedb.configuration();
-const movieSearch = (name) => moviedb.search.movies({query: '"#{urlencode(name)}"'}).then(r => r.json());
-const movieImages = (movieId) => moviedb.images(null, {movie_id: movieId});
+const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`}).then(r => r['results'] || []);
+const movieImage = (name) => movieSearch(name)
+   .then(m => m[titleMatch(name, m.map(m => m.title))])
+   .then(t => movieConfig()
+      .then(c => fetch(c['images']['base_url'] + t['poster_path'].substr(1)))
+      .then(f => f.status < 299 ? f.body.pipe(fs.createWriteStream(`${name}.jpg`)) : -1))
+   .catch(console.error);
 
 module.exports = {
    MOVIE_EXTENSIONS: MOVIE_EXTENSIONS,
@@ -38,9 +45,10 @@ module.exports = {
    images: images,
    titleMatch: titleMatch,
    movieConfig: movieConfig,
-   movieSearch: movieSearch,
-   movieImages: movieImages
+   movieSearch: movieSearch
 };
+
+movieImage("Aliens in the Attic");
 
 /* Examples
  * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg

@@ -160,21 +160,5 @@ describe("simplified", () => {
             expect(under.movieSearch.bind(null)).should.throw;
          });
       });
-      describe('#movieImages', () => {
-         let moviedb = null;
-         beforeEach(() => {
-            moviedb = {images: sinon.stub()};
-            simplified.__set__('moviedb', moviedb);
-         });
-         it('calls moviedb to find movie, calls callback with results', (done) => {
-            let expected = {a: 'b'};
-            moviedb.images.returns(Promise.resolve(expected));
-            under.movieImages().then(result => {
-               result.should.deep.equal(expected);
-               done();
-            });
-            moviedb.images.should.have.been.calledOnce;
-         });
-      });
    });
 });
