@@ -1,4 +1,5 @@
 let fs = require('fs');
+let uri = require('uri');
 const moviedbKey = fs.readFileSync('themoviedb-key.txt', {encoding: 'utf-8'});
 let fuzzy = require('fuzzy');
 let urlencode = require('urlencode');
@@ -26,8 +27,8 @@ const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`
 const movieImage = (name) => movieSearch(name)
    .then(m => m[titleMatch(name, m.map(m => m.title))])
    .then(t => movieConfig()
-      .then(c => fetch(url.resolve(c.images.base_url, t.poster_path)))
-      .then(f => f.status < 299 ? writeStream(f.body, `${name}.jpg`) : -1))
+      .then(c => console.log(uri.join(c.images.base_url, 'w396', t.poster_path)))
+      .then(f => f.status < 299 ? write(f.body, `${name}.jpg`) : -1))
    .catch(console.error);
 
 module.exports = {
