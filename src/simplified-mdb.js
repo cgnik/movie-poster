@@ -3,17 +3,17 @@ let moviedb = new (require('themoviedatabase'))(movieDbKey);
 let fetch = require('isomorphic-fetch');
 
 
-const movieImageFileFetch = (base_url) => fetch(base_url + 'w780' + t["poster_path"]);
-const movieConfig = () => moviedb.configuration();
-const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`}).then(r => r['results'] || []);
-const movieImageFetch = (name, data) => (data ? movieConfig() : Promise.reject(`No movie data for ${name} : ${data}`));
+const fetchPoster = (base_url) => fetch(base_url + 'w780' + t["poster_path"]);
+const config = () => moviedb.configuration();
+const search = (name) => moviedb.search.movies({query: `${urlencode(name)}`}).then(r => r['results'] || []);
+const configImageFetch = (name, data) => (data ? config() : Promise.reject(`No movie data for ${name} : ${data}`));
 
 
 module.exports = {
-   movieImageFileFetch: movieImageFileFetch,
-   movieImageFetch: movieImageFetch,
-   movieConfig: movieConfig,
-   movieSearch: movieSearch
+   fetchPoster: fetchPoster,
+   configImageFetch: configImageFetch,
+   config: config,
+   search: search
 };
 
 
