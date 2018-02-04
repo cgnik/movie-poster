@@ -8,7 +8,7 @@ let fetch = require('isomorphic-fetch');
 const MOVIE_EXTENSIONS = ["mkv", "m4v", "mp4"];
 const IMAGE_EXTENSIONS = ["jpg", "png"];
 
-const arrlast = (arr) => arr && arr.length > 0 ? arr[arr.length - 1] : '';
+const arrlast = (arr, index) => arr && arr.length > 0 ? arr[arr.length - (index || -1)] : '';
 const write = (stream, name) => stream.pipe(fs.createWriteStream(name));
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
 const fileparts = (file) => (file || "").match(/([^./\\]+)/g) || [];
@@ -22,10 +22,10 @@ const titleMatch = (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => 
 
 const movieConfig = () => moviedb.configuration();
 const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`}).then(r => r['results'] || []);
-const movieImageFetch = (movieData) => (movieData ? movieConfig() : Promise.reject("No data"));
+const movieImageFetch = (name,movieData) => (movieData ? movieConfig() : Promise.reject(`No movie data for ${name} : ${movieData}`));
 const movieImage = (name) => movieSearch(name)
    .then(m => m[titleMatch(name, m.map(m => m.title))])
-   .then(t => movieImageFetch(t)
+   .then(t => movieImageFetch(name,t)
       .then(c => fetch(c.images.base_url + 'w780' + t["poster_path"]))
       .then(f => f.status < 299 ? write(f.body, `${name}.jpg`) : Promise.reject('Unable to retrieve ' + f.url + " : " + f.status)))
    .catch(console.error);

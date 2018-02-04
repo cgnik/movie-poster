@@ -4,10 +4,15 @@ let under = simplified;
 
 describe("simplified", () => {
    describe('#Util', () => {
-      describe('Earrlast', () => {
+      describe('#arrlast', () => {
          it('should tolerate null arg', () => {
             under.arrlast().should.equal('');
          });
+         it('should return the last element in an array', () => {
+            under.arrlast([1,2,3]).should.equal(3);
+            under.arrlast([1]).should.equal(1);
+         });
+         it('should ')
       });
    });
    describe('Files', () => {
