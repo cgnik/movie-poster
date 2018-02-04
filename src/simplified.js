@@ -12,6 +12,7 @@ const arrlast = (arr, index) => arr && arr.length > 0 ? arr[Math.max(arr.length 
 const write = (stream, name) => stream.pipe(fs.createWriteStream(name));
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
 const fileparts = (file) => (file || "").match(/([^./\\]+)/g) || [];
+const filename = (file) => arrlast(fileparts(file), 1);
 const isExtension = (filename, extensions) => ((extensions || []).indexOf(arrlast(fileparts(filename)).toLowerCase()) >= 0);
 const isMovie = (filename) => (isExtension(filename, MOVIE_EXTENSIONS));
 const isImage = (filename) => (isExtension(filename, IMAGE_EXTENSIONS));
@@ -22,10 +23,10 @@ const titleMatch = (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => 
 
 const movieConfig = () => moviedb.configuration();
 const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`}).then(r => r['results'] || []);
-const movieImageFetch = (name,movieData) => (movieData ? movieConfig() : Promise.reject(`No movie data for ${name} : ${movieData}`));
+const movieImageFetch = (name, movieData) => (movieData ? movieConfig() : Promise.reject(`No movie data for ${name} : ${movieData}`));
 const movieImage = (name) => movieSearch(name)
    .then(m => m[titleMatch(name, m.map(m => m.title))])
-   .then(t => movieImageFetch(name,t)
+   .then(t => movieImageFetch(name, t)
       .then(c => fetch(c.images.base_url + 'w780' + t["poster_path"]))
       .then(f => f.status < 299 ? write(f.body, `${name}.jpg`) : Promise.reject('Unable to retrieve ' + f.url + " : " + f.status)))
    .catch(console.error);
@@ -37,6 +38,7 @@ module.exports = {
    write: write,
    files: files,
    fileparts: fileparts,
+   filename: filename,
    isExtension: isExtension,
    isMovie: isMovie,
    isImage: isImage,

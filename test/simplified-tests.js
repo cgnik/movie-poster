@@ -61,6 +61,16 @@ describe("simplified", () => {
             under.fileparts('x y.z').should.deep.equal(['x y', 'z']);
          });
       });
+      describe('#filename', () => {
+         it('should give back the file name without path or extension', () => {
+            under.filename('/yuks/mark.fir').should.equal('mark');
+            under.filename('mark.fir').should.equal('mark');
+            under.filename('mark.').should.equal('mark');
+         });
+         it('should tolerate paths', () => {
+            under.filename('/blah/nurp/some/thing.else').should.equal('thing');
+         })
+      });
       describe('#isExtension', () => {
          const extensions = simplified.MOVIE_EXTENSIONS;
          it('should tolerate empty inputs', () => {
