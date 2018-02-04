@@ -8,7 +8,7 @@ let fetch = require('isomorphic-fetch');
 const MOVIE_EXTENSIONS = ["mkv", "m4v", "mp4"];
 const IMAGE_EXTENSIONS = ["jpg", "png"];
 
-const arrlast = (arr, index) => arr && arr.length > 0 ? arr[arr.length - (index || -1)] : '';
+const arrlast = (arr, index) => arr && arr.length > 0 ? arr[Math.max(arr.length - 1 - (index || 0), 0)] : '';
 const write = (stream, name) => stream.pipe(fs.createWriteStream(name));
 const files = (dir) => dir ? fs.readdirSync(dir).filter(f => fs.statSync(f).isFile()) : [];
 const fileparts = (file) => (file || "").match(/([^./\\]+)/g) || [];

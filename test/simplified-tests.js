@@ -9,10 +9,17 @@ describe("simplified", () => {
             under.arrlast().should.equal('');
          });
          it('should return the last element in an array', () => {
-            under.arrlast([1,2,3]).should.equal(3);
+            under.arrlast([1, 2, 3]).should.equal(3);
             under.arrlast([1]).should.equal(1);
          });
-         it('should ')
+         it('should return the specified index starting from the end', () => {
+            under.arrlast([8, 7, 9], 1).should.equal(7);
+            under.arrlast([8], 0).should.equal(8);
+         });
+         it('should tolerate an index logically before the start of the array', () => {
+            under.arrlast([3, 9, 7], 4).should.equal(3);
+            under.arrlast([3], 4).should.equal(3);
+         });
       });
    });
    describe('Files', () => {
