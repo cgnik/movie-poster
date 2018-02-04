@@ -1,3 +1,4 @@
+movieDbKey = "test-moviedb-key";
 let simplified = rewire('../src/simplified');
 let under = simplified;
 

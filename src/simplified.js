@@ -1,13 +1,11 @@
 let fs = require('fs');
-let url = require('url');
-const moviedbKey = fs.readFileSync('../themoviedb-key.txt', {encoding: 'utf-8'});
 let fuzzy = require('fuzzy');
 let urlencode = require('urlencode');
-let moviedb = new (require('themoviedatabase'))(moviedbKey);
+let moviedb = new (require('themoviedatabase'))(movieDbKey);
 let _ = require('lodash');
 let fetch = require('isomorphic-fetch');
 
-const MOVIE_EXTENSIONS = ["mkv", "m4v"];
+const MOVIE_EXTENSIONS = ["mkv", "m4v", "mp4"];
 const IMAGE_EXTENSIONS = ["jpg", "png"];
 
 const arrlast = (arr) => arr && arr.length > 0 ? arr[arr.length - 1] : '';
@@ -24,11 +22,12 @@ const titleMatch = (name, titles) => (fuzzy.filter(name, titles).sort((a, b) => 
 
 const movieConfig = () => moviedb.configuration();
 const movieSearch = (name) => moviedb.search.movies({query: `${urlencode(name)}`}).then(r => r['results'] || []);
+const movieImageFetch = (movieData) => (movieData ? movieConfig() : Promise.reject("No data"));
 const movieImage = (name) => movieSearch(name)
    .then(m => m[titleMatch(name, m.map(m => m.title))])
-   .then(t => movieConfig()
-      .then(c => fetch(c.images.base_url + 'w396' + t.poster_path))
-      .then(f => f.status < 299 ? write(f.body, `${name}.jpg`) : -1))
+   .then(t => movieImageFetch(t)
+      .then(c => fetch(c.images.base_url + 'w780' + t["poster_path"]))
+      .then(f => f.status < 299 ? write(f.body, `${name}.jpg`) : Promise.reject('Unable to retrieve ' + f.url + " : " + f.status)))
    .catch(console.error);
 
 module.exports = {
