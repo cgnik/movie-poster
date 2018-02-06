@@ -56,6 +56,9 @@ describe("simplified", () => {
       it('should tolerate spaces', () => {
          under.fileparts('x y.z').should.deep.equal(['x y', 'z']);
       });
+      it('should pull the extension from an image url', () => {
+         under.fileparts('http://image.tmdb.org/t/p/abc123.jpg').should.deep.equal(['http:', 'image', 'tmdb', 'org','t','p','abc123', 'jpg'])
+      });
    });
    describe('#filename', () => {
       it('should give back the file name without path or extension', () => {

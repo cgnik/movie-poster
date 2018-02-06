@@ -7,5 +7,6 @@ module.exports = {
    MovieDbMovieDb: require('./moviedb-moviedb'),
    MovieListFile: require('./movie-list-file'),
    MetaUpdate: require('./meta-update'),
-   MergeMap: require('./mergemap')
+   MergeMap: require('./mergemap'),
+   simplified: require('./simplified')
 };
