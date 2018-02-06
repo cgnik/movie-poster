@@ -1,7 +1,7 @@
-let simplified = rewire('../src/simplified');
-let under = simplified;
+let util = rewire('../src/util');
+let under = util;
 
-describe("simplified", () => {
+describe("util", () => {
    describe('#arrlast', () => {
       it('should tolerate null arg', () => {
          under.arrlast().should.equal('');
@@ -26,7 +26,7 @@ describe("simplified", () => {
             readdirSync: sinon.stub(),
             statSync: sinon.stub()
          };
-         simplified.__set__('fs', fs);
+         util.__set__('fs', fs);
       });
       it('should list all files in the specified directory', () => {
          let expectedDir = '/derpa/derpy/derp/';
@@ -57,7 +57,7 @@ describe("simplified", () => {
          under.fileparts('x y.z').should.deep.equal(['x y', 'z']);
       });
       it('should pull the extension from an image url', () => {
-         under.fileparts('http://image.tmdb.org/t/p/abc123.jpg').should.deep.equal(['http:', 'image', 'tmdb', 'org','t','p','abc123', 'jpg'])
+         under.fileparts('http://image.tmdb.org/t/p/abc123.jpg').should.deep.equal(['http:', 'image', 'tmdb', 'org', 't', 'p', 'abc123', 'jpg'])
       });
    });
    describe('#filename', () => {
@@ -71,7 +71,7 @@ describe("simplified", () => {
       })
    });
    describe('#isExtension', () => {
-      const extensions = simplified.MOVIE_EXTENSIONS;
+      const extensions = util.MOVIE_EXTENSIONS;
       it('should tolerate empty inputs', () => {
          under.isExtension().should.be.false;
       });

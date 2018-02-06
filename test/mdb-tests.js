@@ -1,7 +1,7 @@
 movieDbKey = "test-moviedb-key";
-let mdb = rewire('../src/simplified-mdb');
+let mdb = rewire('../src/mdb');
 
-describe("simplified", () => {
+describe("mdb", () => {
    describe('#config', () => {
       let moviedb = null;
       beforeEach(() => {
