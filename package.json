@@ -9,7 +9,7 @@
     "isomorphic-fetch": "^2.2.1",
     "sleep-ms": "^2.0.1",
     "themoviedatabase": "^1.1.1",
-    "underscore": "^1.8.3",
+    "lodash": "latest",
     "urlencode": "^1.1.0"
   },
   "devDependencies": {

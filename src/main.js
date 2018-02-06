@@ -1,45 +1,19 @@
-// modules
-let fs = require('fs');
-let Indexer = require('./indexer');
-let MovieSource = require('./moviedb-moviedb');
+movieDbKey = require('fs').readFileSync(__dirname + '/../themoviedb-key.txt', {encoding: 'utf-8'});
+const m = require('./simplified');
+const mdb = require('./simplified-mdb');
 
-const KEYFILE = 'themoviedb-key.txt';
+const files = m.files(process.cwd()).filter(f => m.isMovie(f) || m.isImage(f));
+const movies = files.filter(m.isMovie).map(f => m.filename(f));
 
-class Main {
-   constructor(p) {
-      let params = p || {};
-      this.directories = params['directory'] || [];
-      this.indexers = {};
-      this.themoviedbKey = params['themoviedbKey'];
-      this.moviedb = null;
-      this.KEYFILE = params['keyfile'] || KEYFILE;
-   }
-
-   process() {
-      this.initMoviedb();
-      return Promise.all(this.directories.map(directory => {
-         this.indexers[directory] = new Indexer(this.moviedb, directory);
-         console.info("Indexing directory " + directory);
-         this.indexers[directory].initialize();
-         console.info("Processing directory " + directory);
-         return this.indexers[directory].process();
-      })).catch(console.error);
-   }
-
-
-   initMoviedb() {
-      if (this.themoviedbKey == undefined) {
-         this.themoviedbKey = fs.readFileSync(this.KEYFILE);
-      }
-      this.moviedb = new MovieSource({'themoviedbKey': this.themoviedbKey});
-      if (this.moviedb === undefined) {
-         throw new Error("Unable to initialize moviedb searching");
-      }
-   }
-}
-
-module.exports = Main;
-/* Examples
- * http://api.themoviedb.org/3/movie/348/images/vMNl7mDS57vhbglfth5JV7bAwZp.jpg
- * https://image.tmdb.org/t/p/w396/uU9R1byS3USozpzWJ5oz7YAkXyk.jpg
- */
+const imagiate = (base, movies) => {
+   console.log("Using base: " + base);
+   movies.forEach(movie => {
+      mdb.search(movie)
+         .then(titles => mdb.match(movie, titles))
+         .then(data => mdb.check(base, data))
+         .then(stream => m.write(stream, movie + ".jpg"))
+         .catch(console.error)
+   });
+};
+mdb.config()
+   .then(base => imagiate(base, movies))
