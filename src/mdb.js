@@ -5,9 +5,12 @@ let util = require('./util')
 
 const config = () => moviedb.configuration().then(c => Promise.resolve(c.images.base_url));
 const match = (name, titles) => Promise.resolve(titles[util.titleMatch(name, titles.map(t => t.title))]);
-const search = (name) => moviedb.search.movies({query: `${urlencode(name)}`, language: "en-US"}).then(r => Promise.resolve(r.results || []));
+const search = (name) => moviedb.search.movies({
+   query: `${urlencode(name)}`,
+   language: "en-US"
+}).then(r => Promise.resolve(r.results || []));
 const poster = (base, movie) => fetch(base + 'w780' + movie.poster_path).then(r => r.status < 300 ? Promise.resolve(r.body) : Promise.reject("No body"));
-const check = (base_url, data) => (data ? poster(base_url, data) : Promise.reject(`No movie data : ${data}`));
+const check = (base_url, data) => (data ? poster(base_url, data) : Promise.reject('No matching movie data'));
 
 module.exports = {
    config: config,

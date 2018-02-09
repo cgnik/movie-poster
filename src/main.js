@@ -15,7 +15,7 @@ const imaginate = (base, titles) => {
          .then(titles => mdb.match(movie, titles))
          .then(data => mdb.check(base, data))
          .then(stream => m.write(stream, movie + ".jpg"))
-         .catch(console.error);
+         .catch(e => console.error(e, ": ", movie));
    });
 };
 
