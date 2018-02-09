@@ -1,12 +1,15 @@
 movieDbKey = require('fs').readFileSync(__dirname + '/../themoviedb-key.txt', {encoding: 'utf-8'});
-const m = require('./simplified');
-const mdb = require('./simplified-mdb');
+const m = require('./util');
+const mdb = require('./mdb');
+const funcs = require('./funcs')(process.cwd());
+const cli = require('command-line-args');
 
-const files = m.files(process.cwd()).filter(f => m.isMovie(f) || m.isImage(f));
-const movies = files.filter(m.isMovie).map(f => m.filename(f));
+const opts = cli([
+   {name: 'command', alias: 'c', type: String, defaultOption: true}
+]);
 
+const log = console.log;
 const imaginate = (base, titles) => {
-   console.log("Using base: " + base);
    titles.forEach(movie => {
       mdb.search(movie)
          .then(titles => mdb.match(movie, titles))
@@ -15,5 +18,18 @@ const imaginate = (base, titles) => {
          .catch(console.error);
    });
 };
-mdb.config()
-   .then(base => imaginate(base, movies))
+
+switch (opts.command) {
+   case 'images':
+      log("Fetching missing images");
+      mdb.config()
+         .then(base => imaginate(base, funcs.missing()));
+      break;
+   case 'missing':
+      log("Finding missing images...");
+      log("Missing: ", funcs.missing());
+      break;
+   default:
+      log("Command not understood.");
+}
+log("Done.");
