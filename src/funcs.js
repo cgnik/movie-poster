@@ -11,7 +11,6 @@ module.exports = (dir) => {
       files: () => files(dir),
       images: () => images(dir),
       movies: () => movies(dir),
-      diff: diff,
       missing: () => missing(dir)
    };
    return self;

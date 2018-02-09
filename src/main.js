@@ -27,7 +27,7 @@ switch (opts.command) {
       break;
    case 'missing':
       log("Finding missing images...");
-      log("Missing: ", funcs.missing());
+      log("Missing images: ", funcs.missing());
       break;
    default:
       log("Command not understood.");
