@@ -17,14 +17,13 @@ const imaginate = (base, titles) => {
    });
 };
 const updaterate = (movieFile) => {
-   let mname = m.filename(mfile);
+   let mname = m.filename(movieFile);
    mdb.search(mname)
       .then(titles => mdb.match(mname, titles))
       .then(data => {
-         let d = meta.read(mfile);
-         console.log(data);
+         let d = meta.read(movieFile);
          d = meta.merge(d, data, meta.MOVIE_FIELD_MAP);
-         if (d && meta.write(mfile, d)) {
+         if (d && meta.write(movieFile, d)) {
             console.log("Updated metadata for ", mname);
          } else {
             console.error("Unable to update meta for ", mname);

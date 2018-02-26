@@ -3,7 +3,8 @@ let meta = require('ffmetadata');
 const MOVIE_FIELD_MAP = {
    Title: 'title',
    Description: 'overview',
-   comment: 'overview'
+   comment: 'overview',
+   Date: 'release_date'
 };
 
 const merge = (dst, src, map) => {
