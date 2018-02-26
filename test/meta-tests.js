@@ -34,13 +34,20 @@ describe("meta", () => {
       it('should read the metadata from the file', () => {
          let filename = 'file.fil';
          let expected = {title: 'test'};
-         ffm.read.withArgs(filename).returns(expected);
-         meta.read(filename).should.equal(expected);
+         ffm.read.callsArgWith(1, null, expected)
+         meta.read(filename).should.deep.equal({error: null, data: expected});
       });
    });
    describe('#write', () => {
+      let ffm = null;
+      beforeEach(() => {
+         ffm = {write: sinon.stub()};
+         meta.__set__('meta', ffm);
+      });
       it('should write the metadata to the file', () => {
-
+         let expected = {worp: "derp"};
+         meta.write('honk.mp4', expected);
+         ffm.write.should.have.been.calledWith('honk.mp4', expected);
       });
    });
 });

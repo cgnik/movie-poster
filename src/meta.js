@@ -13,13 +13,23 @@ const merge = (dst, src, map) => {
    return dst;
 };
 
-const read = (file) => meta.read(file, {}, (e, d) => r({error: e, data: d}));
+const read = (file) => {
+   let data = {};
+   meta.read(file, (e, d) => (data = {error: e, data: d}))
+   return data;
+};
 
-const write = (file, meta) => {
-
-}
+const write = (file, input) => {
+   let err = null, data = null;
+   meta.write(file, input, (e, d) => {
+      err = e;
+      data = d;
+   });
+   return err == null;
+};
 
 module.exports = {
    merge: merge,
-   read: read
+   read: read,
+   write: write
 };
