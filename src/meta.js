@@ -2,8 +2,8 @@ let meta = require('ffmetadata');
 
 const MOVIE_FIELD_MAP = {
    Title: 'title',
-   Description: 'description',
-   comment: 'description'
+   Description: 'overview',
+   comment: 'overview'
 };
 
 const merge = (dst, src, map) => {
@@ -31,5 +31,6 @@ const write = (file, input) => {
 module.exports = {
    merge: merge,
    read: read,
-   write: write
+   write: write,
+   MOVIE_FIELD_MAP: MOVIE_FIELD_MAP
 };

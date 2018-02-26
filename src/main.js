@@ -1,6 +1,7 @@
 movieDbKey = require('fs').readFileSync(__dirname + '/../themoviedb-key.txt', {encoding: 'utf-8'});
 const m = require('./util');
 const mdb = require('./mdb');
+const meta = require('./meta');
 const funcs = require('./funcs')(process.cwd());
 const cli = require('command-line-args');
 
@@ -15,11 +16,27 @@ const imaginate = (base, titles) => {
          .catch(e => console.error(e, ": ", movie));
    });
 };
+const updaterate = (movieFile) => {
+   let mname = m.filename(mfile);
+   mdb.search(mname)
+      .then(titles => mdb.match(mname, titles))
+      .then(data => {
+         let d = meta.read(mfile);
+         console.log(data);
+         d = meta.merge(d, data, meta.MOVIE_FIELD_MAP);
+         if (d && meta.write(mfile, d)) {
+            console.log("Updated metadata for ", mname);
+         } else {
+            console.error("Unable to update meta for ", mname);
+         }
+      });
+};
 
 const opts = cli([
    {name: 'command', alias: 'c', type: String, defaultOption: true},
    {name: 'dir', alias: 'd', type: String}
 ]);
+
 const dir = opts.dir || process.cwd();
 
 switch (opts.command) {
@@ -32,11 +49,10 @@ switch (opts.command) {
       log("Missing images: ", funcs.missing());
       break;
    case 'meta':
-      // TODO: iterate all movies and merge titles, descriptions, etc.
       log("Updating metadata...");
-      m.files(dir).filter(m.isMovie).forEach(m => {
-         log(m);
-      })
+      m.files(dir).filter(m.isMovie).forEach(mfile => {
+         updaterate(mfile);
+      });
       break;
    default:
       log("Unrecognized command");
