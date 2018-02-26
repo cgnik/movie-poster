@@ -32,7 +32,7 @@ switch (opts.command) {
       log("Missing images: ", funcs.missing());
       break;
    case 'meta':
-      // TODO: iterate all movies and update titles, descriptions, etc.
+      // TODO: iterate all movies and merge titles, descriptions, etc.
       log("Updating metadata...");
       m.files(dir).filter(m.isMovie).forEach(m => {
          log(m);

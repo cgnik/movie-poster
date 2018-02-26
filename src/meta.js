@@ -5,13 +5,17 @@ const MOVIE_FIELD_MAP = {
    Description: 'description',
    comment: 'description'
 };
-const update = (dst, src, map) => {
+const merge = (dst, src, map) => {
    if (dst && src && map) {
       Object.keys(map).forEach(k => dst[k] = src[map[k]] || dst[k]);
    }
    return dst;
 };
 
+const write = (file, meta) => {
+
+}
+
 module.exports = {
-   update: update
+   merge: merge
 };
