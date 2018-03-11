@@ -21,6 +21,10 @@ const updaterate = (movieFile) => {
    mdb.search(mname)
       .then(titles => mdb.match(mname, titles))
       .then(data => {
+         if (!data || Object.keys(data).length < 1) {
+            log("No data found for movie file ", movieFile);
+            return;
+         }
          let d = meta.read(movieFile);
          d = meta.merge(d, data, meta.MOVIE_FIELD_MAP);
          if (d && meta.write(movieFile, d)) {
