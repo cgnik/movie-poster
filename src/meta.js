@@ -22,7 +22,7 @@ const read = (file) => {
 
 const write = (file, input) => {
    let err = null, data = null;
-   meta.write(file, input, (e, d) => {
+   meta.write(file, input, {preserveStreams: true}, (e, d) => {
       err = e;
       data = d;
    });

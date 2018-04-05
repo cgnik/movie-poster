@@ -168,9 +168,9 @@ eyes@0.1.x:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/eyes/-/eyes-0.1.8.tgz#62cf120234c683785d902348a800ef3e0cc20bc0"
 
-ffmetadata@^1.4.0:
+ffmetadata@cgnik/node-ffmetadata:
   version "1.5.0"
-  resolved "https://registry.yarnpkg.com/ffmetadata/-/ffmetadata-1.5.0.tgz#44f2291f6fb51e20625ea5073a4c12184f890772"
+  resolved "https://codeload.github.com/cgnik/node-ffmetadata/tar.gz/b84aa6b4e5478f7835bc7f32d5eba3cadbb55335"
   dependencies:
     concat-stream "~1.0.0"
     split "~0.2.6"
